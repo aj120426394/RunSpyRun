@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,7 +22,11 @@ import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 
 public class Login extends Activity {
-
+	
+	public static final String PREFS_NAME = "LoginInfo";
+	private static final String PREF_USERNAME = "username";
+	private static final String PREF_PASSWORD = "password";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,10 +35,17 @@ public class Login extends Activity {
 		//Screen orientation lock in login screen
 		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		ParseAnalytics.trackAppOpened(getIntent());
-
+		
+		// Get the username for device's storage
+		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		String username = pref.getString(PREF_USERNAME, null);
+		setUsername(username);
 	}
 
-	
+	private void setUsername(String username){
+		EditText usernameEditText = (EditText) findViewById(R.id.username);
+		usernameEditText.setText(username);
+	}
 	
 	// Login with Parse service
 	public void login(View view){
@@ -46,7 +58,7 @@ public class Login extends Activity {
 			
 		EditText passwordEditText = (EditText) findViewById(R.id.password);
 		String passwordString = passwordEditText.getText().toString();
-			
+		
 		// Login system by Parse
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		ParseUser.logInInBackground(usernameString, passwordString, new LogInCallback() {
@@ -118,6 +130,23 @@ public class Login extends Activity {
 		alert.show();
 	}
 	
+	
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+
+		//Store the username into the device.
+		EditText usernameEditText = (EditText) findViewById(R.id.username);
+		String usernameString = usernameEditText.getText().toString();
+		
+		getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+		.edit()
+		.putString(PREF_USERNAME, usernameString)
+		.commit();
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
