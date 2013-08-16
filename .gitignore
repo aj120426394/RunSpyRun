@@ -18,3 +18,5 @@ project.properties
 # Eclipse project files
 .classpath
 .project
+google-play-services_lib.jar
+google-play-services_lib.jar.properties
