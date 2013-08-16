@@ -42,6 +42,10 @@ public class Login extends Activity {
 		setUsername(username);
 		
 		System.out.println("Hello by Jeff");
+
+		System.out.println("testing");
+
+
 	}
 
 	private void setUsername(String username){
