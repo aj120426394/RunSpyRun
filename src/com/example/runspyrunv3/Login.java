@@ -25,7 +25,6 @@ public class Login extends Activity {
 	
 	public static final String PREFS_NAME = "LoginInfo";
 	private static final String PREF_USERNAME = "username";
-	private static final String PREF_PASSWORD = "password";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
