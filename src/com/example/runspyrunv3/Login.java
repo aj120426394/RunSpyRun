@@ -40,7 +40,9 @@ public class Login extends Activity {
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
 		
-		System.out.println("Hello by Jeff");
+		System.out.println("test");
+
+
 	}
 
 	private void setUsername(String username){
