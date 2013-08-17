@@ -1,4 +1,4 @@
-package uq.deco7381.runspyrun;
+package uq.deco7381.runspyrun.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class Success extends Activity {
+public class SuccessActivity extends Activity {
 
 	static final LatLng NKUT = new LatLng(23.979548, 120.696745);
     private GoogleMap map;

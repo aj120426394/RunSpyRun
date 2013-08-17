@@ -1,4 +1,4 @@
-package uq.deco7381.runspyrun;
+package uq.deco7381.runspyrun.ui;
 
 import com.example.runspyrunv3.R;
 import com.parse.Parse;
@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
-public class Signup extends Activity {
+public class SignupActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class Signup extends Activity {
 	
 	public void signup(View view){
 		
-		final Intent intent = new Intent(this, Login.class);
+		final Intent intent = new Intent(this, LoginActivity.class);
 		EditText usernameET = (EditText)findViewById(R.id.sUsername);
 		String username = usernameET.getText().toString();
 		
@@ -79,7 +79,7 @@ public class Signup extends Activity {
 					// TODO Auto-generated method stub
 					if(e == null){
 						//if signup success, show in dialog box
-						builder.setTitle("Success");
+						builder.setTitle("SuccessActivity");
 						builder.setMessage("Please check your email to activate your account");
 						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 							@Override
@@ -116,7 +116,7 @@ public class Signup extends Activity {
 	}
 	
 	public void cancel(View view){
-		Intent intent = new Intent(this, Login.class);
+		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
 	}
 

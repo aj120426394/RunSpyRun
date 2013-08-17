@@ -1,4 +1,4 @@
-package uq.deco7381.runspyrun;
+package uq.deco7381.runspyrun.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,7 +22,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 
-public class Login extends Activity {
+public class LoginActivity extends Activity {
 	
 	public static final String PREFS_NAME = "LoginInfo";
 	private static final String PREF_USERNAME = "username";
@@ -55,10 +55,10 @@ public class Login extends Activity {
 		usernameEditText.setText(username);
 	}
 	
-	// Login with Parse service
+	// LoginActivity with Parse service
 	public void login(View view){
 			
-		final Intent intent = new Intent(this, Success.class);
+		final Intent intent = new Intent(this, SuccessActivity.class);
 			
 		//Retrieve user input
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
@@ -67,7 +67,7 @@ public class Login extends Activity {
 		EditText passwordEditText = (EditText) findViewById(R.id.password);
 		String passwordString = passwordEditText.getText().toString();
 		
-		// Login system by Parse
+		// LoginActivity system by Parse
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		ParseUser.logInInBackground(usernameString, passwordString, new LogInCallback() {
 				
@@ -95,9 +95,9 @@ public class Login extends Activity {
 		});
 	}
 
-	// Signup with Parse service
+	// SignupActivity with Parse service
 	public void signup(View view){
-		Intent intent = new Intent(this, Signup.class);
+		Intent intent = new Intent(this, SignupActivity.class);
 		startActivity(intent);
 	}
 	
@@ -123,7 +123,7 @@ public class Login extends Activity {
 						// TODO Auto-generated method stub
 						// Avoid software keyboard remain on the screen after click "Send" button
 						InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE));
-						imm.hideSoftInputFromWindow(Login.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+						imm.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 						if(e == null){
 							Toast.makeText(getApplicationContext(), "Password reset mail sent", Toast.LENGTH_LONG).show();
 						}else{
