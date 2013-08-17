@@ -1,4 +1,4 @@
-package uq.deco7381.runspyrun.ui;
+package uq.deco7381.runspyrun.Activity;
 
 import com.example.runspyrunv3.R;
 import com.parse.Parse;
