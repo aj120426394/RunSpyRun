@@ -39,14 +39,6 @@ public class Login extends Activity {
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
-		
-		System.out.println("Hello by Jeff");
-
-		System.out.println("testing");
-
-		System.out.println("test");
-
-
 	}
 
 	private void setUsername(String username){
@@ -106,7 +98,7 @@ public class Login extends Activity {
 		LayoutInflater inflater = LayoutInflater.from(this);
 		final View v = inflater.inflate(R.layout.dialog_resetpassword, null);
 		
-		// Build a AlertDialog
+		// Build a Dialog show the "Reset password" function
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Reset the password");
 		builder.setView(v);

@@ -1,9 +1,14 @@
 package com.example.runspyrunv3;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -22,10 +27,26 @@ public class Success extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_success);
 		
-		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-        Marker nkut = map.addMarker(new MarkerOptions().position(NKUT).title("南開科技大學").snippet("數位生活創意系"));
+		setUpMapIfNeeded();
+		
+		map.setMyLocationEnabled(true);
+		
+		
+		/*
+        Marker nkut = map.addMarker(new MarkerOptions().position(NKUT).title("嚙緯嚙罷嚙踝蕭牏j嚙踝蕭").snippet("嚙複佗蕭肮嚙踝蕭郱N嚙緣"));
 		// Move the camera instantly to NKUT with a zoom of 16.
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(NKUT, 16));
+        */
+	}
+	
+	private void setUpMapIfNeeded(){
+		if (map == null){
+			map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+			
+			if (map != null){
+				
+			}
+		}
 	}
 
 	@Override
