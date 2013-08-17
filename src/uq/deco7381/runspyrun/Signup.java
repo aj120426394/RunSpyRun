@@ -1,5 +1,6 @@
-package com.example.runspyrunv3;
+package uq.deco7381.runspyrun;
 
+import com.example.runspyrunv3.R;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
