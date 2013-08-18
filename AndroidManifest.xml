@@ -28,9 +28,9 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" android:debuggable="true">
         <activity
-            android:name="uq.deco7381.runspyrun.Activity.LoginActivity"
+            android:name="uq.deco7381.runspyrun.activity.LoginActivity"
             android:label="@string/app_name" 
-            android:windowSoftInputMode="adjustPan|adjustResize" >
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,11 +38,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="uq.deco7381.runspyrun.Activity.SuccessActivity"
+            android:name="uq.deco7381.runspyrun.activity.SuccessActivity"
             android:label="@string/title_activity_success" >
         </activity>
         <activity
-            android:name="uq.deco7381.runspyrun.Activity.SignupActivity"
+            android:name="uq.deco7381.runspyrun.activity.SignupActivity"
             android:label="@string/title_activity_signup" >
         </activity>
         <meta-data
