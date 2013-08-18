@@ -2,9 +2,13 @@ package uq.deco7381.runspyrun.Activity;
 
 import uq.deco7381.runspyrun.R;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,14 +29,25 @@ public class SuccessActivity extends Activity  implements OnMyLocationChangeList
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_success);
 		
-		// Check the map is exist or not
-		if (map == null){
-			map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-			
-			if(map != null){
-				setUpMap();
+		
+		LocationManager status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
+		
+		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+			// Check the map is exist or not
+			if (map == null){
+				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+				
+				if(map != null){
+					setUpMap();
+				}
 			}
+			
+		}else{
+			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
+			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
+		
+		
 		
 	}
 	
