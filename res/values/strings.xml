@@ -14,5 +14,6 @@
     <string name="esPassword">Comfirm password</string>
     <string name="email">E-Mail</string>
     <string name="cancel">Cancel</string>
+    <string name="reset">Enter your email address</string>
 
 </resources>
