@@ -32,20 +32,12 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
-		//Screen orientation lock in login screen
-		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		ParseAnalytics.trackAppOpened(getIntent());
 		
 		// Get the username for device's storage
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
-		
-		System.out.println("Hello by Jeff");
-
-		System.out.println("testing");
-
-		System.out.println("test");
 
 
 	}
