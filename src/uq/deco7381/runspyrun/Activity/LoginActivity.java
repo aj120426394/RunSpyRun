@@ -1,5 +1,6 @@
 package uq.deco7381.runspyrun.Activity;
 
+import uq.deco7381.runspyrun.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.runspyrunv3.R;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;

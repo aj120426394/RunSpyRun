@@ -1,20 +1,20 @@
 package uq.deco7381.runspyrun.Activity;
 
-import com.example.runspyrunv3.R;
+import uq.deco7381.runspyrun.R;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
-
-import android.os.Bundle;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.view.Menu;
-import android.view.View;
-import android.widget.EditText;
 
 public class SignupActivity extends Activity {
 

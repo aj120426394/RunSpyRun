@@ -1,10 +1,10 @@
 package uq.deco7381.runspyrun.Activity;
 
+import uq.deco7381.runspyrun.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.example.runspyrunv3.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
