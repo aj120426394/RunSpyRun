@@ -1,4 +1,4 @@
-package uq.deco7381.runspyrun.Activity;
+package uq.deco7381.runspyrun.activity;
 
 import uq.deco7381.runspyrun.R;
 import android.app.Activity;
