@@ -40,12 +40,7 @@ public class LoginActivity extends Activity {
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
-		
-		System.out.println("Hello by Jeff");
 
-		System.out.println("testing");
-
-		System.out.println("test");
 
 
 	}

@@ -30,7 +30,7 @@
         <activity
             android:name="uq.deco7381.runspyrun.activity.LoginActivity"
             android:label="@string/app_name" 
-            android:windowSoftInputMode="adjustPan|adjustResize" >
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
