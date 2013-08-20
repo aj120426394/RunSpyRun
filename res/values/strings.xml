@@ -15,6 +15,9 @@
     <string name="email">E-Mail</string>
     <string name="cancel">Cancel</string>
     <string name="reset">Enter your email address</string>
+
     <color name="white">#FFFFFF</color>
+
+    <string name="title_activity_dashboard">DashboardActivity</string>
 
 </resources>
