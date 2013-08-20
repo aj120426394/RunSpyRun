@@ -2,23 +2,157 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".SuccessActivity"
-    android:background="@color/white" >
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+    android:layout_margin="0dp"
+    android:background="@color/white"
+    tools:context=".SuccessActivity" >
 
     <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
+
+    <RelativeLayout
+        android:id="@+id/basic_info"
+        android:layout_width="350dp"
+        android:layout_height="125dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:background="@color/white" >
+
+        <ImageView
+            android:id="@+id/basicInfo_photo"
+            android:layout_width="125dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/rsricon" />
+
+        <TextView
+            android:id="@+id/basicInfo_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/basicInfo_photo"
+            android:text="Agent B"
+            android:textColor="#EF802E"
+            android:textSize="30dp"
+            android:typeface="normal" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/basicInfo_name"
+            android:layout_below="@+id/basicInfo_name"
+            android:text="Level" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_below="@+id/textView1"
+            android:text="Energy:" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_below="@+id/textView2"
+            android:text="Data Sources:" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView3"
+            android:layout_below="@+id/textView3"
+            android:text="Location:" />
+
+        <TextView
+            android:id="@+id/basicInfo_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/basicInfo_name"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/textView1"
+            android:text="5" />
+
+        <TextView
+            android:id="@+id/basicInfo_dataSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textView3"
+            android:layout_alignBottom="@+id/textView3"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/textView3"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/basicInfo_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textView4"
+            android:layout_alignBottom="@+id/textView4"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/textView4"
+            android:text="locating..." />
+
+        <TextView
+            android:id="@+id/basicInfo_energy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textView3"
+            android:layout_alignRight="@+id/basicInfo_dataSource"
+            android:text="200/500" />
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/Current_Mission"
+        android:layout_width="350dp"
+        android:layout_height="175dp"
+        android:layout_alignLeft="@+id/basic_info"
+        android:layout_below="@+id/basic_info"
+        android:layout_marginTop="15dp"
+        android:background="@color/white" >
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/Messages"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/Current_Mission"
+        android:layout_below="@+id/Current_Mission"
+        android:layout_marginTop="15dp"
+        android:background="@color/white" >
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/Equipments"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/Messages"
+        android:layout_below="@+id/Messages"
+        android:layout_marginTop="15dp"
+        android:background="@color/white" >
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/Equipments"
+        android:layout_below="@+id/Equipments"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@color/white" >
+    </FrameLayout>
 
 </RelativeLayout>
