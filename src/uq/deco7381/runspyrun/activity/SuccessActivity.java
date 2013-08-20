@@ -13,21 +13,27 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 
 public class SuccessActivity extends Activity  implements OnMyLocationChangeListener {
 
 	static final LatLng NKUT = new LatLng(23.979548, 120.696745);
     private GoogleMap map;
+    private boolean firstStart = false;
     
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_success);
+		
 		
 		
 		LocationManager status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
@@ -64,16 +70,53 @@ public class SuccessActivity extends Activity  implements OnMyLocationChangeList
 		return true;
 	}
 
+	
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		map.setOnMapClickListener(new OnMapClickListener() {
+			
+			@Override
+			public void onMapClick(LatLng point) {
+				// TODO Auto-generated method stub
+				
+				map.addMarker(new MarkerOptions()
+				.position(point)
+				.title("Hi"));
+				ParseObject markerObject = new ParseObject("testMarker");
+				ParseGeoPoint parsePoint = new ParseGeoPoint(point.latitude, point.longitude);
+				markerObject.put("title", "Hi");
+				markerObject.put("location", parsePoint);
+				markerObject.saveInBackground();
+			}
+		});
+	}
+
 	// Check if current location change
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
 		// TODO Auto-generated method stub
-		CameraUpdate myLoc = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-		.target(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))
-		.zoom(14)
-		.build());
 		
-		map.moveCamera(myLoc);
+		// Getting latitude of the current location
+        double latitude = lastKnownLocation.getLatitude();
+ 
+        // Getting longitude of the current location
+        double longitude = lastKnownLocation.getLongitude();
+ 
+        // Creating a LatLng object for the current location
+        LatLng latLng = new LatLng(latitude, longitude);
+		
+        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        
+		if(firstStart == false){
+			map.animateCamera(CameraUpdateFactory.zoomTo(15));
+			firstStart = true;
+		}
+		
+		
 		map.setOnCameraChangeListener(null);
 	}
 

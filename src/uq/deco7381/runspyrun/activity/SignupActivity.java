@@ -37,6 +37,7 @@ public class SignupActivity extends Activity {
 	public void signup(View view){
 		
 		final Intent intent = new Intent(this, LoginActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		EditText usernameET = (EditText)findViewById(R.id.sUsername);
 		String username = usernameET.getText().toString();
 		
@@ -117,6 +118,7 @@ public class SignupActivity extends Activity {
 	
 	public void cancel(View view){
 		Intent intent = new Intent(this, LoginActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
 
