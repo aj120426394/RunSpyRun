@@ -1,6 +1,9 @@
 package uq.deco7381.runspyrun.activity;
 
+import java.util.List;
+
 import uq.deco7381.runspyrun.R;
+import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,8 +22,11 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 public class SuccessActivity extends Activity  implements OnMyLocationChangeListener {
 
@@ -86,6 +92,8 @@ public class SuccessActivity extends Activity  implements OnMyLocationChangeList
 				map.addMarker(new MarkerOptions()
 				.position(point)
 				.title("Hi"));
+				
+				// Save the marker to
 				ParseObject markerObject = new ParseObject("testMarker");
 				ParseGeoPoint parsePoint = new ParseGeoPoint(point.latitude, point.longitude);
 				markerObject.put("title", "Hi");
@@ -115,6 +123,29 @@ public class SuccessActivity extends Activity  implements OnMyLocationChangeList
 			map.animateCamera(CameraUpdateFactory.zoomTo(15));
 			firstStart = true;
 		}
+		
+		ParseGeoPoint userLocation = new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("testMarker");
+		query.whereNear("location", userLocation);
+		query.setLimit(10);
+		query.findInBackground(new FindCallback<ParseObject>() {
+			
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if (e == null){
+					for(int i = 0; i < objects.size(); i++){
+						ParseObject parseObject = objects.get(i);
+						ParseGeoPoint location = parseObject.getParseGeoPoint("location");
+						LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+						map.addMarker(new MarkerOptions()
+						.position(latLng)
+						.title(parseObject.getString("title")));
+					}
+				}
+			}
+		});
+		
 		
 		
 		map.setOnCameraChangeListener(null);
