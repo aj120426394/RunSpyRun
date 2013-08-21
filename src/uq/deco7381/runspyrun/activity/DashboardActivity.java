@@ -1,9 +1,5 @@
 package uq.deco7381.runspyrun.activity;
 
-import java.util.List;
-
-import org.w3c.dom.Text;
-
 import uq.deco7381.runspyrun.R;
 import android.app.Activity;
 import android.content.Context;
@@ -17,28 +13,22 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 public class DashboardActivity extends Activity implements OnMyLocationChangeListener {
 	
 	private GoogleMap map;
-	private boolean firstStart = false;
+	private LocationManager status;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 		
-		LocationManager status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
+		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		
 		// Check is GPS available
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
@@ -81,6 +71,24 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		getMenuInflater().inflate(R.menu.dashboard, menu);
 		return true;
 	}
+
+	
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		map.setMyLocationEnabled(false);
+	}
+
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		map.setMyLocationEnabled(true);
+	}
+
 
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
