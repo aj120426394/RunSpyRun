@@ -19,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
@@ -67,6 +68,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
+		UiSettings uiSettings = map.getUiSettings();
+		uiSettings.setAllGesturesEnabled(false);
+		uiSettings.setMyLocationButtonEnabled(false);
+		uiSettings.setZoomControlsEnabled(false);
 	}
 	
 	
@@ -91,32 +96,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         
-		if(firstStart == false){
-			map.animateCamera(CameraUpdateFactory.zoomTo(15));
-			firstStart = true;
-		}
-		
-		ParseGeoPoint userLocation = new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("testMarker");
-		query.whereNear("location", userLocation);
-		query.setLimit(10);
-		query.findInBackground(new FindCallback<ParseObject>() {
-			
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				if (e == null){
-					for(int i = 0; i < objects.size(); i++){
-						ParseObject parseObject = objects.get(i);
-						ParseGeoPoint location = parseObject.getParseGeoPoint("location");
-						LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-						map.addMarker(new MarkerOptions()
-						.position(latLng)
-						.title(parseObject.getString("title")));
-					}
-				}
-			}
-		});
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		
 		
 		
