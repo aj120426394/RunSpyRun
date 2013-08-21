@@ -1,7 +1,6 @@
 package uq.deco7381.runspyrun.activity;
 
 import uq.deco7381.runspyrun.R;
-import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

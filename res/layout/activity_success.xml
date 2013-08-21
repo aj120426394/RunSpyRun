@@ -16,7 +16,7 @@
         class="com.google.android.gms.maps.MapFragment" />
 
     <RelativeLayout
-        android:id="@+id/basic_info"
+        android:id="@+id/db_info"
         android:layout_width="350dp"
         android:layout_height="125dp"
         android:layout_alignParentTop="true"
@@ -115,11 +115,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/Current_Mission"
+        android:id="@+id/db_mission"
         android:layout_width="350dp"
         android:layout_height="175dp"
-        android:layout_alignLeft="@+id/basic_info"
-        android:layout_below="@+id/basic_info"
+        android:layout_alignLeft="@+id/db_info"
+        android:layout_below="@+id/db_info"
         android:layout_marginTop="15dp"
         android:background="@color/white" >
 
@@ -136,11 +136,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/Messages"
+        android:id="@+id/db_messages"
         android:layout_width="350dp"
         android:layout_height="50dp"
-        android:layout_alignLeft="@+id/Current_Mission"
-        android:layout_below="@+id/Current_Mission"
+        android:layout_alignLeft="@+id/db_mission"
+        android:layout_below="@+id/db_mission"
         android:layout_marginTop="15dp"
         android:background="@color/white" >
 
@@ -170,11 +170,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/Equipments"
+        android:id="@+id/db_equipments"
         android:layout_width="350dp"
         android:layout_height="50dp"
-        android:layout_alignLeft="@+id/Messages"
-        android:layout_below="@+id/Messages"
+        android:layout_alignLeft="@+id/db_messages"
+        android:layout_below="@+id/db_messages"
         android:layout_marginTop="15dp"
         android:background="@color/white" >
 
@@ -203,11 +203,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/RelativeLayout1"
+        android:id="@+id/db_layout"
         android:layout_width="350dp"
         android:layout_height="50dp"
-        android:layout_alignLeft="@+id/Equipments"
-        android:layout_below="@+id/Equipments"
+        android:layout_alignLeft="@+id/db_equipments"
+        android:layout_below="@+id/db_equipments"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         android:background="@color/white" >
