@@ -1,6 +1,7 @@
 package uq.deco7381.runspyrun.activity;
 
 import uq.deco7381.runspyrun.R;
+import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +36,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			// Check the map is exist or not
 			if (map == null){
 				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-				
 				if(map != null){
 					setUpMap();
 				}
