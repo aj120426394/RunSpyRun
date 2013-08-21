@@ -6,95 +6,108 @@
     tools:context=".Login"
     android:background="@color/white"  >
 
-    <EditText
-        android:id="@+id/username"
+    <ProgressBar
+        android:id="@+id/loading_spinner"
+        style="?android:progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:ems="10"
-        android:hint="@string/username"
-        android:inputType="text"
-        android:layout_above="@+id/password" >
+        android:layout_centerVertical="true" />
 
-    </EditText>
-    
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/username"
-        android:layout_centerVertical="true"
-        android:ems="10"
-        android:hint="@string/password"
-        android:inputType="textPassword" />
-    
-    <TextView
-        android:id="@+id/resetPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/password"
-        android:layout_below="@+id/password"
-        android:layout_marginTop="10dp"
-        android:autoLink="none"
-        android:clickable="true"
-        android:focusableInTouchMode="true"
-        android:freezesText="true"
-        android:longClickable="true"
-        android:onClick="resetPassword"
-        android:text="Forgot your password?" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/username"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/templogo"
-        android:layout_marginBottom="20dp" />
-
-   <View
+    <RelativeLayout
+        android:id="@+id/login_content"
         android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/dividerHorizontal"
-        android:layout_above="@+id/linearLayout1"/>
-   
-   <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true" >
-        
-        <Button
-            android:id="@+id/login"
-            android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fitsSystemWindows="true"
-            android:onClick="login"
-            android:text="@string/login"
-            android:visibility="visible"
-            android:background="?android:attr/selectableItemBackground" />
-        
+            android:layout_above="@+id/password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:ems="10"
+            android:hint="@string/username"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/username"
+            android:layout_centerVertical="true"
+            android:ems="10"
+            android:hint="@string/password"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/resetPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/password"
+            android:layout_below="@+id/password"
+            android:layout_marginTop="10dp"
+            android:autoLink="none"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:freezesText="true"
+            android:longClickable="true"
+            android:onClick="resetPassword"
+            android:text="Forgot your password?" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/username"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/templogo" />
+
         <View
-            android:layout_width="1dip"
-            android:layout_height="match_parent"
-            android:background="?android:attr/dividerVertical" />
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_above="@+id/linearLayout1"
+            android:background="?android:attr/dividerHorizontal" />
 
-        <Button
-            android:id="@+id/signup"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fitsSystemWindows="true"
-            android:onClick="signup"
-            android:text="@string/signup"
-            android:visibility="visible"
-            android:background="?android:attr/selectableItemBackground" />
-        	
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="1dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/login"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:fitsSystemWindows="true"
+                android:onClick="login"
+                android:text="@string/login"
+                android:visibility="visible" />
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:background="?android:attr/dividerVertical" />
+
+            <Button
+                android:id="@+id/signup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:fitsSystemWindows="true"
+                android:onClick="signup"
+                android:text="@string/signup"
+                android:visibility="visible" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
 

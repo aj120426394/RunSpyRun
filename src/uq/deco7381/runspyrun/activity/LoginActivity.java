@@ -1,6 +1,8 @@
 package uq.deco7381.runspyrun.activity;
 
 import uq.deco7381.runspyrun.R;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -27,6 +29,10 @@ public class LoginActivity extends Activity {
 	public static final String PREFS_NAME = "LoginInfo";
 	private static final String PREF_USERNAME = "username";
 	
+	private View mContentView;
+	private View mLoadingView;
+	private int mShortAnimationDuration;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,7 +44,12 @@ public class LoginActivity extends Activity {
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
-
+		
+		mContentView = findViewById(R.id.login_content);
+		mLoadingView = findViewById(R.id.loading_spinner);
+		
+		mLoadingView.setVisibility(View.GONE);
+		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
 
 	}
@@ -51,6 +62,7 @@ public class LoginActivity extends Activity {
 	// LoginActivity with Parse service
 	public void login(View view){
 			
+		showLoading();
 		final Intent intent = new Intent(this, DashboardActivity.class);
 			
 		//Retrieve user input
@@ -79,6 +91,7 @@ public class LoginActivity extends Activity {
 						public void onClick(DialogInterface dialog, int which) {
 							// TODO Auto-generated method stub
 							dialog.cancel();
+							showContent();
 						}
 					});
 					//show the dialog box
@@ -131,8 +144,46 @@ public class LoginActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
-	
+	// Show the Content of activity with animation
+	private void showContent(){
+		mContentView.setAlpha(0f);
+		mContentView.setVisibility(View.VISIBLE);
+		
+		mContentView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
+		
+		mLoadingView.animate()
+					.alpha(0f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+	                    public void onAnimationEnd(Animator animation) {
+	                        mLoadingView.setVisibility(View.GONE);
+	                    }
+					});
+	}
+	// Show loading process with animation
+	private void showLoading(){
+		mLoadingView.setAlpha(0f);
+		mLoadingView.setVisibility(View.VISIBLE);
+		
+		mLoadingView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
+		
+		mContentView.animate()
+					.alpha(0.5f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+	                    public void onAnimationEnd(Animator animation) {
+							mContentView.setVisibility(View.GONE);
+	                    }
+					});
+	}
 	
 	@Override
 	protected void onPause() {
