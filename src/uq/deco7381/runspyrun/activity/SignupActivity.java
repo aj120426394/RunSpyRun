@@ -1,6 +1,8 @@
 package uq.deco7381.runspyrun.activity;
 
 import uq.deco7381.runspyrun.R;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,6 +20,10 @@ import com.parse.SignUpCallback;
 
 public class SignupActivity extends Activity {
 
+	
+	private View mContentView;
+	private View mLoadingView;
+	private int mShortAnimationDuration;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -25,6 +31,12 @@ public class SignupActivity extends Activity {
 		
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
+		
+		mContentView = findViewById(R.id.signup_content);
+		mLoadingView = findViewById(R.id.signup_loading);
+		
+		mLoadingView.setVisibility(View.GONE);
+		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 	}
 
 	@Override
@@ -35,7 +47,7 @@ public class SignupActivity extends Activity {
 	}
 	
 	public void signup(View view){
-		
+		showLoading();
 		final Intent intent = new Intent(this, LoginActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		EditText usernameET = (EditText)findViewById(R.id.sUsername);
@@ -49,8 +61,6 @@ public class SignupActivity extends Activity {
 		
 		EditText emailET = (EditText)findViewById(R.id.email);
 		String email = emailET.getText().toString();
-		System.out.println(password);
-		System.out.println(ePassword);
 		
 		
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -101,6 +111,7 @@ public class SignupActivity extends Activity {
 							public void onClick(DialogInterface dialog, int which) {
 								// TODO Auto-generated method stub
 								dialog.cancel();
+								showContent();
 							}
 						});
 						//show the dialog box
@@ -115,6 +126,48 @@ public class SignupActivity extends Activity {
 		
 		
 	}
+	
+	
+	// Show the Content of activity with animation
+		private void showContent(){
+			mContentView.setAlpha(0f);
+			mContentView.setVisibility(View.VISIBLE);
+			
+			mContentView.animate()
+						.alpha(1f)
+						.setDuration(mShortAnimationDuration)
+						.setListener(null);
+			
+			mLoadingView.animate()
+						.alpha(0f)
+						.setDuration(mShortAnimationDuration)
+						.setListener(new AnimatorListenerAdapter() {
+							@Override
+		                    public void onAnimationEnd(Animator animation) {
+		                        mLoadingView.setVisibility(View.GONE);
+		                    }
+						});
+		}
+		// Show loading process with animation
+		private void showLoading(){
+			mLoadingView.setAlpha(0f);
+			mLoadingView.setVisibility(View.VISIBLE);
+			
+			mLoadingView.animate()
+						.alpha(1f)
+						.setDuration(mShortAnimationDuration)
+						.setListener(null);
+			
+			mContentView.animate()
+						.alpha(0.5f)
+						.setDuration(mShortAnimationDuration)
+						.setListener(new AnimatorListenerAdapter() {
+							@Override
+		                    public void onAnimationEnd(Animator animation) {
+								mContentView.setVisibility(View.GONE);
+		                    }
+						});
+		}
 	
 	public void cancel(View view){
 		Intent intent = new Intent(this, LoginActivity.class);
