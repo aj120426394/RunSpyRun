@@ -57,6 +57,10 @@
             android:name="uq.deco7381.runspyrun.activity.DashboardActivity"
             android:label="@string/title_activity_dashboard" >
         </activity>
+        <activity
+            android:name="uq.deco7381.runspyrun.activity.DefenceActivity"
+            android:label="@string/title_activity_defence" >
+        </activity>
     </application>
 
 </manifest>

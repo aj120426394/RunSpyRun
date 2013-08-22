@@ -19,5 +19,6 @@
     <color name="white">#FFFFFF</color>
 
     <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_activity_defence">DefenceActivity</string>
 
 </resources>
