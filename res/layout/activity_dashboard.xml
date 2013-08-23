@@ -15,13 +15,14 @@
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
 
+    
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="#99FFFFFF" >
+        android:background="#CCe5e5e5" >
 
         <RelativeLayout
             android:id="@+id/db_base"
@@ -46,9 +47,8 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:src="@drawable/rsricon"
-                    android:background="@android:color/background_dark" />
-                
+                    android:background="@android:color/background_dark"
+                    android:src="@drawable/dprofile" />
 
                 <TextView
                     android:id="@+id/basicInfo_name"
@@ -60,7 +60,7 @@
                     android:layout_toRightOf="@+id/basicInfo_photo"
                     android:text="Agent B"
                     android:textColor="#EF802E"
-                    android:textSize="30dp"
+                    android:textSize="20dp"
                     android:typeface="normal" />
 
                 <TextView
@@ -161,7 +161,7 @@
             
             <View
 		        android:layout_width="match_parent"
-		        android:layout_height="3dip"
+		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_mission"
 		        android:background="?android:attr/dividerHorizontal"
 		        android:layout_marginLeft="15dp"
@@ -169,7 +169,7 @@
             
             <View
 		        android:layout_width="match_parent"
-		        android:layout_height="3dip"
+		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_info"
 		        android:background="?android:attr/dividerHorizontal"
 		        android:layout_marginLeft="15dp"
@@ -177,7 +177,7 @@
             
             <View
 		        android:layout_width="match_parent"
-		        android:layout_height="3dip"
+		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_messages"
 		        android:background="?android:attr/dividerHorizontal"
 		        android:layout_marginLeft="15dp"
@@ -185,7 +185,7 @@
             
             <View
 		        android:layout_width="match_parent"
-		        android:layout_height="3dip"
+		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_equipments"
 		        android:background="?android:attr/dividerHorizontal"
 		        android:layout_marginLeft="15dp"
@@ -193,7 +193,7 @@
             
             <View
 		        android:layout_width="match_parent"
-		        android:layout_height="3dip"
+		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_settings"
 		        android:background="?android:attr/dividerHorizontal"
 		        android:layout_marginLeft="15dp"
