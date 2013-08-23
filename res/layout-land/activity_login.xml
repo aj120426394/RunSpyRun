@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Login"  >
+    tools:context=".Login" >
 
     <ProgressBar
         android:id="@+id/loading_spinner"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
-
+    
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="230dp"
@@ -20,25 +20,14 @@
         android:src="@drawable/logo2"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"/>
-    
+
     <RelativeLayout
         android:id="@+id/login_content"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"        
+        android:layout_centerHorizontal="true"        
     	android:background="@color/white" >
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
-            android:layout_above="@+id/username"
-            android:layout_marginBottom="10dp"
-            android:src="@drawable/templogo" />
 
         <EditText
             android:id="@+id/username"
@@ -75,6 +64,15 @@
             android:longClickable="true"
             android:onClick="resetPassword"
             android:text="Forgot your password?" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/username"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/templogo" />
 
         <View
             android:layout_width="match_parent"
@@ -122,7 +120,6 @@
             android:layout_alignParentBottom="true"
             android:background="?android:attr/dividerHorizontal" />
     </RelativeLayout>
-    
 
 </RelativeLayout>
 

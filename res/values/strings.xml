@@ -32,6 +32,8 @@
 	<color name="blue">#0000FF</color>
 	<color name="navy">#000080</color>
 	<color name="black">#000000</color>
+	<color name="transparentBackground">#CCe5e5e5</color>
+	<color name="orangeText">#ff8a00</color>
 
     <string name="title_activity_dashboard">DashboardActivity</string>
 

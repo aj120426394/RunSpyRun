@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="0dp"
-    android:background="@color/white"
     tools:context=".SuccessActivity" >
 
     <fragment
@@ -14,15 +13,23 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
-
     
-    <ScrollView
+   
+    <View
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/transparentBackground"/> 
+    
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="450dp"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:background="#CCe5e5e5" >
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp" >
 
         <RelativeLayout
             android:id="@+id/db_base"
@@ -36,8 +43,6 @@
                 android:layout_height="125dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -59,7 +64,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_toRightOf="@+id/basicInfo_photo"
                     android:text="Agent B"
-                    android:textColor="#EF802E"
+                    android:textColor="@color/orangeText"
                     android:textSize="20dp"
                     android:typeface="normal" />
 
@@ -136,11 +141,9 @@
             <RelativeLayout
                 android:id="@+id/db_mission"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="150dp"
                 android:layout_below="@+id/db_info"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -154,8 +157,8 @@
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="15dp"
                     android:text="Current Missions"
-                    android:textColor="#EF802E"
-                    android:textSize="32sp" />
+                    android:textColor="@color/orangeText"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 			    
             </RelativeLayout>
             
@@ -163,41 +166,31 @@
 		        android:layout_width="match_parent"
 		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_mission"
-		        android:background="?android:attr/dividerHorizontal"
-		        android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+		        android:background="?android:attr/dividerHorizontal" />
             
             <View
 		        android:layout_width="match_parent"
 		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_info"
-		        android:background="?android:attr/dividerHorizontal"
-		        android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+		        android:background="?android:attr/dividerHorizontal" />
             
             <View
 		        android:layout_width="match_parent"
 		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_messages"
-		        android:background="?android:attr/dividerHorizontal"
-		        android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+		        android:background="?android:attr/dividerHorizontal" />
             
             <View
 		        android:layout_width="match_parent"
 		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_equipments"
-		        android:background="?android:attr/dividerHorizontal"
-		        android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+		        android:background="?android:attr/dividerHorizontal" />
             
             <View
 		        android:layout_width="match_parent"
 		        android:layout_height="2dip"
 		        android:layout_below="@+id/db_settings"
-		        android:background="?android:attr/dividerHorizontal"
-		        android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+		        android:background="?android:attr/dividerHorizontal" />
 
             <RelativeLayout
                 android:id="@+id/db_messages"
@@ -205,8 +198,6 @@
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/db_mission"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -219,7 +210,7 @@
                     android:layout_marginLeft="20dp"
                     android:text="Messages"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
 
                 <TextView
                     android:id="@+id/textView11"
@@ -231,7 +222,7 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -240,8 +231,6 @@
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/db_messages"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -254,7 +243,7 @@
                     android:layout_marginLeft="20dp"
                     android:text="Equipments"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
 
                 <TextView
                     android:id="@+id/textView9"
@@ -266,7 +255,7 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -275,8 +264,6 @@
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/db_equipments"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -289,7 +276,7 @@
                     android:layout_marginLeft="20dp"
                     android:text="Settings"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -301,7 +288,7 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#EF802E" />
+                    android:textColor="@color/orangeText" />
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>
