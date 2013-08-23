@@ -9,6 +9,14 @@
     tools:context=".Signup"
     android:background="@color/white" >
 
+    <ProgressBar
+        android:id="@+id/signup_loading"
+        style="?android:progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"  />
+
     <RelativeLayout
         android:id="@+id/signup_content"
         android:layout_width="match_parent"
@@ -73,13 +81,6 @@
 	        android:hint="@string/email"
 	        android:inputType="textEmailAddress"
 	        android:layout_below="@+id/ePassword"/>
-
-	    <ProgressBar
-	        android:id="@+id/signup_loading"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerHorizontal="true"
-	        android:layout_centerVertical="true" />
 	    
 	    </RelativeLayout>
 	
@@ -121,6 +122,4 @@
 	            android:background="?android:attr/selectableItemBackground" />
 	
 	    </LinearLayout>
-    </RelativeLayout>
-
-</RelativeLayout>
+    </RelativeLayout></RelativeLayout>
