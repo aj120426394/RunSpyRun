@@ -13,6 +13,8 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="setDatastream"
             android:text="Data Stream"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 

@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +64,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		uiSettings.setZoomControlsEnabled(false);
 	}
 	
+	public void goEquipment(View v){
+		Intent intent = new Intent(this, EquipmentActivity.class);
+		startActivity(intent);
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,9 +109,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
-		
-		
-		
+
 		map.setOnCameraChangeListener(null);
 	}
 
