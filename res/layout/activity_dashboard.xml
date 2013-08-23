@@ -29,7 +29,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp" >
+        android:layout_marginRight="15dp"
+        android:scrollbars="none"
+        android:overScrollMode="never" >
 
         <RelativeLayout
             android:id="@+id/db_base"
