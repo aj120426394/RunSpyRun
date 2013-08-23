@@ -97,21 +97,7 @@
 	        android:layout_marginBottom="1dp"
 	        android:orientation="horizontal"
 	        android:layout_alignParentBottom="true" >
-	
-	        <Button
-	            android:id="@+id/sSignup"
-	            android:layout_width="0dp"
-	            android:layout_weight="1"
-	            android:layout_height="wrap_content"
-	            android:text="@string/signup"
-	            android:onClick="signup"
-	            android:background="?android:attr/selectableItemBackground"/>
 	        
-			<View
-	            android:layout_width="1dip"
-	            android:layout_height="match_parent"
-	            android:background="?android:attr/dividerVertical" />
-			
 	        <Button
 	            android:id="@+id/button2"
 	            android:layout_width="0dp"
@@ -120,6 +106,20 @@
 	            android:text="@string/cancel"
 	            android:onClick="cancel"
 	            android:background="?android:attr/selectableItemBackground" />
+	        
+			<View
+	            android:layout_width="1dip"
+	            android:layout_height="match_parent"
+	            android:background="?android:attr/dividerVertical" />
+			
+	        <Button
+	            android:id="@+id/sSignup"
+	            android:layout_width="0dp"
+	            android:layout_weight="1"
+	            android:layout_height="wrap_content"
+	            android:text="@string/signup"
+	            android:onClick="signup"
+	            android:background="?android:attr/selectableItemBackground"/>
 	
 	    </LinearLayout>
     </RelativeLayout></RelativeLayout>
