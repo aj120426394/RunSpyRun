@@ -20,4 +20,5 @@
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
 
+
 </FrameLayout>

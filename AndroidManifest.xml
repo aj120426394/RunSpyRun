@@ -61,10 +61,12 @@
             android:name="uq.deco7381.runspyrun.activity.DefenceActivity"
             android:label="@string/title_activity_defence" >
         </activity>
+
         <activity
             android:name="uq.deco7381.runspyrun.activity.EquipmentActivity"
             android:label="@string/title_activity_equipment" >
         </activity>
+
     </application>
 
 </manifest>

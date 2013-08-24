@@ -63,7 +63,7 @@ public class LoginActivity extends Activity {
 	public void login(View view){
 			
 		showLoading();
-		final Intent intent = new Intent(this, DashboardActivity.class);
+		final Intent intent = new Intent(this, DefenceActivity.class);
 			
 		//Retrieve user input
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
