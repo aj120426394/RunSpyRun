@@ -45,7 +45,7 @@ public class SuccessActivity extends Activity  implements OnMyLocationChangeList
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
 			// Check the map is exist or not
 			if (map == null){
-				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.defence_map)).getMap();
 				
 				if(map != null){
 					setUpMap();

@@ -6,7 +6,7 @@
     tools:context=".SuccessActivity" >
 
     <fragment
-        android:id="@+id/map"
+        android:id="@+id/db_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
@@ -234,7 +234,9 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/db_messages"
                 android:layout_marginTop="15dp"
-                android:background="@color/white" >
+                android:background="@color/white"
+                android:clickable="true"
+                android:onClick="goEquipment" >
 
                 <TextView
                     android:id="@+id/textView7"

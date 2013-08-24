@@ -36,6 +36,8 @@
 	<color name="orangeText">#ff8a00</color>
 
     <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_activity_defence">DefenceActivity</string>
+    <string name="title_activity_equipment">EquipmentActivity</string>
 
 </resources>
 

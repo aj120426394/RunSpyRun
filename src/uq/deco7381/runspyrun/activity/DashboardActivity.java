@@ -35,7 +35,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
 			// Check the map is exist or not
 			if (map == null){
-				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.db_map)).getMap();
 				if(map != null){
 					setUpMap();
 				}
