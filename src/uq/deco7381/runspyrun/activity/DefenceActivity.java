@@ -3,6 +3,8 @@ package uq.deco7381.runspyrun.activity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -10,6 +12,7 @@ import uq.deco7381.runspyrun.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -57,6 +60,14 @@ public class DefenceActivity extends Activity {
 		LatLng latLng = new LatLng(latitude, longtitude);
 		
 		map.addMarker(new MarkerOptions().position(latLng).title("Test"));
+		
+		CircleOptions circleOptions = new CircleOptions()
+											.center(latLng)
+											.radius(1000)
+											.fillColor(0x40ff0000)
+											.strokeColor(Color.TRANSPARENT)
+											.strokeWidth(2);
+		Circle circle = map.addCircle(circleOptions);
 	}
 
 	private void setUpMap(){
