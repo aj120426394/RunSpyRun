@@ -68,7 +68,6 @@ public class LoginActivity extends Activity {
 		//Retrieve user input
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
 		String usernameString = usernameEditText.getText().toString();
-		intent.putExtra("username", usernameString);
 		
 		EditText passwordEditText = (EditText) findViewById(R.id.password);
 		String passwordString = passwordEditText.getText().toString();

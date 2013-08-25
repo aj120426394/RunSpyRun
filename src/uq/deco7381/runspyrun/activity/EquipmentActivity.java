@@ -34,7 +34,6 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		
 		lClient = new LocationClient(this, this, this);
 
-		
 	}
 
 	@Override

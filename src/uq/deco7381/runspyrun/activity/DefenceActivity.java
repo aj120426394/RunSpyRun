@@ -1,35 +1,32 @@
 package uq.deco7381.runspyrun.activity;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Guard;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.TranslateAnimation;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class DefenceActivity extends Activity {
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+
+public class DefenceActivity extends Activity implements OnMyLocationChangeListener {
 	
 	private GoogleMap map;
-	
+	private LocationManager status;
+	private Location currentLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +35,12 @@ public class DefenceActivity extends Activity {
 		
 		Intent intent = getIntent();
 		
+		// Get the Course's center point (where to put data stream) from intent
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longtitude = intent.getDoubleExtra("longtitude", 0.0);
-		/*
-		String loc = "(" + String.valueOf(latitude) + ", " + String.valueOf(longtitude)+")"; 
-		TextView testTextView = (TextView)findViewById(R.id.textView1);
-		testTextView.setText(loc);
-		*/
+
 		// Map set up
-		LocationManager status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
+		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
 			// Check the map is exist or not
 			if (map == null){
@@ -60,20 +54,15 @@ public class DefenceActivity extends Activity {
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
 		
+		//Set the course (make it visible on the map)
 		LatLng latLng = new LatLng(latitude, longtitude);
-		
-		map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-		map.animateCamera(CameraUpdateFactory.zoomTo(15));
-		
-		Guard g1 = new Guard(latLng);
-		
-		map.addMarker(g1.getIcon());
-		
 		setCourse(latLng);
 	}
 
+	// Set up the map with
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
+		map.setOnMyLocationChangeListener(this);
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(true);
 		uiSettings.setZoomControlsEnabled(true);
@@ -89,12 +78,42 @@ public class DefenceActivity extends Activity {
 			.strokeWidth(2);
 		map.addCircle(circleOptions);
 	}
-	
+	// Setting the Guard on the map
+	public void setGuard(View v){
+		LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+		Guard g1 = new Guard(latLng);
+		map.addMarker(g1.getMarker());
+	}
+	// Update the current location from OnMyLocationChange()
+	private void setCurrentLocation(Location location){
+		this.currentLocation = location;
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.defence, menu);
 		return true;
+	}
+	
+	@Override
+	public void onMyLocationChange(Location lastKnownLocation) {
+		// TODO Auto-generated method stub
+		setCurrentLocation(lastKnownLocation);
+		// Getting latitude of the current location
+        double latitude = lastKnownLocation.getLatitude();
+ 
+        // Getting longitude of the current location
+        double longitude = lastKnownLocation.getLongitude();
+ 
+        // Creating a LatLng object for the current location
+        LatLng latLng = new LatLng(latitude, longitude);
+		
+        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+		map.setOnCameraChangeListener(null);
+		
 	}
 
 

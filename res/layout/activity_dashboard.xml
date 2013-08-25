@@ -79,7 +79,7 @@
                     android:text="Level" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/equipment_numOfData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@+id/textView1"
@@ -90,8 +90,8 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/textView2"
-                    android:layout_below="@+id/textView2"
+                    android:layout_alignLeft="@+id/equipment_numOfData"
+                    android:layout_below="@+id/equipment_numOfData"
                     android:text="Data Sources:" />
 
                 <TextView
@@ -136,8 +136,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/textView3"
-                    android:layout_alignRight="@+id/basicInfo_dataSource"
-                    android:text="200/500" />
+                    android:layout_toRightOf="@+id/basicInfo_level"
+                    android:text="2000/5000" />
+
             </RelativeLayout>
 
             <RelativeLayout

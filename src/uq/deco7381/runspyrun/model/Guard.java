@@ -15,7 +15,7 @@ public class Guard extends Obstacle {
 	}
 	
 	
-	public MarkerOptions getIcon(){
+	public MarkerOptions getMarker(){
 		MarkerOptions markerOptions = new MarkerOptions()
 										.position(getLatLng())
 										.title("Guard")
