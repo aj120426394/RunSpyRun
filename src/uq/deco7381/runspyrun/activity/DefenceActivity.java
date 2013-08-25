@@ -1,14 +1,17 @@
 package uq.deco7381.runspyrun.activity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.model.Guard;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -59,27 +62,33 @@ public class DefenceActivity extends Activity {
 		
 		LatLng latLng = new LatLng(latitude, longtitude);
 		
-		map.addMarker(new MarkerOptions().position(latLng).title("Test"));
+		map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		
-		CircleOptions circleOptions = new CircleOptions()
-											.center(latLng)
-											.radius(1000)
-											.fillColor(0x40ff0000)
-											.strokeColor(Color.TRANSPARENT)
-											.strokeWidth(2);
-		Circle circle = map.addCircle(circleOptions);
+		Guard g1 = new Guard(latLng);
+		
+		map.addMarker(g1.getIcon());
+		
+		setCourse(latLng);
 	}
 
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
-		/*
 		UiSettings uiSettings = map.getUiSettings();
-		uiSettings.setAllGesturesEnabled(true);
 		uiSettings.setMyLocationButtonEnabled(true);
-		uiSettings.setZoomControlsEnabled(true)
-		*/
+		uiSettings.setZoomControlsEnabled(true);
 	}
 	
+	// Set the course on the location
+	private void setCourse(LatLng latLng){
+		CircleOptions circleOptions = new CircleOptions()
+			.center(latLng)
+			.radius(500)
+			.fillColor(0x40ff0000)
+			.strokeColor(Color.TRANSPARENT)
+			.strokeWidth(2);
+		map.addCircle(circleOptions);
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
