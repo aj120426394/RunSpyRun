@@ -9,12 +9,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class Guard extends Obstacle {
 	// Get the icon id
 	
-	public Guard(LatLng latLng) {
-		super(latLng);
+	public Guard(LatLng latLng, String org, String username) {
+		super(latLng, "Guard",org, username);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 	public MarkerOptions getMarker(){
 		MarkerOptions markerOptions = new MarkerOptions()
 										.position(getLatLng())
@@ -24,5 +22,9 @@ public class Guard extends Obstacle {
 		return markerOptions;
 										
 	}
+	public String getType(){
+		return "Guard";
+	}
+	
 
 }

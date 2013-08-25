@@ -6,9 +6,10 @@
     tools:context=".EquipmentActivity" >
 
     <RelativeLayout
-        android:id="@+id/RelativeLayout1"
+        android:id="@+id/equipment_data"
         android:layout_width="match_parent"
-        android:layout_height="30dp" >
+        android:layout_height="30dp"
+        android:onClick="setCourse" >
 
         <TextView
             android:id="@+id/textView1"
@@ -18,9 +19,9 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:clickable="true"
-            android:onClick="setDatastream"
             android:text="Data Stream"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/orangeText" />
 
         <TextView
             android:id="@+id/equipment_numOfData"

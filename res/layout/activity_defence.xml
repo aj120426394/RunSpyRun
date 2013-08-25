@@ -1,10 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/FrameLayout1"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DefenceActivity" >
-    
+
     <fragment
         android:id="@+id/defence_map"
         android:layout_width="match_parent"
@@ -12,6 +12,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         class="com.google.android.gms.maps.MapFragment" />
 
     <Button
@@ -19,6 +20,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="setGuard"
-        android:text="Button" />
+        android:text="Guard" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="storeCourse"
+        android:text="Create" />
+
+</RelativeLayout>
