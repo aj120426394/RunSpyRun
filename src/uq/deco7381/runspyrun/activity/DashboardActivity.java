@@ -4,14 +4,20 @@ import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import android.R.integer;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +32,7 @@ import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -36,6 +43,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private GoogleMap map;
 	private LocationManager status;
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,16 +68,90 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
 		
-		System.out.println("DEBUGGING");
 		
 		
 		// Get user info from Parse server
 		setUserInfo();
-		
-		
+		displayMissionList();
 		
 	}
-	
+	// Display the mission list retrieved from Database
+	private void displayMissionList(){
+		final Intent intent = new Intent(this, DefenceActivity.class);
+		// Get user's mission list
+		ParseQuery<ParseObject> missionList = ParseQuery.getQuery("Mission");
+		missionList.whereEqualTo("username", ParseUser.getCurrentUser());
+		missionList.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if(objects.size() != 0 && e == null){
+					for(ParseObject mission: objects){
+						// Get the course of the mission
+						mission.getParseObject("course").fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+							@Override
+							public void done(final ParseObject object, ParseException e) {
+								// TODO Auto-generated method stub
+								if(e == null){
+									LinearLayout linearLayout = (LinearLayout)findViewById(R.id.db_mission_list);
+									RelativeLayout missionLayout = new RelativeLayout(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									// Display mission name
+									TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									missionName.setId(R.id.textView1);
+									missionName.setText("Mission:");
+									missionName.setId(R.id.button1);
+									missionName.setTextColor(Color.parseColor("#EF802E"));
+									missionName.setTextSize(15);
+									missionName.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+									missionLayout.addView(missionName);
+									
+									//Display arrow of eachline
+									TextView missionArrow = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									missionLayout.addView(missionArrow);
+									missionArrow.setText(">");
+									missionArrow.setTextColor(Color.parseColor("#EF802E"));
+									missionArrow.setTextSize(15);
+									RelativeLayout.LayoutParams missionArrowParams = (RelativeLayout.LayoutParams)missionArrow.getLayoutParams();
+									missionArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+									missionArrow.setLayoutParams(missionArrowParams);
+									
+									// Display geolocation of the course
+									final ParseGeoPoint location = object.getParseGeoPoint("location");
+									String locatString = " (" + location.getLatitude() + ", " + location.getLongitude() +")";
+									
+									TextView missionLoc = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									missionLayout.addView(missionLoc);
+									missionLoc.setText(locatString);
+									missionLoc.setTextColor(Color.parseColor("#EF802E"));
+									missionLoc.setTextSize(15);
+									RelativeLayout.LayoutParams missionLocParams = (RelativeLayout.LayoutParams)missionLoc.getLayoutParams();
+									missionLocParams.addRule(RelativeLayout.RIGHT_OF,missionName.getId());
+									missionLoc.setLayoutParams(missionLocParams);
+									//Set up onclick listener if click on the mission
+									missionLayout.setOnClickListener(new OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											
+											intent.putExtra("latitude", location.getLatitude());
+											intent.putExtra("longtitude", location.getLongitude());
+											intent.putExtra("isFrom", "exsitMission");
+											startActivity(intent);
+										}
+									});
+									linearLayout.addView(missionLayout);
+									
+									System.out.println("Sucess");
+								}else{
+									System.out.println(e.getMessage());
+								}
+							}
+						});
+					}
+				}
+			}
+		});
+	}
 	private void setUserInfo() {
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		

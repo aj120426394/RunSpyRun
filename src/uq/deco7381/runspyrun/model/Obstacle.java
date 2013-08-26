@@ -25,6 +25,12 @@ public class Obstacle {
 	public LatLng getLatLng(){
 		return this.location;
 	}
+	public double getLatitude(){
+		return this.location.latitude;
+	}
+	public double getLongitude(){
+		return this.location.longitude;
+	}
 	public void setCreator(String creator){
 		this.creator = creator;
 	}

@@ -1,12 +1,14 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
 import android.app.Activity;
+import android.app.DownloadManager.Query;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -22,10 +24,12 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -37,6 +41,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private String isFrom;
 	private ArrayList<Obstacle> obstaclesOnCourse;
 	private Course course;
+	private LatLng courseLatLng;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +71,84 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 		//Set the course (make it visible on the map)
-		LatLng courseLatLng = new LatLng(latitude, longtitude);
+		courseLatLng = new LatLng(latitude, longtitude);
 		setCourse(courseLatLng);
+		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
+			displayObstacle();
+		}
 	}
 
-	private void missionDecide(String isFrom){
+	public void missionDecide(View v){
 		if(isFrom.equals("newCourse")){
-			
+			newCourse();
+		}else if(isFrom.equals("existMission")){
+			existMission();
+		}else if(isFrom.equals("existCourse")){
+			existCourse();
 		}
+		
+		Intent intent = new Intent(this, DashboardActivity.class);
+		startActivity(intent);
+	}
+	
+	private void displayObstacle(){
+		/*
+		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
+		ParseGeoPoint courseCenter = new ParseGeoPoint(courseLatLng.latitude, courseLatLng.longitude);
+		course.whereEqualTo("location", courseCenter);
+		
+		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
+		obstacleQuery.whereMatchesQuery("course", course);
+		obstacleQuery.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if(objects.size() != 0 && e == null){
+					for(ParseObject obstacle: objects){
+						double latitude = obstacle.getParseGeoPoint("location").getLatitude();
+						double longitude = obstacle.getParseGeoPoint("location").getLongitude();
+						final String org = obstacle.getString("organization");
+						final LatLng location = new LatLng(latitude, longitude);
+						
+						obstacle.getParseUser("creator")
+							.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+								@Override
+								public void done(ParseObject object,
+										ParseException e) {
+									// TODO Auto-generated method stub
+									if(e == null){
+										String username = object.getString("username");
+										Guard g1 = new Guard(location,org,username);
+										map.addMarker(g1.getMarker());
+									}
+								}
+							});
+	
+					}
+				}else{
+					System.out.println(e.getMessage());
+				}
+			}
+		});*/
+		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
+		ParseGeoPoint courseCenter = new ParseGeoPoint(courseLatLng.latitude, courseLatLng.longitude);
+		course.whereEqualTo("location", courseCenter);
+		
+		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
+		obstacleQuery.whereMatchesQuery("course", course);
+		obstacleQuery.findInBackground(new FindCallback<ParseObject>() {
+
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					System.out.println(objects.get(0).getString("organization"));
+				}else{
+					System.out.println(e.getMessage());
+				}
+			}
+		});
+		
 	}
 	// Set up the map with
 	private void setUpMap(){
@@ -128,36 +203,115 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		
 	}
 
-	public void storeCourse(View v){
-		
+	public void newCourse(){
+		// Save new Course
 		ParseObject parseCourse = new ParseObject("Course");
 		parseCourse.put("owner",ParseUser.getCurrentUser());
 		parseCourse.put("location", new ParseGeoPoint(course.getLatitude(),course.getLongitude()));
 		parseCourse.put("level", course.getLevel());
 		parseCourse.put("organization", course.getOrg());
 		parseCourse.saveInBackground();
-		System.out.println(obstaclesOnCourse.size());
 		
+		// Save new Obstacle
 		for(Obstacle obstacle: obstaclesOnCourse){
-			ParseObject object = new ParseObject("obstacle");
+			ParseObject object = new ParseObject("Obstacle");
 			object.put("creator", ParseUser.getCurrentUser());
 			object.put("energy", obstacle.getEnergy());
+			object.put("location", new ParseGeoPoint(obstacle.getLatitude(), obstacle.getLongitude()));
 			object.put("type", obstacle.getType());
 			object.put("organization", obstacle.getOrg());
 			object.put("course", parseCourse);
 			object.saveInBackground(new SaveCallback() {
-				
 				@Override
 				public void done(ParseException e) {
 					// TODO Auto-generated method stub
 					if(e == null){
 						System.out.println("SUCCESS");
 					}else{
-						System.out.println(e.getMessage());
+						Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 					}
 				}
 			});
 		}
+		// Save new mission to mission list
+		ParseObject mission = new ParseObject("Mission");
+		mission.put("course", parseCourse);
+		mission.put("username", ParseUser.getCurrentUser());
+		mission.saveInBackground();
+
+	}
+	public void existMission(){
+		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
+		course.whereEqualTo("location", new ParseGeoPoint(courseLatLng.latitude,courseLatLng.longitude));
+		course.getFirstInBackground(new GetCallback<ParseObject>() {
+			@Override
+			public void done(ParseObject object, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					for(Obstacle obstacle: obstaclesOnCourse){
+						ParseObject test = new ParseObject("Obstacle");
+						test.put("creator", ParseUser.getCurrentUser());
+						test.put("energy", obstacle.getEnergy());
+						test.put("type", obstacle.getType());
+						test.put("organization", obstacle.getOrg());
+						test.put("course", object);
+						test.saveInBackground(new SaveCallback() {
+							@Override
+							public void done(ParseException e) {
+								// TODO Auto-generated method stub
+								if(e == null){
+									System.out.println("SUCCESS");
+								}else{
+									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+								}
+							}
+						});
+					}
+				}else{
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+			}
+		});
+	}
+	
+	public void existCourse(){
+		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
+		course.whereEqualTo("location", new ParseGeoPoint(courseLatLng.latitude,courseLatLng.longitude));
+		course.getFirstInBackground(new GetCallback<ParseObject>() {
+			@Override
+			public void done(ParseObject object, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					for(Obstacle obstacle: obstaclesOnCourse){
+						ParseObject test = new ParseObject("Obstacle");
+						test.put("creator", ParseUser.getCurrentUser());
+						test.put("energy", obstacle.getEnergy());
+						test.put("type", obstacle.getType());
+						test.put("organization", obstacle.getOrg());
+						test.put("course", object);
+						test.saveInBackground(new SaveCallback() {
+							@Override
+							public void done(ParseException e) {
+								// TODO Auto-generated method stub
+								if(e == null){
+									System.out.println("SUCCESS");
+								}else{
+									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+								}
+							}
+						});
+					}
+					// Save new mission to mission list
+					ParseObject mission = new ParseObject("Mission");
+					mission.put("course",object);
+					mission.put("username", ParseUser.getCurrentUser());
+					mission.saveInBackground();
+				}else{
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+			}
+		});
+		
 		
 	}
 

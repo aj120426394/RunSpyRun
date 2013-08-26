@@ -50,6 +50,7 @@ public class SignupActivity extends Activity {
 		showLoading();
 		final Intent intent = new Intent(this, LoginActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		
 		EditText usernameET = (EditText)findViewById(R.id.sUsername);
 		String username = usernameET.getText().toString();
 		
@@ -62,66 +63,86 @@ public class SignupActivity extends Activity {
 		EditText emailET = (EditText)findViewById(R.id.email);
 		String email = emailET.getText().toString();
 		
-		
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		
-		if(!password.equals(ePassword)){
-			//Build an AlertDialog for the mistyping of password
-			builder.setTitle("Wrong typing");
-			builder.setMessage("Password comfirmation fail");
+		if(username.equals("") || password.equals("") || ePassword.equals("") || email.equals("")){
+			builder.setTitle("Empty form");
+			builder.setMessage("Please fill all the information");
 			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// TODO Auto-generated method stub
 					dialog.cancel();
+					showContent();
 				}
 			});
 			//show the dialog box
 			AlertDialog alert = builder.create();
 			alert.show();
 		}else{
-			ParseUser user = new ParseUser();
-			user.setUsername(username);
-			user.setPassword(ePassword);
-			user.setEmail(email);
-			user.signUpInBackground(new SignUpCallback() {
-				@Override
-				public void done(ParseException e) {
-					// TODO Auto-generated method stub
-					if(e == null){
-						//if signup success, show in dialog box
-						builder.setTitle("SuccessActivity");
-						builder.setMessage("Please check your email to activate your account");
-						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
-								startActivity(intent);
-							}
-						});
-						//show the dialog box
-						AlertDialog alert = builder.create();
-						alert.show();
-					}else {
-						//if there is a exception from parse, show in dialog box
-						builder.setTitle("Alert");
-						builder.setMessage(e.getMessage());
-						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
-								dialog.cancel();
-								showContent();
-							}
-						});
-						//show the dialog box
-						AlertDialog alert = builder.create();
-						alert.show();
+			if(!password.equals(ePassword)){
+				//Build an AlertDialog for the mistyping of password
+				builder.setTitle("Wrong typing");
+				builder.setMessage("Password comfirmation fail");
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						dialog.cancel();
+						showContent();
 					}
-				}
-			});
-			
+				});
+				//show the dialog box
+				AlertDialog alert = builder.create();
+				alert.show();
+			}else{
+				ParseUser user = new ParseUser();
+				user.setUsername(username);
+				user.setPassword(ePassword);
+				user.setEmail(email);
+				user.signUpInBackground(new SignUpCallback() {
+					@Override
+					public void done(ParseException e) {
+						// TODO Auto-generated method stub
+						if(e == null){
+							//if signup success, show in dialog box
+							builder.setTitle("SuccessActivity");
+							builder.setMessage("Please check your email to activate your account");
+							builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									startActivity(intent);
+								}
+							});
+							//show the dialog box
+							AlertDialog alert = builder.create();
+							alert.show();
+						}else {
+							//if there is a exception from parse, show in dialog box
+							builder.setTitle("Alert");
+							builder.setMessage(e.getMessage());
+							builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									dialog.cancel();
+									showContent();
+								}
+							});
+							//show the dialog box
+							AlertDialog alert = builder.create();
+							alert.show();
+						}
+					}
+				});
+				
+			}
 		}
+		
+		
+		
+		
 		
 		
 		

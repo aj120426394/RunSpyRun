@@ -13,15 +13,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
-    
-   
+
     <View
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:background="@color/transparentBackground"/> 
-    
+        android:background="@color/transparentBackground" />
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="450dp"
@@ -30,8 +29,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:scrollbars="none"
-        android:overScrollMode="never" >
+        android:overScrollMode="never"
+        android:scrollbars="none" >
 
         <RelativeLayout
             android:id="@+id/db_base"
@@ -62,8 +61,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="5dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
                     android:layout_toRightOf="@+id/basicInfo_photo"
                     android:text="Agent B"
                     android:textColor="@color/orangeText"
@@ -138,17 +137,19 @@
                     android:layout_above="@+id/textView3"
                     android:layout_toRightOf="@+id/basicInfo_level"
                     android:text="2000/5000" />
-
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/db_mission"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/db_info"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
-                android:background="@color/white" >
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp" >
 
                 <TextView
                     android:id="@+id/textView5"
@@ -156,44 +157,66 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginTop="15dp"
                     android:text="Current Missions"
-                    android:textColor="@color/orangeText"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-			    
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/orangeText" />
+
+                <TextView
+                    android:id="@+id/db_mission_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/db_mission_list"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="+add new"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/orangeText" />
+
+                <LinearLayout
+                    android:id="@+id/db_mission_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView5"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="vertical"
+                    android:paddingRight="15dp" >
+
+                </LinearLayout>
+
             </RelativeLayout>
-            
+
             <View
-		        android:layout_width="match_parent"
-		        android:layout_height="2dip"
-		        android:layout_below="@+id/db_mission"
-		        android:background="?android:attr/dividerHorizontal" />
-            
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_mission"
+                android:background="?android:attr/dividerHorizontal" />
+
             <View
-		        android:layout_width="match_parent"
-		        android:layout_height="2dip"
-		        android:layout_below="@+id/db_info"
-		        android:background="?android:attr/dividerHorizontal" />
-            
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_info"
+                android:background="?android:attr/dividerHorizontal" />
+
             <View
-		        android:layout_width="match_parent"
-		        android:layout_height="2dip"
-		        android:layout_below="@+id/db_messages"
-		        android:background="?android:attr/dividerHorizontal" />
-            
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_messages"
+                android:background="?android:attr/dividerHorizontal" />
+
             <View
-		        android:layout_width="match_parent"
-		        android:layout_height="2dip"
-		        android:layout_below="@+id/db_equipments"
-		        android:background="?android:attr/dividerHorizontal" />
-            
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_equipments"
+                android:background="?android:attr/dividerHorizontal" />
+
             <View
-		        android:layout_width="match_parent"
-		        android:layout_height="2dip"
-		        android:layout_below="@+id/db_settings"
-		        android:background="?android:attr/dividerHorizontal" />
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_settings"
+                android:background="?android:attr/dividerHorizontal" />
 
             <RelativeLayout
                 android:id="@+id/db_messages"
@@ -297,4 +320,5 @@
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>
+
 </RelativeLayout>
