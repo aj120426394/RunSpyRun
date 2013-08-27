@@ -1,35 +1,37 @@
 package uq.deco7381.runspyrun.model;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseGeoPoint;
 
 public class Obstacle {
-	private LatLng location;
+	//private LatLng location;
 	private int energy;
 	private String creator;
 	private String organization;
 	private String type;
+	private ParseGeoPoint location;
 	
-	public Obstacle(LatLng latLng, String type, String org, String username) {
+	public Obstacle(ParseGeoPoint location, String type, String org, String username) {
 		// TODO Auto-generated constructor stub
-		this.location = latLng;
+		this.location = location;
 		this.type = type;
 		this.energy = 0;
 		this.organization = org;
 		this.creator = username;
 	}
 	
-	public void setLatLng(LatLng latLng){
-		this.location = latLng;
+	public void setLocation(ParseGeoPoint location){
+		this.location = location;
 	}
 	
-	public LatLng getLatLng(){
+	public ParseGeoPoint getLocation(){
 		return this.location;
 	}
 	public double getLatitude(){
-		return this.location.latitude;
+		return this.location.getLatitude();
 	}
 	public double getLongitude(){
-		return this.location.longitude;
+		return this.location.getLongitude();
 	}
 	public void setCreator(String creator){
 		this.creator = creator;

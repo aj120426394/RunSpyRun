@@ -3,7 +3,6 @@ package uq.deco7381.runspyrun.activity;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
-import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -36,7 +35,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 public class DashboardActivity extends Activity implements OnMyLocationChangeListener {
 	
@@ -72,6 +70,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		
 		// Get user info from Parse server
 		setUserInfo();
+
 		displayMissionList();
 		
 	}
@@ -202,15 +201,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		Intent intent = new Intent(this, EquipmentActivity.class);
 		startActivity(intent);
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.dashboard, menu);
-		return true;
-	}
-
-	
 	
 	@Override
 	protected void onPause() {

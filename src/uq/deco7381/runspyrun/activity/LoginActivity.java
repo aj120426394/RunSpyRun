@@ -23,15 +23,23 @@ import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
-
+/**
+ * This is a launch Activity of this application
+ * It provide two funcation:
+ * 1. Login
+ * 2. Reset password
+ * 
+ * @author Jafo
+ *
+ */
 public class LoginActivity extends Activity {
 	
-	public static final String PREFS_NAME = "LoginInfo";
-	private static final String PREF_USERNAME = "username";
+	public static final String PREFS_NAME = "LoginInfo";  // Key of SharedPreferences
+	private static final String PREF_USERNAME = "username"; // Key of getting username in SharedPreference
 	
-	private View mContentView;
-	private View mLoadingView;
-	private int mShortAnimationDuration;
+	private View mContentView;	// The view contain the whole content.
+	private View mLoadingView;	// The view contain the process animation.
+	private int mShortAnimationDuration;	// Animation time
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,7 @@ public class LoginActivity extends Activity {
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
 		
-		// Get the username for device's storage
+		// Get the username from device's storage
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
@@ -54,12 +62,24 @@ public class LoginActivity extends Activity {
 
 	}
 
+	/**
+	 * Set the username on the login screen if user have login before.
+	 * 
+	 * @param username
+	 * @see onCreate()
+	 */
 	private void setUsername(String username){
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
 		usernameEditText.setText(username);
 	}
 	
-	// LoginActivity with Parse service
+	/**
+	 * This method will execute when user click button "Login" in activity_login.xml
+	 * The function run in this method:
+	 * 1. Login verification by Parse service
+	 * 
+	 * @param view
+	 */
 	public void login(View view){
 			
 		showLoading();
@@ -102,13 +122,23 @@ public class LoginActivity extends Activity {
 		});
 	}
 
-	// SignupActivity with Parse service
+	/**
+	 * This method will execute when user click button "Signup" in activity_login.xml
+	 * The function run in this method:
+	 * 1. Direct user to "Signup" activity
+	 * @param view
+	 */
 	public void signup(View view){
 		Intent intent = new Intent(this, SignupActivity.class);
 		startActivity(intent);
 	}
 	
-	// Reset password with Parse service
+	/**
+	 * This method will execute when user click TextView "Forget password" in activity_login.xml
+	 * The function run in this method:
+	 * 1. Pop out a dialog let user input the email address
+	 * @param view
+	 */
 	public void resetPassword(View view){
 		// Set up a layout to input in Alert Dialog
 		LayoutInflater inflater = LayoutInflater.from(this);

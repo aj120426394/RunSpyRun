@@ -8,7 +8,6 @@ import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
 import android.app.Activity;
-import android.app.DownloadManager.Query;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -32,16 +31,25 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-
+/**
+ * This is an Activity with Defense mode, it inherit from OnMyLocationChangeListener
+ * which is going to track user's current location.
+ *  
+ * There are three state for user to get into this Activity:
+ * 1. Create a new course
+ * 2. Create new mission from a existing course
+ * 3. Existing mission
+ * @author Jafo
+ *
+ */
 public class DefenceActivity extends Activity implements OnMyLocationChangeListener {
 	
 	private GoogleMap map;
 	private LocationManager status;
-	private Location currentLocation;
-	private String isFrom;
-	private ArrayList<Obstacle> obstaclesOnCourse;
-	private Course course;
-	private LatLng courseLatLng;
+	private ParseGeoPoint currentLocation;
+	private String isFrom; 				// Determine which Activity is user coming from
+	private ArrayList<Obstacle> obstaclesOnCourse;	// Save the obstacle when user create new.
+	private Course course;				// Course of this mode
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +79,22 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 		//Set the course (make it visible on the map)
-		courseLatLng = new LatLng(latitude, longtitude);
-		setCourse(courseLatLng);
+		setCourse(new ParseGeoPoint(latitude,longtitude));
 		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
 			displayObstacle();
 		}
 	}
 
+	/**
+	 * This method will execute when user click the button "Create" in activity_defence.xml.
+	 * The triggered function will determined on which state user on.
+	 * 
+	 * 1. Create a new course
+	 * 2. Create new mission from a existing course
+	 * 3. Existing mission
+	 * 
+	 * @param v
+	 */
 	public void missionDecide(View v){
 		if(isFrom.equals("newCourse")){
 			newCourse();
@@ -88,15 +105,27 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 		Intent intent = new Intent(this, DashboardActivity.class);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		startActivity(intent);
 	}
-	
+	/**
+	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.
+	 * 
+	 * It will retrieve data from Parse server base on:
+	 * 1. Select data from "Course" where "location" near current location
+	 * 2. Select data from "Obstacle" where "course" equal to the selection from step 1.
+	 */
 	private void displayObstacle(){
-		/*
+		// Make query "SELECT FROM "Course" WHERE "location" = course center location "
 		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		ParseGeoPoint courseCenter = new ParseGeoPoint(courseLatLng.latitude, courseLatLng.longitude);
-		course.whereEqualTo("location", courseCenter);
+		course.whereNear("location", this.course.getLocation());
 		
+		// Make query "SELECT FROM "Obstacle" WHERE "course" = course"
 		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
 		obstacleQuery.whereMatchesQuery("course", course);
 		obstacleQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -105,10 +134,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 				// TODO Auto-generated method stub
 				if(objects.size() != 0 && e == null){
 					for(ParseObject obstacle: objects){
-						double latitude = obstacle.getParseGeoPoint("location").getLatitude();
-						double longitude = obstacle.getParseGeoPoint("location").getLongitude();
+						final ParseGeoPoint location = obstacle.getParseGeoPoint("location");
 						final String org = obstacle.getString("organization");
-						final LatLng location = new LatLng(latitude, longitude);
 						
 						obstacle.getParseUser("creator")
 							.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
@@ -129,53 +156,61 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 					System.out.println(e.getMessage());
 				}
 			}
-		});*/
-		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		ParseGeoPoint courseCenter = new ParseGeoPoint(courseLatLng.latitude, courseLatLng.longitude);
-		course.whereEqualTo("location", courseCenter);
-		
-		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
-		obstacleQuery.whereMatchesQuery("course", course);
-		obstacleQuery.findInBackground(new FindCallback<ParseObject>() {
-
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				if(e == null){
-					System.out.println(objects.get(0).getString("organization"));
-				}else{
-					System.out.println(e.getMessage());
-				}
-			}
 		});
 		
 	}
-	// Set up the map with
+	/**
+	 * Set up a Google map.
+	 * Remove the button: zoom
+	 * Remove the button: find my location
+	 * Initiate the zoom of camera to 15
+	 */
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		UiSettings uiSettings = map.getUiSettings();
-		uiSettings.setMyLocationButtonEnabled(true);
-		uiSettings.setZoomControlsEnabled(true);
+		uiSettings.setMyLocationButtonEnabled(false);
+		uiSettings.setZoomControlsEnabled(false);
 	}
 	
-	// Set the course on the location
-	private void setCourse(LatLng latLng){
+	
+	/**
+	 * Set up a course:
+	 * 1. Display the zone
+	 * 2. Set the course object
+	 * 
+	 * @param latLng
+	 */
+	private void setCourse(ParseGeoPoint location){
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		course= new Course(latLng, currentUser.getUsername(),currentUser.getString("organization"));
+		course= new Course(location, currentUser.getUsername(),currentUser.getString("organization"));
 		map.addCircle(course.getCourseZone());
 	}
-	// Setting the Guard on the map
-	public void setGuard(View v){
-		LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+	/**
+	 * Set up a obstacle: Guard:
+	 * Base on your current location
+	 * 
+	 * @param v
+	 */
+	public void setGuard(View v){;
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		Guard g1 = new Guard(latLng,currentUser.getString("organization"),currentUser.getUsername());
+		Guard g1 = new Guard(currentLocation,currentUser.getString("organization"),currentUser.getUsername());
 		map.addMarker(g1.getMarker());
+		
+		// Add to the list of new obstacle
 		obstaclesOnCourse.add(g1);
 	}
-	// Update the current location from OnMyLocationChange()
+	
+	/**
+	 * Set "currentLocation" to the actual current location
+	 * 1. Transform the type of location to ParseGeoPoint
+	 * 
+	 * @param location: Actual current location from OnMyLocationChange
+	 * @see onMyLocationChange(Location lastKnownLocation)
+	 */
 	private void setCurrentLocation(Location location){
-		this.currentLocation = location;
+		this.currentLocation = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -198,16 +233,24 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         LatLng latLng = new LatLng(latitude, longitude);
 		
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-		map.animateCamera(CameraUpdateFactory.zoomTo(15));
+		
 		map.setOnCameraChangeListener(null);
 		
 	}
 
+	/**
+	 * This method will called by missionDecide() when user's state is "Create a new course"
+	 * 1. Save new course.
+	 * 2. Save new obstacle
+	 * 3. Save new mission
+	 * 
+	 * @see missionDecide(View v)
+	 */
 	public void newCourse(){
 		// Save new Course
 		ParseObject parseCourse = new ParseObject("Course");
 		parseCourse.put("owner",ParseUser.getCurrentUser());
-		parseCourse.put("location", new ParseGeoPoint(course.getLatitude(),course.getLongitude()));
+		parseCourse.put("location", course.getLocation());
 		parseCourse.put("level", course.getLevel());
 		parseCourse.put("organization", course.getOrg());
 		parseCourse.saveInBackground();
@@ -217,7 +260,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			ParseObject object = new ParseObject("Obstacle");
 			object.put("creator", ParseUser.getCurrentUser());
 			object.put("energy", obstacle.getEnergy());
-			object.put("location", new ParseGeoPoint(obstacle.getLatitude(), obstacle.getLongitude()));
+			object.put("location", obstacle.getLocation());
 			object.put("type", obstacle.getType());
 			object.put("organization", obstacle.getOrg());
 			object.put("course", parseCourse);
@@ -240,22 +283,29 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mission.saveInBackground();
 
 	}
+	/**
+	 * This method will called by missionDecide() when user's state is "Existing Mission"
+	 * 1. Save Obstacle
+	 * 
+	 * @see missionDecide(View v)
+	 */
 	public void existMission(){
 		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		course.whereEqualTo("location", new ParseGeoPoint(courseLatLng.latitude,courseLatLng.longitude));
+		course.whereEqualTo("location", this.course.getLocation());
 		course.getFirstInBackground(new GetCallback<ParseObject>() {
 			@Override
 			public void done(ParseObject object, ParseException e) {
 				// TODO Auto-generated method stub
 				if(e == null){
 					for(Obstacle obstacle: obstaclesOnCourse){
-						ParseObject test = new ParseObject("Obstacle");
-						test.put("creator", ParseUser.getCurrentUser());
-						test.put("energy", obstacle.getEnergy());
-						test.put("type", obstacle.getType());
-						test.put("organization", obstacle.getOrg());
-						test.put("course", object);
-						test.saveInBackground(new SaveCallback() {
+						ParseObject temp = new ParseObject("Obstacle");
+						temp.put("creator", ParseUser.getCurrentUser());
+						temp.put("energy", obstacle.getEnergy());
+						temp.put("location", obstacle.getLocation());
+						temp.put("type", obstacle.getType());
+						temp.put("organization", obstacle.getOrg());
+						temp.put("course", object);
+						temp.saveInBackground(new SaveCallback() {
 							@Override
 							public void done(ParseException e) {
 								// TODO Auto-generated method stub
@@ -274,22 +324,30 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		});
 	}
 	
+	/**
+	 * This method will called by missionDecide() when user's state is "New Mission with existing course"
+	 * 1. Save Obstacle
+	 * 2. Save Mission
+	 * @see missionDecide(View v)
+	 */
 	public void existCourse(){
 		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		course.whereEqualTo("location", new ParseGeoPoint(courseLatLng.latitude,courseLatLng.longitude));
+		course.whereEqualTo("location", this.course.getLocation());
 		course.getFirstInBackground(new GetCallback<ParseObject>() {
 			@Override
 			public void done(ParseObject object, ParseException e) {
 				// TODO Auto-generated method stub
 				if(e == null){
+					// Save the obstacle
 					for(Obstacle obstacle: obstaclesOnCourse){
-						ParseObject test = new ParseObject("Obstacle");
-						test.put("creator", ParseUser.getCurrentUser());
-						test.put("energy", obstacle.getEnergy());
-						test.put("type", obstacle.getType());
-						test.put("organization", obstacle.getOrg());
-						test.put("course", object);
-						test.saveInBackground(new SaveCallback() {
+						ParseObject temp = new ParseObject("Obstacle");
+						temp.put("creator", ParseUser.getCurrentUser());
+						temp.put("energy", obstacle.getEnergy());
+						temp.put("location", obstacle.getLocation());
+						temp.put("type", obstacle.getType());
+						temp.put("organization", obstacle.getOrg());
+						temp.put("course", object);
+						temp.saveInBackground(new SaveCallback() {
 							@Override
 							public void done(ParseException e) {
 								// TODO Auto-generated method stub

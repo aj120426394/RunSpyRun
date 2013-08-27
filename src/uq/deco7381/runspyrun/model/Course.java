@@ -4,19 +4,20 @@ import android.graphics.Color;
 
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseGeoPoint;
 
 public class Course {
 
-	private LatLng centerLatLng;
 	private int radius;
 	private int level;
 	private String owner;
 	private String organization;
+	private ParseGeoPoint location;
 	
-	public Course(LatLng latLng, String username, String org) {
+	public Course(ParseGeoPoint location, String username, String org) {
 		// TODO Auto-generated constructor stub
-		this.centerLatLng = latLng;
-		this.radius = 1000; //1000 meter
+		this.location = location;
+		this.radius = 400; //400 meter
 		this.level = 1;
 		this.owner = username;
 		this.organization = org;
@@ -24,18 +25,18 @@ public class Course {
 	
 	public CircleOptions getCourseZone(){
 		return new CircleOptions()
-					.center(this.centerLatLng)
+					.center(new LatLng(getLatitude(), getLongitude()))
 					.radius(this.radius)
 					.fillColor(0x40ff0000)
 					.strokeColor(Color.TRANSPARENT)
 					.strokeWidth(2);
 	}
 
-	public void setLatLng(LatLng latLng){
-		this.centerLatLng = latLng;
+	public void setLocation(ParseGeoPoint location){
+		this.location = location;
 	}
-	public LatLng getLatLng(){
-		return this.centerLatLng;
+	public ParseGeoPoint getLocation(){
+		return this.location;
 	}
 	public String getType(){
 		return "Datasource";
@@ -47,10 +48,10 @@ public class Course {
 		return this.level;
 	}
 	public double getLatitude(){
-		return this.centerLatLng.latitude;
+		return this.location.getLatitude();
 	}
 	public double getLongitude(){
-		return this.centerLatLng.longitude;
+		return this.location.getLongitude();
 	}
 	public void setOrg(String org){
 		this.organization = org;
