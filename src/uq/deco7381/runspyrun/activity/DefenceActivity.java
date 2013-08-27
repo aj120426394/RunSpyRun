@@ -69,10 +69,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			// Check the map is exist or not
 			if (map == null){
 				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.defence_map)).getMap();
-				if(map != null){
-					setUpMap();
-				}
 			}
+			setUpMap();
 		}else{
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -124,6 +122,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		// Make query "SELECT FROM "Course" WHERE "location" = course center location "
 		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
 		course.whereNear("location", this.course.getLocation());
+		course.setLimit(1);
 		
 		// Make query "SELECT FROM "Obstacle" WHERE "course" = course"
 		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
@@ -281,6 +280,30 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mission.put("course", parseCourse);
 		mission.put("username", ParseUser.getCurrentUser());
 		mission.saveInBackground();
+		
+		// Update equipment
+		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
+		equipment.whereEqualTo("username", ParseUser.getCurrentUser());
+		equipment.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				for(ParseObject equipmentObject: objects){
+					String eType = equipmentObject.getString("eq_name");
+					if(eType.equals("Datasource")){
+						equipmentObject.put("number", equipmentObject.getInt("number")-1);
+						equipmentObject.saveInBackground();
+					}else{
+						/*
+						for(Obstacle obstacle: obstaclesOnCourse){
+							if(obstacle.getType().equals(eType)){
+								equipmentObject.put("number", equipmentObject.getInt("number")-1);
+							}
+						}*/
+					}
+				}
+			}
+		});
 
 	}
 	/**

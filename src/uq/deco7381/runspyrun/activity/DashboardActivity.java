@@ -1,5 +1,7 @@
 package uq.deco7381.runspyrun.activity;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
@@ -8,10 +10,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -74,9 +77,23 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		displayMissionList();
 		
 	}
-	// Display the mission list retrieved from Database
+	
+	/**
+	 * This method is to display the list of mission that user have started and haven't finished.
+	 * 
+	 * 1. Save the textview which display the distance between user and the course to a ArrayList
+	 * 2. Save the course geolocation to a ArrayList.
+	 * @see onMyLocationChange()   Both of the ArrayList would be use to measure and dipaly the distance
+	 * 								between user and course.
+	 * 
+	 * Fetch the mission list and the course info from Parse server.
+	 * 
+	 */
+	ArrayList<TextView> distance = new ArrayList<TextView>();
+	ArrayList<ParseGeoPoint> course = new ArrayList<ParseGeoPoint>();
 	private void displayMissionList(){
 		final Intent intent = new Intent(this, DefenceActivity.class);
+		
 		// Get user's mission list
 		ParseQuery<ParseObject> missionList = ParseQuery.getQuery("Mission");
 		missionList.whereEqualTo("username", ParseUser.getCurrentUser());
@@ -86,7 +103,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				// TODO Auto-generated method stub
 				if(objects.size() != 0 && e == null){
 					for(ParseObject mission: objects){
-						// Get the course of the mission
+						// Get the course of each mission
 						mission.getParseObject("course").fetchIfNeededInBackground(new GetCallback<ParseObject>() {
 							@Override
 							public void done(final ParseObject object, ParseException e) {
@@ -94,38 +111,69 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 								if(e == null){
 									LinearLayout linearLayout = (LinearLayout)findViewById(R.id.db_mission_list);
 									RelativeLayout missionLayout = new RelativeLayout(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,70);
+									missionLayout.setLayoutParams(missiLayoutParams);
 									// Display mission name
 									TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionName.setId(R.id.textView1);
-									missionName.setText("Mission:");
+									missionName.setText("Mission - ");
 									missionName.setId(R.id.button1);
 									missionName.setTextColor(Color.parseColor("#EF802E"));
-									missionName.setTextSize(15);
+									missionName.setTextSize(18);
 									missionName.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 									missionLayout.addView(missionName);
 									
-									//Display arrow of eachline
+									
+									// Display arrow of each mission
 									TextView missionArrow = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionLayout.addView(missionArrow);
 									missionArrow.setText(">");
 									missionArrow.setTextColor(Color.parseColor("#EF802E"));
-									missionArrow.setTextSize(15);
+									missionArrow.setTextSize(18);
 									RelativeLayout.LayoutParams missionArrowParams = (RelativeLayout.LayoutParams)missionArrow.getLayoutParams();
 									missionArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+									missionArrowParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 									missionArrow.setLayoutParams(missionArrowParams);
 									
-									// Display geolocation of the course
+									// Display place name of the course
 									final ParseGeoPoint location = object.getParseGeoPoint("location");
-									String locatString = " (" + location.getLatitude() + ", " + location.getLongitude() +")";
+									String locality = "";
+									Geocoder geocoder = new Geocoder(DashboardActivity.this);
+									try {
+										List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+										locality = addresses.get(0).getLocality();
+										locality += ", " + addresses.get(0).getAdminArea();
+										locality += ", " + addresses.get(0).getCountryCode();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
 									
 									TextView missionLoc = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionLayout.addView(missionLoc);
-									missionLoc.setText(locatString);
+									missionLoc.setText(locality);
 									missionLoc.setTextColor(Color.parseColor("#EF802E"));
 									missionLoc.setTextSize(15);
 									RelativeLayout.LayoutParams missionLocParams = (RelativeLayout.LayoutParams)missionLoc.getLayoutParams();
 									missionLocParams.addRule(RelativeLayout.RIGHT_OF,missionName.getId());
+									missionLocParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+									missionLocParams.setMargins(0, 5, 0, 0);
 									missionLoc.setLayoutParams(missionLocParams);
+									
+									// Display distance between user and the course.
+									TextView missionDis = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									missionLayout.addView(missionDis);
+									missionDis.setText("Counting distance...");
+									missionDis.setTextColor(Color.BLACK);
+									missionDis.setTextSize(12);
+									RelativeLayout.LayoutParams missionDisParams = (RelativeLayout.LayoutParams)missionDis.getLayoutParams();
+									missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+									missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+									missionDis.setLayoutParams(missionDisParams);
+									
+									distance.add(missionDis);
+									course.add(location);
+									
 									//Set up onclick listener if click on the mission
 									missionLayout.setOnClickListener(new OnClickListener() {
 										@Override
@@ -140,7 +188,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									});
 									linearLayout.addView(missionLayout);
 									
-									System.out.println("Sucess");
 								}else{
 									System.out.println(e.getMessage());
 								}
@@ -227,6 +274,32 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
         // Getting longitude of the current location
         double longitude = lastKnownLocation.getLongitude();
  
+        Geocoder geocoder = new Geocoder(DashboardActivity.this);
+        String locality = "";
+		try {
+			List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+			locality = addresses.get(0).getLocality();
+			locality += ", " + addresses.get(0).getAdminArea();
+			locality += ", " + addresses.get(0).getCountryCode();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		TextView currentLocTextView = (TextView)findViewById(R.id.basicInfo_location);
+		currentLocTextView.setText(locality);
+		
+        ParseGeoPoint currentLoc = new ParseGeoPoint(latitude,longitude);
+        for(int i = 0; i < course.size(); i++){
+        	TextView tempTextView = distance.get(i);
+        	double distanceDouble = currentLoc.distanceInKilometersTo(course.get(i));
+        	String distanceString = "";
+        	if(distanceDouble*1000 < 400){
+        		distanceString = "you are in the course";
+        	}else{
+        		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
+        	}
+        	tempTextView.setText(distanceString);
+        }
         // Creating a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
 		
