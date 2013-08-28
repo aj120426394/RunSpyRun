@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,6 +19,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,6 +46,8 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	
 	private GoogleMap map;
 	private LocationManager status;
+	
+	Location loc;
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -76,6 +81,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 
 		displayMissionList();
 		
+		
+		loc = new Location(LocationManager.GPS_PROVIDER);
+		loc.setLatitude(-27.490059);
+		loc.setLongitude(153.112972);
 	}
 	
 	/**
@@ -91,6 +100,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 */
 	ArrayList<TextView> distance = new ArrayList<TextView>();
 	ArrayList<ParseGeoPoint> course = new ArrayList<ParseGeoPoint>();
+	ArrayList<ImageView> direction = new ArrayList<ImageView>();
 	private void displayMissionList(){
 		final Intent intent = new Intent(this, DefenceActivity.class);
 		
@@ -111,7 +121,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 								if(e == null){
 									LinearLayout linearLayout = (LinearLayout)findViewById(R.id.db_mission_list);
 									RelativeLayout missionLayout = new RelativeLayout(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,70);
+									RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,android.widget.RelativeLayout.LayoutParams.MATCH_PARENT);
 									missionLayout.setLayoutParams(missiLayoutParams);
 									// Display mission name
 									TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
@@ -160,6 +170,20 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									missionLocParams.setMargins(0, 5, 0, 0);
 									missionLoc.setLayoutParams(missionLocParams);
 									
+									
+									// Display direction of the course.
+									ImageView missionDir = new ImageView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+									missionDir.setImageResource(R.drawable.arrow);
+									missionDir.setId(R.id.textView10);
+									missionLayout.addView(missionDir);
+									RelativeLayout.LayoutParams missionDirParams = (RelativeLayout.LayoutParams)missionDir.getLayoutParams();
+									missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+									missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+									missionDirParams.width = 20;
+									missionDirParams.height = 20;
+									missionDir.setLayoutParams(missionDirParams);
+									
+									
 									// Display distance between user and the course.
 									TextView missionDis = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionLayout.addView(missionDis);
@@ -168,8 +192,16 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									missionDis.setTextSize(12);
 									RelativeLayout.LayoutParams missionDisParams = (RelativeLayout.LayoutParams)missionDis.getLayoutParams();
 									missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-									missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+									missionDisParams.setMargins(0, 50, 0, 0);
+									missionDisParams.addRule(RelativeLayout.RIGHT_OF,missionDir.getId());
 									missionDis.setLayoutParams(missionDisParams);
+									
+									Matrix matrix = new Matrix();
+									missionDir.setScaleType(ScaleType.MATRIX);
+									matrix.postRotate(90);
+									missionDir.setImageMatrix(matrix);
+									
+									
 									
 									distance.add(missionDis);
 									course.add(location);
@@ -303,6 +335,8 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
         // Creating a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
 		
+        System.out.println(lastKnownLocation.bearingTo(loc));
+        
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
