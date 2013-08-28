@@ -52,14 +52,14 @@ public class LoginActivity extends Activity {
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
 		
-		// Get the username from device's storage
+		// Get the username from device's cache
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
 
+		// Set up the loading screen and content screen
 		mContentView = findViewById(R.id.login_content);
 		mLoadingView = findViewById(R.id.loading_spinner);
-		
 		mLoadingView.setVisibility(View.GONE);
 		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -78,8 +78,9 @@ public class LoginActivity extends Activity {
 	
 	/**
 	 * This method will execute when user click button "Login" in activity_login.xml
-	 * The function run in this method:
-	 * 1. Login verification by Parse service
+	 * 1. Get data that user input from TextView
+	 * 2. Set up the dialog for alert user in some situation
+	 * 3. Validate the username and password on Parse.
 	 * 
 	 * @param view
 	 */
@@ -126,8 +127,8 @@ public class LoginActivity extends Activity {
 	}
 
 	/**
-	 * This method will execute when user click button "Signup" in activity_login.xml
-	 * The function run in this method:
+	 * onClick method triggered by "Signup"
+	 * 
 	 * 1. Direct user to "Signup" activity
 	 * @param view
 	 */
@@ -137,9 +138,11 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
-	 * This method will execute when user click TextView "Forget password" in activity_login.xml
-	 * The function run in this method:
-	 * 1. Pop out a dialog let user input the email address
+	 * onClick method triggered by "Forget password"
+	 * 1. Pop out a dialog let user input the email address(already registered)
+	 * 2. Sending email address to Parse
+	 * (Parse will send a mail to user's mail box to reset password)
+	 * 
 	 * @param view
 	 */
 	public void resetPassword(View view){
@@ -177,7 +180,11 @@ public class LoginActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	// Show the Content of activity with animation
+	/**
+	 * Set up the screen in normal condition
+	 * 1. Set content visible
+	 * 2. set loading progress invisible
+	 */
 	private void showContent(){
 		mContentView.setAlpha(0f);
 		mContentView.setVisibility(View.VISIBLE);
@@ -197,7 +204,11 @@ public class LoginActivity extends Activity {
 	                    }
 					});
 	}
-	// Show loading process with animation
+	/**
+	 * Set up the screen in loading condition
+	 * 1. Set loading progress visible
+	 * 2. Set content invisible
+	 */
 	private void showLoading(){
 		mLoadingView.setAlpha(0f);
 		mLoadingView.setVisibility(View.VISIBLE);
