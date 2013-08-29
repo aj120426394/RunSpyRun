@@ -39,6 +39,12 @@ import com.parse.SaveCallback;
  * 1. Create a new course
  * 2. Create new mission from a existing course
  * 3. Existing mission
+ * 
+ * Functionality:
+ * 1. Display user current location
+ * 2. Display zone of the course
+ * 3. Display obstacle in the zone
+ * 
  * @author Jafo
  *
  */
@@ -58,15 +64,21 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		obstaclesOnCourse = new ArrayList<Obstacle>();
 		Intent intent = getIntent();
 		
-		// Get the Course's center point (where to put data stream) from intent
+		/*
+		 * Get the Course's center point (where to put data stream) from intent
+		 */
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longtitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
 
-		// Map set up
+		/*
+		 *  Map set up
+		 */
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-			// Check the map is exist or not
+			/*
+			 *  Check the map is exist or not
+			 */
 			if (map == null){
 				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.defence_map)).getMap();
 			}
@@ -76,7 +88,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
 		
-		//Set the course (make it visible on the map)
+		/*
+		 * Set the course (make it visible on the map)
+		 */
 		setCourse(new ParseGeoPoint(latitude,longtitude));
 		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
 			displayObstacle();
@@ -84,14 +98,15 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	}
 
 	/**
-	 * This method will execute when user click the button "Create" in activity_defence.xml.
-	 * The triggered function will determined on which state user on.
+	 * onClick method triggered by "Create"
+	 * 1. Determine which method to execute base on user's state
 	 * 
-	 * 1. Create a new course
-	 * 2. Create new mission from a existing course
-	 * 3. Existing mission
+	 * @see newCourse()
+	 * @see existMission()
+	 * @see existCourse()
 	 * 
-	 * @param v
+	 * @param v   
+	 * 
 	 */
 	public void missionDecide(View v){
 		if(isFrom.equals("newCourse")){

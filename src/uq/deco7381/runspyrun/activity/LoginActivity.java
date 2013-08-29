@@ -52,12 +52,16 @@ public class LoginActivity extends Activity {
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
 		
-		// Get the username from device's cache
+		/*
+		 *  Get the username from device's cache
+		 */
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
 
-		// Set up the loading screen and content screen
+		/*
+		 *  Set up the loading screen and content screen
+		 */
 		mContentView = findViewById(R.id.login_content);
 		mLoadingView = findViewById(R.id.loading_spinner);
 		mLoadingView.setVisibility(View.GONE);
@@ -77,7 +81,7 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
-	 * This method will execute when user click button "Login" in activity_login.xml
+	 *onClick method triggered by button "Login"
 	 * 1. Get data that user input from TextView
 	 * 2. Set up the dialog for alert user in some situation
 	 * 3. Validate the username and password on Parse.
@@ -89,14 +93,18 @@ public class LoginActivity extends Activity {
 		showLoading();
 		final Intent intent = new Intent(this, DashboardActivity.class);
 			
-		//Retrieve user input
+		/*
+		 * Retrieve user input
+		 */
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
 		String usernameString = usernameEditText.getText().toString();
 		
 		EditText passwordEditText = (EditText) findViewById(R.id.password);
 		String passwordString = passwordEditText.getText().toString();
 		
-		// LoginActivity system by Parse
+		/*
+		 *  LoginActivity system by Parse
+		 */
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		ParseUser.logInInBackground(usernameString, passwordString, new LogInCallback() {
 				
@@ -107,7 +115,9 @@ public class LoginActivity extends Activity {
 					startActivity(intent);
 					showContent();
 				}else{
-					//if there is a exception from parse, show in dialog box
+					/*
+					 * if there is a exception from parse, show in dialog box
+					 */
 					builder.setTitle("Alert");
 					builder.setMessage("Username or Password is invalid");
 					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -127,7 +137,7 @@ public class LoginActivity extends Activity {
 	}
 
 	/**
-	 * onClick method triggered by "Signup"
+	 * onClick method triggered by button "Signup"
 	 * 
 	 * 1. Direct user to "Signup" activity
 	 * @param view
@@ -146,11 +156,15 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void resetPassword(View view){
-		// Set up a layout to input in Alert Dialog
+		/*
+		 *  Set up a layout to input in Alert Dialog
+		 */
 		LayoutInflater inflater = LayoutInflater.from(this);
 		final View v = inflater.inflate(R.layout.dialog_resetpassword, null);
 		
-		// Build a AlertDialog
+		/*
+		 *  Build a AlertDialog
+		 */
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Reset the password");
 		builder.setView(v);
@@ -158,13 +172,17 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				// Get the email address from the AlertDialog and send a password reset email to user.
+				/*
+				 *  Get the email address from the AlertDialog and send a password reset email to user.
+				 */
 				EditText email = (EditText)(v.findViewById(R.id.rpEmail));
 				ParseUser.requestPasswordResetInBackground(email.getText().toString(), new RequestPasswordResetCallback(){
 					@Override
 					public void done(ParseException e) {
 						// TODO Auto-generated method stub
-						// Avoid software keyboard remain on the screen after click "Send" button
+						/*
+						 *  Avoid software keyboard remain on the screen after click "Send" button
+						 */
 						InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE));
 						imm.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 						if(e == null){
@@ -234,7 +252,9 @@ public class LoginActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onPause();
 
-		//Store the username into the device.
+		/*
+		 *  Store the username into the device.
+		 */
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
 		String usernameString = usernameEditText.getText().toString();
 		
@@ -246,7 +266,9 @@ public class LoginActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		/*
+		 *  Inflate the menu; this adds items to the action bar if it is present.
+		 */
 		getMenuInflater().inflate(R.menu.login, menu);
 		return true;
 	}

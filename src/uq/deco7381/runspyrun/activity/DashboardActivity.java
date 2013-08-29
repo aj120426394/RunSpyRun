@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,7 +42,28 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
+/**
+ * This activity is the main page "Dash board" when user launch the app.
+ * 1. Display user's current information:
+ * 	a.Username
+ * 	b.Level
+ * 	c.Energy
+ * 	d.Datasource number
+ * 	e.Current location
+ * 
+ * 2. Display user's current mission list:
+ * 	a.Mission name (not available)
+ *  b.Mission took place
+ *  c.Distance between user and course of the mission
+ *  d.Direction of course of the mission.
+ *  
+ * 3. Other Activities link
+ * 	a.Message (not available)
+ * 	b.Equipment
+ * 	c.Setting (not available)
+ * @author Jafo
+ *
+ */
 public class DashboardActivity extends Activity implements OnMyLocationChangeListener {
 	
 	private GoogleMap map;
@@ -60,9 +80,13 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		ParseAnalytics.trackAppOpened(getIntent());
 		
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
-		// Check is GPS available
+		/*
+		 *  Check is GPS available
+		 */
 		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-			// Check the map is exist or not
+			/*
+			 *  Check the map is exist or not
+			 */
 			if (map == null){
 				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.db_map)).getMap();
 				if(map != null){
@@ -70,16 +94,20 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				}
 			}
 		}else{
-			// If GPS is no available, direct user to Setting  
+			/*
+			 *  If GPS is no available, direct user to Setting  
+			 */
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
-		
-		
-		
-		// Set the compass images.
+
+		/*
+		 *  Set the compass images.
+		 */
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
-		// Get user info from Parse server
+		/*
+		 *  Get user info from Parse server
+		 */
 		setUserInfo();
 		displayMissionList();
 	}
@@ -110,7 +138,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private void displayMissionList(){
 		final Intent intent = new Intent(this, DefenceActivity.class);
 		
-		// Get user's mission list
+		/*
+		 *  Get user's mission list
+		 */
 		ParseQuery<ParseObject> missionList = ParseQuery.getQuery("Mission");
 		missionList.whereEqualTo("username", ParseUser.getCurrentUser());
 		missionList.findInBackground(new FindCallback<ParseObject>() {
@@ -119,7 +149,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				// TODO Auto-generated method stub
 				if(objects.size() != 0 && e == null){
 					for(ParseObject mission: objects){
-						// Get the course of each mission
+						/*
+						 *  Get the course of each mission
+						 */
 						mission.getParseObject("course").fetchIfNeededInBackground(new GetCallback<ParseObject>() {
 							@Override
 							public void done(final ParseObject object, ParseException e) {
@@ -130,7 +162,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,android.widget.RelativeLayout.LayoutParams.MATCH_PARENT);
 									missionLayout.setLayoutParams(missiLayoutParams);
 									
-									// Display mission name
+									/*
+									 *  Display mission name
+									 */
 									TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionName.setId(R.id.textView1);
 									missionName.setText("Mission - ");
@@ -141,7 +175,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									missionLayout.addView(missionName);
 									
 									
-									// Display arrow of each mission
+									/*
+									 *  Display arrow of each mission
+									 */
 									TextView missionArrow = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionLayout.addView(missionArrow);
 									missionArrow.setText(">");
@@ -152,7 +188,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									missionArrowParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 									missionArrow.setLayoutParams(missionArrowParams);
 									
-									// Display place name of the course
+									/*
+									 *  Display place name of the course
+									 */
 									final ParseGeoPoint location = object.getParseGeoPoint("location");
 									String locality = "";
 									Geocoder geocoder = new Geocoder(DashboardActivity.this);
@@ -178,9 +216,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									missionLoc.setLayoutParams(missionLocParams);
 									
 									
-									// Display direction of the course.
+									/*
+									 *  Display direction of the course.
+									 */
 									ImageView missionDir = new ImageView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									//missionDir.setImageResource(R.drawable.arrow);
 									missionDir.setId(R.id.textView10);
 									missionLayout.addView(missionDir);
 									RelativeLayout.LayoutParams missionDirParams = (RelativeLayout.LayoutParams)missionDir.getLayoutParams();
@@ -192,7 +231,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									
 									
 									
-									// Display distance between user and the course.
+									/*
+									 *  Display distance between user and the course.
+									 */
 									TextView missionDis = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
 									missionLayout.addView(missionDis);
 									missionDis.setText("Counting distance...");
@@ -208,7 +249,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									course.add(location);
 									direction.add(missionDir);
 									
-									//Set up onclick listener if click on the mission
+									/*
+									 *  Set up onclick listener if click on the mission
+									 */
 									missionLayout.setOnClickListener(new OnClickListener() {
 										@Override
 										public void onClick(View v) {
@@ -244,22 +287,30 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private void setUserInfo() {
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		
-		// Set the username
+		/*
+		 *  Set the username
+		 */
 		String userString = currentUser.getUsername();
 		TextView usernameTextView = (TextView)findViewById(R.id.basicInfo_name);
 		usernameTextView.setText(userString);
 		
-		// Set the level
+		/*
+		 *  Set the level
+		 */
 		int level = (Integer) currentUser.getInt("level");
 		TextView levelTextView = (TextView)findViewById(R.id.basicInfo_level);
 		levelTextView.setText(String.valueOf(level));
 		
-		// Set the energy level
+		/*
+		 *  Set the energy level
+		 */
 		int energyLv = (Integer) currentUser.getNumber("energyLevel");
 		TextView energyTextView = (TextView)findViewById(R.id.basicInfo_energy);
 		energyTextView.setText(String.valueOf(energyLv)+" / "+String.valueOf(level*100));
 		
-		// Set the datasource number
+		/*
+		 *  Set the datasource number
+		 */
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
 		query.whereEqualTo("username", currentUser);
 		query.whereEqualTo("eq_name", "Datasource");
@@ -321,13 +372,19 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	public void onMyLocationChange(Location lastKnownLocation) {
 		// TODO Auto-generated method stub
 		
-		// Getting latitude of the current location
+		/*
+		 *  Getting latitude of the current location
+		 */
         double latitude = lastKnownLocation.getLatitude();
  
-        // Getting longitude of the current location
+        /*
+         *  Getting longitude of the current location
+         */
         double longitude = lastKnownLocation.getLongitude();
  
-        // Measure and display the locality user in.
+        /*
+         *  Measure and display the locality user in.
+         */
         Geocoder geocoder = new Geocoder(DashboardActivity.this);
         String locality = "";
 		try {
@@ -341,7 +398,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		currentLocTextView.setText(locality);
 		
 		
-		// Measure and display the distance between user and each course in mission.
+		/*
+		 *  Measure and display the distance between user and each course in mission.
+		 */
         ParseGeoPoint currentLoc = new ParseGeoPoint(latitude,longitude);
         for(int i = 0; i < course.size(); i++){
         	TextView tempTextView = distance.get(i);
@@ -354,7 +413,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
         	}
         	tempTextView.setText(distanceString);
         	
-        	// Measuer and display the direction (compass) of each course.
+        	/*
+        	 *  Measuer and display the direction (compass) of each course.
+        	 */
         	Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
         	tempLoc.setLatitude(course.get(i).getLatitude());
         	tempLoc.setLongitude(course.get(i).getLongitude());
@@ -366,7 +427,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
         	
         	
         }
-        // Make camera on map keep tracking user.
+        /*
+         *  Make camera on map keep tracking user.
+         */
         LatLng latLng = new LatLng(latitude, longitude);
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));

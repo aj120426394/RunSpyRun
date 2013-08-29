@@ -27,7 +27,14 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-
+/**
+ * This class is an testing activity with any functionality used on other page.
+ * Not relate to this project.
+ * No comments here.
+ * 
+ * @author Jafo
+ *
+ */
 public class SuccessActivity extends Activity  implements OnMyLocationChangeListener {
 
 	static final LatLng NKUT = new LatLng(23.979548, 120.696745);

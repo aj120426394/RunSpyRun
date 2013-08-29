@@ -31,7 +31,9 @@ public class SignupActivity extends Activity {
 		
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
-		
+		/*
+		 * Setting up the loading progress and content display
+		 */
 		mContentView = findViewById(R.id.signup_content);
 		mLoadingView = findViewById(R.id.signup_loading);
 		
@@ -46,7 +48,20 @@ public class SignupActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * onClick method triggered by "Signup"
+	 * 1. Get information from screen
+	 * 2. Build dialog to display alert information
+	 * 3. Checking if any information isn't filled
+	 * 4. Validating password is correct when user type in two times.
+	 * 5. Sending inforation to Parse server 
+	 * 
+	 * @param view
+	 */
 	public void signup(View view){
+		/*
+		 * Show loading screen when sending signup information to Parse
+		 */
 		showLoading();
 		final Intent intent = new Intent(this, LoginActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -76,12 +91,16 @@ public class SignupActivity extends Activity {
 					showContent();
 				}
 			});
-			//show the dialog box
+			/*
+			 * show the dialog box
+			 */
 			AlertDialog alert = builder.create();
 			alert.show();
 		}else{
 			if(!password.equals(ePassword)){
-				//Build an AlertDialog for the mistyping of password
+				/*
+				 * Build an AlertDialog for the mistyping of password
+				 */
 				builder.setTitle("Wrong typing");
 				builder.setMessage("Password comfirmation fail");
 				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -92,7 +111,9 @@ public class SignupActivity extends Activity {
 						showContent();
 					}
 				});
-				//show the dialog box
+				/*
+				 * show the dialog box
+				 */
 				AlertDialog alert = builder.create();
 				alert.show();
 			}else{
@@ -105,7 +126,9 @@ public class SignupActivity extends Activity {
 					public void done(ParseException e) {
 						// TODO Auto-generated method stub
 						if(e == null){
-							//if signup success, show in dialog box
+							/*
+							 * if signup success, show in dialog box
+							 */
 							builder.setTitle("SuccessActivity");
 							builder.setMessage("Please check your email to activate your account");
 							builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -115,11 +138,15 @@ public class SignupActivity extends Activity {
 									startActivity(intent);
 								}
 							});
-							//show the dialog box
+							/*
+							 * show the dialog box
+							 */
 							AlertDialog alert = builder.create();
 							alert.show();
 						}else {
-							//if there is a exception from parse, show in dialog box
+							/*
+							 * if there is a exception from parse, show in dialog box
+							 */
 							builder.setTitle("Alert");
 							builder.setMessage(e.getMessage());
 							builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -130,7 +157,9 @@ public class SignupActivity extends Activity {
 									showContent();
 								}
 							});
-							//show the dialog box
+							/*
+							 * show the dialog box
+							 */
 							AlertDialog alert = builder.create();
 							alert.show();
 						}
@@ -139,57 +168,62 @@ public class SignupActivity extends Activity {
 				
 			}
 		}
-		
-		
-		
-		
-		
-		
-		
 	}
 	
 	
-	// Show the Content of activity with animation
-		private void showContent(){
-			mContentView.setAlpha(0f);
-			mContentView.setVisibility(View.VISIBLE);
+	/**
+	 * Set up the screen in normal condition
+	 * 1. Set content visible
+	 * 2. set loading progress invisible
+	 */
+	private void showContent(){
+		mContentView.setAlpha(0f);
+		mContentView.setVisibility(View.VISIBLE);
 			
-			mContentView.animate()
-						.alpha(1f)
-						.setDuration(mShortAnimationDuration)
-						.setListener(null);
+		mContentView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
 			
-			mLoadingView.animate()
-						.alpha(0f)
-						.setDuration(mShortAnimationDuration)
-						.setListener(new AnimatorListenerAdapter() {
-							@Override
-		                    public void onAnimationEnd(Animator animation) {
-		                        mLoadingView.setVisibility(View.GONE);
-		                    }
-						});
-		}
-		// Show loading process with animation
-		private void showLoading(){
-			mLoadingView.setAlpha(0f);
-			mLoadingView.setVisibility(View.VISIBLE);
+		mLoadingView.animate()
+					.alpha(0f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+		                public void onAnimationEnd(Animator animation) {
+		                    mLoadingView.setVisibility(View.GONE);
+		                }
+					});
+	}
+	/**
+	 * Set up the screen in loading condition
+	 * 1. Set loading progress visible
+	 * 2. Set content invisible
+	 */
+	private void showLoading(){
+		mLoadingView.setAlpha(0f);
+		mLoadingView.setVisibility(View.VISIBLE);
 			
-			mLoadingView.animate()
-						.alpha(1f)
-						.setDuration(mShortAnimationDuration)
-						.setListener(null);
+		mLoadingView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
 			
-			mContentView.animate()
-						.alpha(0.5f)
-						.setDuration(mShortAnimationDuration)
-						.setListener(new AnimatorListenerAdapter() {
-							@Override
-		                    public void onAnimationEnd(Animator animation) {
-								mContentView.setVisibility(View.GONE);
-		                    }
-						});
-		}
-	
+		mContentView.animate()
+					.alpha(0.5f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+		                public void onAnimationEnd(Animator animation) {
+							mContentView.setVisibility(View.GONE);
+		                }
+					});
+	}
+	/**
+	 * onClick method triggered by "Cancel"
+	 * 1. Direct user to Login screen
+	 * @param view
+	 */
 	public void cancel(View view){
 		Intent intent = new Intent(this, LoginActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
