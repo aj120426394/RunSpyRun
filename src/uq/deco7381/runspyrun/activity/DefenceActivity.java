@@ -225,7 +225,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 */
 	public void setGuard(View v){;
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLatitude(),currentLocation.getAltitude(),currentUser.getUsername(), currentUser.getInt("level"));
+		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(),currentUser.getUsername(), currentUser.getInt("level"));
 		map.addMarker(g1.getMarkerOptions());
 		
 		/*
@@ -265,6 +265,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         LatLng latLng = new LatLng(latitude, longitude);
 		
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		
 		map.setOnCameraChangeListener(null);
 		

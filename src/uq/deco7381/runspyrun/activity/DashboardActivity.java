@@ -143,6 +143,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 *  Get user's mission list
 		 */
 		ParseQuery<ParseObject> missionList = ParseQuery.getQuery("Mission");
+		missionList.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
 		missionList.whereEqualTo("username", ParseUser.getCurrentUser());
 		missionList.findInBackground(new FindCallback<ParseObject>() {
 			@Override
@@ -314,6 +315,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 *  Set the datasource number
 		 */
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
+		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
 		query.whereEqualTo("username", currentUser);
 		query.whereEqualTo("eq_name", "Datasource");
 		query.findInBackground(new FindCallback<ParseObject>() {
