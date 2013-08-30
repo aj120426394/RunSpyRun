@@ -121,6 +121,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 * 4. Display the course locality
 	 * 5. Display the distance between user and course
 	 * 6. Display the direction(compass)
+	 * 7. Make each mission clickable to direct into course of that mission
 	 * 
 	 * To complete the 5 and 6:
 	 * 1. Save the TextView which display the distance between user and the course to an ArrayList
@@ -251,6 +252,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 									
 									/*
 									 *  Set up onclick listener if click on the mission
+									 *  it will direct user into defense mode
 									 */
 									missionLayout.setOnClickListener(new OnClickListener() {
 										@Override
@@ -423,6 +425,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			matrix.postRotate(lastKnownLocation.bearingTo(tempLoc));
 			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 			direction.get(i).setImageBitmap(bmp);
+			
 			
         	
         	

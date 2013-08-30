@@ -1,26 +1,37 @@
 package uq.deco7381.runspyrun.model;
 
 import uq.deco7381.runspyrun.R;
-import android.location.LocationManager;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.ParseGeoPoint;
 
 /**
- * 
+ * This class is a type of obstacle, most of the function are inherited from Obstacle.class
+ * extra method: Giving the MarkOption (put the icon on the map)
  * @author Jafo
  *
  */
 public class Guard extends Obstacle {
-	// Get the icon id
-	
-	public Guard(ParseGeoPoint location, String org, String username) {
-		super(location, "Guard", org, username);
+	/**
+	 * Constructor
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 * @param altitude
+	 * @param username
+	 * @param level
+	 */
+	public Guard(double latitude,double longitude,double altitude, String username, int level) {
+		super(latitude, longitude, altitude, "Guard", username, level);
 		// TODO Auto-generated constructor stub
 	}
-	public MarkerOptions getMarker(){
+	/**
+	 * Get the MarkerOption to place the icon on the Google map
+	 * 
+	 * @return MarkerOption: the MarkerOption can set on the google map
+	 */
+	public MarkerOptions getMarkerOptions(){
 		MarkerOptions markerOptions = new MarkerOptions()
 										.position(new LatLng(getLatitude(), getLongitude()))
 										.title("Guard")
@@ -28,9 +39,6 @@ public class Guard extends Obstacle {
 		
 		return markerOptions;
 										
-	}
-	public String getType(){
-		return "Guard";
 	}
 	
 

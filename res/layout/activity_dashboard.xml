@@ -187,7 +187,7 @@
                 </LinearLayout>
 
             </RelativeLayout>
-
+<!-- Both of this for view are the shadow of the display screen, it will display under each part of display box -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dip"
@@ -217,6 +217,7 @@
                 android:layout_height="2dip"
                 android:layout_below="@+id/db_settings"
                 android:background="?android:attr/dividerHorizontal" />
+<!-- Shadow above  -->
 
             <RelativeLayout
                 android:id="@+id/db_messages"

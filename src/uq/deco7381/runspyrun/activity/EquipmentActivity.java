@@ -22,17 +22,25 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-public class EquipmentActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
-GooglePlayServicesClient.OnConnectionFailedListener {
-/*
+/**
+ * 
+ * This activity is to show how many and what kind of equipment that player have.
+ * Also when user select Datasource it would direct to Defence mode to create a new course.
+ * (User would be set as "newCourse" state to DefenceActivity)
+ * 
+ * Using Location Client:
  * Using the Google play service: Location Client to catch the current location.
- * It avoid the unnecessary method: Location Listener, and get the location faster and more precise.
+ * It would get the location faster and more precise.
+ * But it would need to check if user's device have already install Google play service to use this functionality
  * 
  * Founded Issue of Android build-in method: Location Manager
  * need LocationChange method to help to get the latest location, and that's not proper for this class.
  * 
+ * @author Jafo
+ *
  */
+public class EquipmentActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener {
 	private LocationClient lClient;
 	
 	
@@ -40,29 +48,25 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_equipment);
-		
+		/*
+		 * Set up a Location client
+		 */
 		lClient = new LocationClient(this, this, this);
 
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
 		setNumOfData();
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.equipment, menu);
-		return true;
-	}
 	
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		/*
+		 * make the location detection start
+		 */
 		lClient.connect();
 	}
-	
-	
 
 	@Override
 	protected void onStop() {
@@ -71,6 +75,15 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		super.onStop();
 	}
 
+	/**
+	 * onClick method triggered by click on "Datasource"
+	 * 1. Get the user's current location
+	 * 2. Store it into intent to pass it to next Activity
+	 * 3. Store the user's state to pass it to next Activity
+	 * 4. Direct to DefenceActivity
+	 * 
+	 * @param v
+	 */
 	public void setCourse(View v){
 		Intent intent = new Intent(this, DefenceActivity.class);
 		Location location = lClient.getLastLocation();
@@ -80,6 +93,13 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		startActivity(intent);
 	}
 
+	/**
+	 * (unfinished)
+	 * Display the number of equipment
+	 * 1. Fetch the equipment list base on username
+	 * 2. Get the number of each equipment
+	 * 3. Set the number of each equipment on the TextView
+	 */
 	private void setNumOfData(){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
 		query.whereEqualTo("username", ParseUser.getCurrentUser());
