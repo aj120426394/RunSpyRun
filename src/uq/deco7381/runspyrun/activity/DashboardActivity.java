@@ -34,7 +34,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
@@ -69,6 +68,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private GoogleMap map;
 	private LocationManager status;
 	private Bitmap bitmap;
+	private ArrayList<ParseObject> missionList;
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -105,178 +105,196 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 *  Set the compass images.
 		 */
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
+		missionList = new ArrayList<ParseObject>();
 		/*
 		 *  Get user info from Parse server
 		 */
 		setUserInfo();
-		displayMissionList();
+		getMissionList();
 	}
 	
 	/**
-	 * This method is to display the list of mission that user have started and haven't finished.
+	 * This method is to get the list of mission that user have started and haven't finished.
 	 * 
 	 * 1. Fetch "Mission" base on Current user
 	 * 2. Fetch "Course" base on fetched mission
 	 * 3. Display the course name
-	 * 4. Display the course locality
-	 * 5. Display the distance between user and course
-	 * 6. Display the direction(compass)
-	 * 7. Make each mission clickable to direct into course of that mission
 	 * 
-	 * To complete the 5 and 6:
-	 * 1. Save the TextView which display the distance between user and the course to an ArrayList
-	 * 2. Save the course geolocation to an ArrayList.
-	 * 3. Save the ImageView which display the compass to and ArrayList
-	 * 
+
 	 * @see onMyLocationChange()   Both of the ArrayList would be use to measure and dipaly the distance
 	 * 								between user and course.
 	 * 
 	 * 
 	 */
-	ArrayList<TextView> distance = new ArrayList<TextView>();
-	ArrayList<ParseGeoPoint> course = new ArrayList<ParseGeoPoint>();
-	ArrayList<ImageView> direction = new ArrayList<ImageView>();
-	private void displayMissionList(){
+	
+	private void getMissionList(){
 		final Intent intent = new Intent(this, DefenceActivity.class);
-		
+
 		/*
 		 *  Get user's mission list
 		 */
-		ParseQuery<ParseObject> missionList = ParseQuery.getQuery("Mission");
-		missionList.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-		missionList.whereEqualTo("username", ParseUser.getCurrentUser());
-		missionList.findInBackground(new FindCallback<ParseObject>() {
+		ParseQuery<ParseObject> missionListQuery = ParseQuery.getQuery("Mission"); 
+		missionListQuery.whereEqualTo("username", ParseUser.getCurrentUser());
+		missionListQuery.include("course");
+		if(missionListQuery.hasCachedResult()){
+			missionListQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+		}else{
+			missionListQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		}
+		missionListQuery.findInBackground(new FindCallback<ParseObject>() {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				// TODO Auto-generated method stub
+				
 				if(objects.size() != 0 && e == null){
 					for(ParseObject mission: objects){
-						/*
-						 *  Get the course of each mission
-						 */
-						mission.getParseObject("course").fetchIfNeededInBackground(new GetCallback<ParseObject>() {
-							@Override
-							public void done(final ParseObject object, ParseException e) {
-								// TODO Auto-generated method stub
-								if(e == null){
-									LinearLayout linearLayout = (LinearLayout)findViewById(R.id.db_mission_list);
-									RelativeLayout missionLayout = new RelativeLayout(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,android.widget.RelativeLayout.LayoutParams.MATCH_PARENT);
-									missionLayout.setLayoutParams(missiLayoutParams);
-									
-									/*
-									 *  Display mission name
-									 */
-									TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									missionName.setId(R.id.textView1);
-									missionName.setText("Mission - ");
-									missionName.setId(R.id.button1);
-									missionName.setTextColor(Color.parseColor("#EF802E"));
-									missionName.setTextSize(18);
-									missionName.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-									missionLayout.addView(missionName);
-									
-									
-									/*
-									 *  Display arrow of each mission
-									 */
-									TextView missionArrow = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									missionLayout.addView(missionArrow);
-									missionArrow.setText(">");
-									missionArrow.setTextColor(Color.parseColor("#EF802E"));
-									missionArrow.setTextSize(18);
-									RelativeLayout.LayoutParams missionArrowParams = (RelativeLayout.LayoutParams)missionArrow.getLayoutParams();
-									missionArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-									missionArrowParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-									missionArrow.setLayoutParams(missionArrowParams);
-									
-									/*
-									 *  Display place name of the course
-									 */
-									final ParseGeoPoint location = object.getParseGeoPoint("location");
-									String locality = "";
-									Geocoder geocoder = new Geocoder(DashboardActivity.this);
-									try {
-										List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-										locality = addresses.get(0).getLocality();
-										locality += ", " + addresses.get(0).getAdminArea();
-										locality += ", " + addresses.get(0).getCountryCode();
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-									
-									TextView missionLoc = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									missionLayout.addView(missionLoc);
-									missionLoc.setText(locality);
-									missionLoc.setTextColor(Color.parseColor("#EF802E"));
-									missionLoc.setTextSize(15);
-									RelativeLayout.LayoutParams missionLocParams = (RelativeLayout.LayoutParams)missionLoc.getLayoutParams();
-									missionLocParams.addRule(RelativeLayout.RIGHT_OF,missionName.getId());
-									missionLocParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-									missionLocParams.setMargins(0, 5, 0, 0);
-									missionLoc.setLayoutParams(missionLocParams);
-									
-									
-									/*
-									 *  Display direction of the course.
-									 */
-									ImageView missionDir = new ImageView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									missionDir.setId(R.id.textView10);
-									missionLayout.addView(missionDir);
-									RelativeLayout.LayoutParams missionDirParams = (RelativeLayout.LayoutParams)missionDir.getLayoutParams();
-									missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-									missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-									missionDirParams.width = 20;
-									missionDirParams.height = 20;
-									missionDir.setLayoutParams(missionDirParams);
-									
-									
-									
-									/*
-									 *  Display distance between user and the course.
-									 */
-									TextView missionDis = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
-									missionLayout.addView(missionDis);
-									missionDis.setText("Counting distance...");
-									missionDis.setTextColor(Color.BLACK);
-									missionDis.setTextSize(12);
-									RelativeLayout.LayoutParams missionDisParams = (RelativeLayout.LayoutParams)missionDis.getLayoutParams();
-									missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-									missionDisParams.setMargins(0, 50, 0, 0);
-									missionDisParams.addRule(RelativeLayout.RIGHT_OF,missionDir.getId());
-									missionDis.setLayoutParams(missionDisParams);
-
-									distance.add(missionDis);
-									course.add(location);
-									direction.add(missionDir);
-									
-									/*
-									 *  Set up onclick listener if click on the mission
-									 *  it will direct user into defense mode
-									 */
-									missionLayout.setOnClickListener(new OnClickListener() {
-										@Override
-										public void onClick(View v) {
-											// TODO Auto-generated method stub
-											
-											intent.putExtra("latitude", location.getLatitude());
-											intent.putExtra("longtitude", location.getLongitude());
-											intent.putExtra("isFrom", "exsitMission");
-											startActivity(intent);
-										}
-									});
-									linearLayout.addView(missionLayout);
-									
-								}else{
-									System.out.println(e.getMessage());
-								}
+						boolean isNew = true;
+						for(ParseObject inMission: missionList){
+							if(mission.getObjectId().equals(inMission.getObjectId())){
+								isNew = false;
 							}
-						});
+						}
+						if(isNew){
+							missionList.add(mission);
+							displayMission(mission, intent);
+						}
 					}
 				}
+				
 			}
 		});
+		
+	}
+	/**
+	 * Display mission in Current mission block
+	 * 
+	 * 1. Display default layout
+	 * 2. Display the course locality
+	 * 3. Display the distance between user and course
+	 * 4. Display the direction(compass)
+	 * 5. Make this mission clickable to direct into course of that mission
+	 * 
+	 * @param mission	ParseObject: the mission retrieve from Parse
+	 * @param intent	Intent: the intent direct user to DefenceActivity
+	 * 
+	 * To complete the 3 and 4:
+	 * 1. Save the TextView which display the distance between user and the course to an ArrayList
+	 * 2. Save the course geolocation to an ArrayList.
+	 * 3. Save the ImageView which display the compass to and ArrayList
+	 */
+	ArrayList<TextView> distance = new ArrayList<TextView>();
+	ArrayList<ParseGeoPoint> course = new ArrayList<ParseGeoPoint>();
+	ArrayList<ImageView> direction = new ArrayList<ImageView>();
+	private void displayMission(ParseObject mission, final Intent intent){
+		
+		LinearLayout linearLayout = (LinearLayout)findViewById(R.id.db_mission_list);
+		RelativeLayout missionLayout = new RelativeLayout(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		RelativeLayout.LayoutParams missiLayoutParams = new RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,android.widget.RelativeLayout.LayoutParams.MATCH_PARENT);
+		missionLayout.setLayoutParams(missiLayoutParams);
+		
+		/*
+		 *  Display mission name
+		 */
+		TextView missionName = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		missionName.setId(R.id.textView1);
+		missionName.setText("Mission - ");
+		missionName.setId(R.id.button1);
+		missionName.setTextColor(Color.parseColor("#EF802E"));
+		missionName.setTextSize(18);
+		missionName.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		missionLayout.addView(missionName);
+		
+		
+		/*
+		 *  Display arrow of each mission
+		 */
+		TextView missionArrow = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		missionLayout.addView(missionArrow);
+		missionArrow.setText(">");
+		missionArrow.setTextColor(Color.parseColor("#EF802E"));
+		missionArrow.setTextSize(18);
+		RelativeLayout.LayoutParams missionArrowParams = (RelativeLayout.LayoutParams)missionArrow.getLayoutParams();
+		missionArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		missionArrowParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		missionArrow.setLayoutParams(missionArrowParams);
+		
+		/*
+		 *  Display place name of the course
+		 */
+		final ParseGeoPoint location = mission.getParseObject("course").getParseGeoPoint("location");
+		String locality = "";
+		Geocoder geocoder = new Geocoder(DashboardActivity.this);
+		try {
+			List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+			locality = addresses.get(0).getLocality();
+			locality += ", " + addresses.get(0).getAdminArea();
+			locality += ", " + addresses.get(0).getCountryCode();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		TextView missionLoc = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		missionLayout.addView(missionLoc);
+		missionLoc.setText(locality);
+		missionLoc.setTextColor(Color.parseColor("#EF802E"));
+		missionLoc.setTextSize(15);
+		RelativeLayout.LayoutParams missionLocParams = (RelativeLayout.LayoutParams)missionLoc.getLayoutParams();
+		missionLocParams.addRule(RelativeLayout.RIGHT_OF,missionName.getId());
+		missionLocParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		missionLocParams.setMargins(0, 5, 0, 0);
+		missionLoc.setLayoutParams(missionLocParams);
+		
+		
+		/*
+		 *  Display direction of the course.
+		 */
+		ImageView missionDir = new ImageView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		missionDir.setId(R.id.textView10);
+		missionLayout.addView(missionDir);
+		RelativeLayout.LayoutParams missionDirParams = (RelativeLayout.LayoutParams)missionDir.getLayoutParams();
+		missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		missionDirParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+		missionDirParams.width = 20;
+		missionDirParams.height = 20;
+		missionDir.setLayoutParams(missionDirParams);
+		
+		
+		
+		/*
+		 *  Display distance between user and the course.
+		 */
+		TextView missionDis = new TextView(uq.deco7381.runspyrun.activity.DashboardActivity.this);
+		missionLayout.addView(missionDis);
+		missionDis.setText("Counting distance...");
+		missionDis.setTextColor(Color.BLACK);
+		missionDis.setTextSize(12);
+		RelativeLayout.LayoutParams missionDisParams = (RelativeLayout.LayoutParams)missionDis.getLayoutParams();
+		missionDisParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		missionDisParams.setMargins(0, 50, 0, 0);
+		missionDisParams.addRule(RelativeLayout.RIGHT_OF,missionDir.getId());
+		missionDis.setLayoutParams(missionDisParams);
+
+		distance.add(missionDis);
+		course.add(location);
+		direction.add(missionDir);
+		
+		/*
+		 *  Set up onclick listener if click on the mission
+		 *  it will direct user into defense mode
+		 */
+		missionLayout.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				intent.putExtra("latitude", location.getLatitude());
+				intent.putExtra("longtitude", location.getLongitude());
+				intent.putExtra("isFrom", "exsitMission");
+				startActivity(intent);
+			}
+		});
+		linearLayout.addView(missionLayout);
 	}
 	
 	/**
@@ -314,11 +332,15 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		/*
 		 *  Set the datasource number
 		 */
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
-		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-		query.whereEqualTo("username", currentUser);
-		query.whereEqualTo("eq_name", "Datasource");
-		query.findInBackground(new FindCallback<ParseObject>() {
+		ParseQuery<ParseObject> equipmentQuery = ParseQuery.getQuery("equipment");
+		equipmentQuery.whereEqualTo("username", currentUser);
+		equipmentQuery.whereEqualTo("eq_name", "Datasource");
+		if(equipmentQuery.hasCachedResult()){
+			equipmentQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+		}else{
+			equipmentQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		}
+		equipmentQuery.findInBackground(new FindCallback<ParseObject>() {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				// TODO Auto-generated method stub
