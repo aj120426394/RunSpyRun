@@ -118,12 +118,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 * 
 	 * 1. Fetch "Mission" base on Current user
 	 * 2. Fetch "Course" base on fetched mission
-	 * 3. Display the course name
+	 * 3. Check if result is stored in device's cache (if yes, fetch data from cache then network. if no, only fetch from network)
+	 * 4. Check if result is already fetched (from cache).
 	 * 
-
-	 * @see onMyLocationChange()   Both of the ArrayList would be use to measure and dipaly the distance
-	 * 								between user and course.
-	 * 
+	 * @see displayMission(mission, intent)   Display the fetched data into Current mission block
 	 * 
 	 */
 	
@@ -181,6 +179,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 * 1. Save the TextView which display the distance between user and the course to an ArrayList
 	 * 2. Save the course geolocation to an ArrayList.
 	 * 3. Save the ImageView which display the compass to and ArrayList
+	 * 
+	 * @see onMyLocationChange()   Both of the ArrayList would be use to measure and dipaly the distance
+	 * 								between user and course.
 	 */
 	ArrayList<TextView> distance = new ArrayList<TextView>();
 	ArrayList<ParseGeoPoint> course = new ArrayList<ParseGeoPoint>();
