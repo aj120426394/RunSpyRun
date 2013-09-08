@@ -15,6 +15,7 @@ import android.widget.EditText;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -135,6 +136,11 @@ public class SignupActivity extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									// TODO Auto-generated method stub
+									ParseObject equipment = new ParseObject("equipment");
+									equipment.put("username", ParseUser.getCurrentUser());
+									equipment.put("eq_name", "Datasource");
+									equipment.put("number", 10);
+									equipment.saveInBackground();
 									startActivity(intent);
 								}
 							});
