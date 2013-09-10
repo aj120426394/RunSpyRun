@@ -1,10 +1,18 @@
 package uq.deco7381.runspyrun.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,23 +20,24 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+
 public class ListAdapter_newmission extends BaseAdapter {
 
 	private LayoutInflater mInflater;
-	private ArrayList<HashMap<String, Object>> mAppList;
+	private ArrayList<ParseObject> mAppList;
 	private Context mContext;
-	private String[] keyString;
-	private int[] valueViewID;
+	private Location currentLocation;
+	private Bitmap bitmap;
 	
-	public ListAdapter_newmission(Context c, ArrayList<HashMap<String, Object>> appList, int resource, String[] from, int[] to) {
+	public ListAdapter_newmission(Context c, Location location) {
 		// TODO Auto-generated constructor stub
-		mAppList = appList;
+		mAppList = new ArrayList<ParseObject>();
 		mContext = c;
 		mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		keyString = new String[from.length];
-		valueViewID = new int[to.length];
-		System.arraycopy(from, 0, keyString, 0, from.length);
-		System.arraycopy(to, 0, valueViewID, 0, to.length);
+		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
+		currentLocation = location;
 	}
 
 	/*private view holder class*/
@@ -37,8 +46,16 @@ public class ListAdapter_newmission extends BaseAdapter {
         TextView type;
         TextView distance;
         TextView locality;
+        TextView level;
     }
-	
+	public void setCurrentLocation(Location currenLocation){
+		this.currentLocation = currenLocation;
+		this.notifyDataSetChanged();
+	}
+    public void addCourse(ParseObject course){
+    	mAppList.add(course);
+    	this.notifyDataSetChanged();
+    }
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -60,6 +77,9 @@ public class ListAdapter_newmission extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		/*
+		 * Set up view holder
+		 */
 		ViewHolder holder = null;
 		if (convertView != null){
 			holder = (ViewHolder) convertView.getTag();
@@ -71,7 +91,75 @@ public class ListAdapter_newmission extends BaseAdapter {
 			holder.compass = (ImageView) convertView.findViewById(R.id.imageView1);
 			holder.locality = (TextView) convertView.findViewById(R.id.textView4);
 			holder.distance = (TextView) convertView.findViewById(R.id.textView2);
+			holder.level = (TextView) convertView.findViewById(R.id.textView5);
+			convertView.setTag(holder);
 		}
+		/*
+		 * Get the course from the list
+		 */
+		ParseObject course = mAppList.get(position);
+		holder.type.setText("DEFENCE");
+		/*
+		 * Get the locality
+		 */
+		ParseGeoPoint courseLoc = course.getParseGeoPoint("location");
+		String locality = "";
+		Geocoder geocoder = new Geocoder(mContext);
+		try {
+			List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
+			locality = addresses.get(0).getLocality();
+			locality += ", " + addresses.get(0).getAdminArea();
+			holder.locality.setText(locality);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		/*
+		 * Get the distance 
+		 */
+		if(currentLocation != null){
+			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
+			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
+	    	String distanceString = "";
+	    	if(distanceDouble*1000 < 400){
+	    		distanceString = "you are in the course";
+	    	}else{
+	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
+	    	}
+	    	holder.distance.setText(distanceString);
+		}else{
+			holder.distance.setText("Computing...");
+		}
+		
+		/*
+		 * Rotate the compass
+		 */
+		if(currentLocation != null){
+			Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
+	    	tempLoc.setLatitude(courseLoc.getLatitude());
+	    	tempLoc.setLongitude(courseLoc.getLongitude());
+	    	Matrix matrix = new Matrix();
+			matrix.postRotate(currentLocation.bearingTo(tempLoc));
+			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+			holder.compass.setImageBitmap(bmp);
+		}else{
+			holder.compass.setImageBitmap(bitmap);
+		}
+    	/*
+    	 * Get level of the course
+    	 */
+		String levelString = String.valueOf(course.getInt("level"));
+		holder.level.setText(levelString);
+		
+		
+		
+		
+		
+
+		
+		
+		
 		return convertView;
 	}
 

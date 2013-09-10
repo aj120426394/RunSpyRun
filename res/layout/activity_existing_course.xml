@@ -14,5 +14,46 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparentBackground" >
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:background="@color/white"
+        android:padding="10dp" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Find New Missions"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/orangeText"
+            android:textSize="30sp" />
+
+        <ListView
+            android:id="@+id/ListOFCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textView1"
+            android:layout_marginTop="10dp"
+            android:divider="@color/white"
+            android:dividerHeight="20dp" >
+
+        </ListView>
+
+    </RelativeLayout>
     
 </RelativeLayout>

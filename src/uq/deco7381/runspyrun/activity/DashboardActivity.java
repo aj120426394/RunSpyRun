@@ -69,6 +69,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private LocationManager status;
 	private Bitmap bitmap;
 	private ArrayList<ParseObject> missionList;
+	private Location currentLocation;
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -379,7 +380,16 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		Intent intent = new Intent(this, EquipmentActivity.class);
 		startActivity(intent);
 	}
-	
+	/**
+	 * 
+	 */
+	public void goExistingCourse(View v){
+		Intent intent = new Intent(this, Existing_courseActivity.class);
+		intent.putExtra("latitude", currentLocation.getLatitude());
+		intent.putExtra("longtitude", currentLocation.getLongitude());
+		intent.putExtra("isFrom", "newCourse");
+		startActivity(intent);
+	}
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -395,11 +405,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		map.setMyLocationEnabled(true);
 	}
 
-
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
 		// TODO Auto-generated method stub
-		
+		currentLocation = lastKnownLocation;
 		/*
 		 *  Getting latitude of the current location
 		 */

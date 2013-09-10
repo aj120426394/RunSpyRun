@@ -170,6 +170,8 @@
                     android:layout_below="@+id/db_mission_list"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:clickable="true"
+                    android:onClick="goExistingCourse"
                     android:text="+add new"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/orangeText" />

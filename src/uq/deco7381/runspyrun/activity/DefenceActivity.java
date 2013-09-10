@@ -67,7 +67,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
-		double longtitude = intent.getDoubleExtra("longtitude", 0.0);
+		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
 
 		/*
@@ -90,7 +90,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Set the course (make it visible on the map)
 		 */
-		setCourse(new ParseGeoPoint(latitude,longtitude));
+		setCourse(new ParseGeoPoint(latitude,longitude));
 		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
 			displayObstacle();
 		}
