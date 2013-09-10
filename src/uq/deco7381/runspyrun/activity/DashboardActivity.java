@@ -111,6 +111,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 */
 		setUserInfo();
 		getMissionList();
+		
 	}
 	
 	/**

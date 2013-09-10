@@ -3,12 +3,12 @@ package uq.deco7381.runspyrun.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uq.deco7381.runspyrun.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,14 +19,6 @@ public class ListAdapter_newmission extends BaseAdapter {
 	private Context mContext;
 	private String[] keyString;
 	private int[] valueViewID;
-	
-	private ItemView itemView;
-	 
-	private class ItemView {
-	   ImageView compass;
-	   TextView ItemName;
-	   TextView ItemInfo;
-	}
 	
 	public ListAdapter_newmission(Context c, ArrayList<HashMap<String, Object>> appList, int resource, String[] from, int[] to) {
 		// TODO Auto-generated constructor stub
@@ -39,6 +31,13 @@ public class ListAdapter_newmission extends BaseAdapter {
 		System.arraycopy(to, 0, valueViewID, 0, to.length);
 	}
 
+	/*private view holder class*/
+    private class ViewHolder {
+        ImageView compass;
+        TextView type;
+        TextView distance;
+        TextView locality;
+    }
 	
 	@Override
 	public int getCount() {
@@ -61,10 +60,17 @@ public class ListAdapter_newmission extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		ViewHolder holder = null;
 		if (convertView != null){
-			itemView = (ItemView) convertView.getTag();
+			holder = (ViewHolder) convertView.getTag();
 		}else {
+			convertView = mInflater.inflate(R.layout.list_tag_new_mission, null);
 			
+			holder = new ViewHolder();
+			holder.type = (TextView) convertView.findViewById(R.id.textView1);
+			holder.compass = (ImageView) convertView.findViewById(R.id.imageView1);
+			holder.locality = (TextView) convertView.findViewById(R.id.textView4);
+			holder.distance = (TextView) convertView.findViewById(R.id.textView2);
 		}
 		return convertView;
 	}
