@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -16,6 +18,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -30,7 +33,6 @@ public class ListAdapter_newmission extends BaseAdapter {
 	private ArrayList<ParseObject> mAppList;
 	private Context mContext;
 	private Location currentLocation;
-	private Location courseLocation;
 	private Bitmap bitmap;
 	
 	public ListAdapter_newmission(Context c, Location location) {
@@ -49,34 +51,47 @@ public class ListAdapter_newmission extends BaseAdapter {
         TextView distance;
         TextView locality;
         TextView level;
-        Bitmap bitmap;
+        int position;
     }
-    private class locationComputing extends AsyncTask<ViewHolder, Void, ViewHolder>{
+    private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
+    	private ViewHolder holder;
+    	private int position;
+    	private String distanceString;
 
 		@Override
-		protected ViewHolder doInBackground(ViewHolder... params) {
-			// TODO Auto-generated method stub
-			ViewHolder viewHolder = params[0];
-			if(currentLocation != null){
-		    	Matrix matrix = new Matrix();
-				matrix.postRotate(currentLocation.bearingTo(courseLocation));
-				viewHolder.bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-			}else{
-				viewHolder.bitmap = bitmap;
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			if(holder.position == position){
+				this.holder.compass.setImageBitmap(result);
+				//this.holder.distance.setText(distanceString);
 			}
-			return null;
 		}
-
 		@Override
-		protected void onPostExecute(ViewHolder result) {
+		protected Bitmap doInBackground(Object... params) {
 			// TODO Auto-generated method stub
-			if(result.bitmap == null){
-				result.compass.setImageResource(R.drawable.arrow);
-			}else{
-				result.compass.setImageBitmap(result.bitmap);
-
-			}
+			holder = (ViewHolder)params[0];
+			position = (Integer) params[1];
+			ParseGeoPoint courseLoc = (ParseGeoPoint)params[2];
+			/*
+			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
+			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
+	    	distanceString = "";
+	    	if(distanceDouble*1000 < 400){
+	    		distanceString = "you are in the course";
+	    	}else{
+	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
+	    	}
+			*/
+	    	Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
+	    	tempLoc.setLatitude(courseLoc.getLatitude());
+	    	tempLoc.setLongitude(courseLoc.getLongitude());
+	    	
+			Matrix matrix = new Matrix();
+			matrix.postRotate(currentLocation.bearingTo(tempLoc));
+			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+			return bmp;
 		}
+		
     }
 	public void setCurrentLocation(Location currenLocation){
 		this.currentLocation = currenLocation;
@@ -122,6 +137,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 			holder.locality = (TextView) convertView.findViewById(R.id.textView4);
 			holder.distance = (TextView) convertView.findViewById(R.id.textView2);
 			holder.level = (TextView) convertView.findViewById(R.id.textView5);
+			holder.position = position;
 			convertView.setTag(holder);
 		}
 		/*
@@ -132,7 +148,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 		/*
 		 * Get the locality
 		 */
-		ParseGeoPoint courseLoc = course.getParseGeoPoint("location");
+		final ParseGeoPoint courseLoc = course.getParseGeoPoint("location");
 		String locality = "";
 		Geocoder geocoder = new Geocoder(mContext);
 		try {
@@ -148,6 +164,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 		/*
 		 * Get the distance 
 		 */
+		
 		if(currentLocation != null){
 			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
 			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
@@ -165,29 +182,26 @@ public class ListAdapter_newmission extends BaseAdapter {
 		/*
 		 * Rotate the compass (Image)
 		 */
-		/*
-		courseLocation.setLatitude(courseLoc.getLatitude());
-		courseLocation.setLongitude(courseLoc.getLongitude());
-		new locationComputing().execute(holder);
-		*/
 		
-		if(currentLocation != null){
-			Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
-	    	tempLoc.setLatitude(courseLoc.getLatitude());
-	    	tempLoc.setLongitude(courseLoc.getLongitude());
-	    	Matrix matrix = new Matrix();
-			matrix.postRotate(currentLocation.bearingTo(tempLoc));
-			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-			holder.compass.setImageBitmap(bmp);
-		}else{
-			holder.compass.setImageBitmap(bitmap);
-		}
 		
+		new locationComputing().execute(new Object[]{holder,position,courseLoc});
     	/*
     	 * Get level of the course
     	 */
 		String levelString = String.valueOf(course.getInt("level"));
 		holder.level.setText(levelString);
+		
+		convertView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(mContext, DefenceActivity.class);
+				intent.putExtra("latitude", courseLoc.getLatitude());
+				intent.putExtra("longtitude", courseLoc.getLongitude());
+				intent.putExtra("isFrom", "existCourse");
+				mContext.startActivity(intent);
+			}
+		});
 		
 		return convertView;
 	}

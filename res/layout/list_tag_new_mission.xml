@@ -17,8 +17,8 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/textView2"
         android:layout_marginLeft="5dp"
@@ -42,7 +42,7 @@
         android:layout_below="@+id/textView1"
         android:layout_marginLeft="15dp"
         android:layout_toRightOf="@+id/imageView1"
-        android:text="1400 m"
+        android:text="computing..."
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/gray"
         android:textSize="12sp" />

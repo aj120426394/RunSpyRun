@@ -37,7 +37,6 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private LocationManager status;
 	private ListView existingCourseListView;
 	private ListAdapter_newmission adapter;
-	private ArrayList<ParseObject> existingCourse;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,12 +73,13 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
+		getCourseList();
 		
-		existingCourse = new ArrayList<ParseObject>();
 		existingCourseListView = (ListView) findViewById(R.id.ListOFCourse);
+		existingCourseListView.setScrollingCacheEnabled(false);
 		adapter = new ListAdapter_newmission(this,currentLocation);
 		existingCourseListView.setAdapter(adapter);
-		getCourseList();
+		
 		
 		
 	}
@@ -87,28 +87,13 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private void getCourseList(){
 		ParseQuery<ParseObject> courseList = ParseQuery.getQuery("Course");
 		courseList.whereEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
-		if(courseList.hasCachedResult()){
-			courseList.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
-		}else{
-			courseList.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-		}
-		courseList.findInBackground(new FindCallback<ParseObject>() {
-			
+		courseList.findInBackground(new FindCallback<ParseObject>() {	
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				// TODO Auto-generated method stub
 				if(e == null){
 					for(ParseObject mission: objects){
-						boolean isNew = true;
-						for(ParseObject inMission: existingCourse){
-							if(mission.getObjectId().equals(inMission.getObjectId())){
-								isNew = false;
-							}
-						}
-						if(isNew){
-							existingCourse.add(mission);
-							adapter.addCourse(mission);
-						}
+						adapter.addCourse(mission);
 					}
 				}else{
 					System.out.println(e.getMessage());
