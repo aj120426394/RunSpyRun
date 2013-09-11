@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 	private ArrayList<ParseObject> mAppList;
 	private Context mContext;
 	private Location currentLocation;
+	private Location courseLocation;
 	private Bitmap bitmap;
 	
 	public ListAdapter_newmission(Context c, Location location) {
@@ -47,6 +49,34 @@ public class ListAdapter_newmission extends BaseAdapter {
         TextView distance;
         TextView locality;
         TextView level;
+        Bitmap bitmap;
+    }
+    private class locationComputing extends AsyncTask<ViewHolder, Void, ViewHolder>{
+
+		@Override
+		protected ViewHolder doInBackground(ViewHolder... params) {
+			// TODO Auto-generated method stub
+			ViewHolder viewHolder = params[0];
+			if(currentLocation != null){
+		    	Matrix matrix = new Matrix();
+				matrix.postRotate(currentLocation.bearingTo(courseLocation));
+				viewHolder.bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+			}else{
+				viewHolder.bitmap = bitmap;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(ViewHolder result) {
+			// TODO Auto-generated method stub
+			if(result.bitmap == null){
+				result.compass.setImageResource(R.drawable.arrow);
+			}else{
+				result.compass.setImageBitmap(result.bitmap);
+
+			}
+		}
     }
 	public void setCurrentLocation(Location currenLocation){
 		this.currentLocation = currenLocation;
@@ -133,8 +163,14 @@ public class ListAdapter_newmission extends BaseAdapter {
 		}
 		
 		/*
-		 * Rotate the compass
+		 * Rotate the compass (Image)
 		 */
+		/*
+		courseLocation.setLatitude(courseLoc.getLatitude());
+		courseLocation.setLongitude(courseLoc.getLongitude());
+		new locationComputing().execute(holder);
+		*/
+		
 		if(currentLocation != null){
 			Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
 	    	tempLoc.setLatitude(courseLoc.getLatitude());
@@ -146,19 +182,12 @@ public class ListAdapter_newmission extends BaseAdapter {
 		}else{
 			holder.compass.setImageBitmap(bitmap);
 		}
+		
     	/*
     	 * Get level of the course
     	 */
 		String levelString = String.valueOf(course.getInt("level"));
 		holder.level.setText(levelString);
-		
-		
-		
-		
-		
-
-		
-		
 		
 		return convertView;
 	}
