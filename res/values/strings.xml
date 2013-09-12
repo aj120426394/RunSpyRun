@@ -39,5 +39,6 @@
     <string name="title_activity_defence">DefenceActivity</string>
     <string name="title_activity_equipment">EquipmentActivity</string>
     <string name="title_activity_existing_course">Existing_courseActivity</string>
+    <string name="title_activity_attack_course_list">AttackCourseListActivity</string>
 
 </resources>

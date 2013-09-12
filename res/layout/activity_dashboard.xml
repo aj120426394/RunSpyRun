@@ -330,7 +330,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/db_settings"
                 android:layout_marginTop="15dp"
-                android:background="@color/white" >
+                android:background="@color/white"
+                android:onClick="goAttack" >
 
                 <TextView
                     android:id="@+id/TextView01"

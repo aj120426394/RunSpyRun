@@ -57,13 +57,15 @@ public class ListAdapter_newmission extends BaseAdapter {
     	private ViewHolder holder;
     	private int position;
     	private String distanceString;
+    	private String locality;
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
 			if(holder.position == position){
 				this.holder.compass.setImageBitmap(result);
-				//this.holder.distance.setText(distanceString);
+				this.holder.distance.setText(distanceString);
+				this.holder.locality.setText(locality);
 			}
 		}
 		@Override
@@ -72,7 +74,10 @@ public class ListAdapter_newmission extends BaseAdapter {
 			holder = (ViewHolder)params[0];
 			position = (Integer) params[1];
 			ParseGeoPoint courseLoc = (ParseGeoPoint)params[2];
+			
 			/*
+			 * Computing the distance between current location to each course
+			 */
 			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
 			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
 	    	distanceString = "";
@@ -81,7 +86,24 @@ public class ListAdapter_newmission extends BaseAdapter {
 	    	}else{
 	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
 	    	}
-			*/
+			
+			/*
+			 * Get the locality of each course
+			 */
+			locality = "";
+			Geocoder geocoder = new Geocoder(mContext);
+			try {
+				List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
+				locality = addresses.get(0).getLocality();
+				locality += ", " + addresses.get(0).getAdminArea();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			/*
+			 * Get the compass direction of each course
+			 */
 	    	Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
 	    	tempLoc.setLatitude(courseLoc.getLatitude());
 	    	tempLoc.setLongitude(courseLoc.getLongitude());
@@ -145,45 +167,11 @@ public class ListAdapter_newmission extends BaseAdapter {
 		 */
 		ParseObject course = mAppList.get(position);
 		holder.type.setText("DEFENCE");
+
 		/*
-		 * Get the locality
+		 * Computing the "locality", "bearing", "distance" in an Asynchrony Task
 		 */
 		final ParseGeoPoint courseLoc = course.getParseGeoPoint("location");
-		String locality = "";
-		Geocoder geocoder = new Geocoder(mContext);
-		try {
-			List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
-			locality = addresses.get(0).getLocality();
-			locality += ", " + addresses.get(0).getAdminArea();
-			holder.locality.setText(locality);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		/*
-		 * Get the distance 
-		 */
-		
-		if(currentLocation != null){
-			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
-			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
-	    	String distanceString = "";
-	    	if(distanceDouble*1000 < 400){
-	    		distanceString = "you are in the course";
-	    	}else{
-	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
-	    	}
-	    	holder.distance.setText(distanceString);
-		}else{
-			holder.distance.setText("Computing...");
-		}
-		
-		/*
-		 * Rotate the compass (Image)
-		 */
-		
-		
 		new locationComputing().execute(new Object[]{holder,position,courseLoc});
     	/*
     	 * Get level of the course

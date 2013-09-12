@@ -394,7 +394,10 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 * Direct user to a list of course can be attacked
 	 */
 	public void goAttack(View v){
-		
+		Intent intent = new Intent(this, AttackCourseListActivity.class);
+		intent.putExtra("latitude", currentLocation.getLatitude());
+		intent.putExtra("longtitude", currentLocation.getLongitude());
+		startActivity(intent);
 	}
 	@Override
 	protected void onPause() {
