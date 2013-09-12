@@ -323,14 +323,15 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="db_attack"
+                android:id="@+id/db_attack"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/db_settings"
                 android:layout_marginTop="15dp"
-                android:background="@color/white" >
+                android:background="@color/white"
+                android:onClick="goAttack" >
 
                 <TextView
                     android:id="@+id/TextView01"
