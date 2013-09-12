@@ -387,8 +387,14 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		Intent intent = new Intent(this, Existing_courseActivity.class);
 		intent.putExtra("latitude", currentLocation.getLatitude());
 		intent.putExtra("longtitude", currentLocation.getLongitude());
-		intent.putExtra("isFrom", "newCourse");
 		startActivity(intent);
+	}
+	/**
+	 * onClick method triggered by "Attack"
+	 * Direct user to a list of course can be attacked
+	 */
+	public void goAttack(View v){
+		
 	}
 	@Override
 	protected void onPause() {

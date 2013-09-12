@@ -35,7 +35,7 @@
         <RelativeLayout
             android:id="@+id/db_base"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <RelativeLayout
@@ -321,6 +321,42 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/orangeText" />
             </RelativeLayout>
+
+            <RelativeLayout
+                android:id="db_attack"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/db_settings"
+                android:layout_marginTop="15dp"
+                android:background="@color/white" >
+
+                <TextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="Attack"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/orangeText" />
+
+                <TextView
+                    android:id="@+id/TextView02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/TextView01"
+                    android:layout_alignBottom="@+id/TextView01"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dp"
+                    android:text=">"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/orangeText" />
+
+            </RelativeLayout>
+
         </RelativeLayout>
     </ScrollView>
 
