@@ -13,6 +13,13 @@
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparentBackground" >
+
+    </FrameLayout>
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="400dp"

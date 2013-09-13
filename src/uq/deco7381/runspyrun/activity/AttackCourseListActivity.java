@@ -3,10 +3,12 @@ package uq.deco7381.runspyrun.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
@@ -19,6 +21,7 @@ import com.parse.ParseUser;
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.R.layout;
 import uq.deco7381.runspyrun.R.menu;
+import uq.deco7381.runspyrun.model.ListAdapter_attackcourse;
 import uq.deco7381.runspyrun.model.ListAdapter_newmission;
 import android.location.Location;
 import android.location.LocationManager;
@@ -34,7 +37,7 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 	private GoogleMap map;
 	private LocationManager status;
 	private ListView attackCourseListView;
-	private ListAdapter_newmission adapter;
+	private ListAdapter_attackcourse adapter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,7 +46,11 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		Intent intent = getIntent();
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
-		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude,longitude);
+		ParseGeoPoint pCurrentLocation = new ParseGeoPoint(latitude,longitude);
+		
+		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
+		currentLocation.setLatitude(latitude);
+		currentLocation.setLongitude(longitude);
 		
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
@@ -69,8 +76,11 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
-		ArrayList<ParseObject> courseList = getCourseList(currentLocation);
+		ArrayList<ParseObject> courseList = getCourseList(pCurrentLocation);
+		System.out.println(courseList.size());
 		attackCourseListView = (ListView)findViewById(R.id.courseList);
+		adapter = new ListAdapter_attackcourse(this,currentLocation,courseList);
+		attackCourseListView.setAdapter(adapter);
 	}
 
 
@@ -88,6 +98,16 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
 		course.whereWithinKilometers("location", loc, 0.5);
 		course.whereNotEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
+		try {
+			List<ParseObject> objects =  course.find();
+			for(ParseObject courseObject: objects){
+				courseList.add(courseObject);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
 		course.findInBackground(new FindCallback<ParseObject>() {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
@@ -102,12 +122,20 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 				
 			}
 		});
+		*/
+		System.out.println(courseList.size());
 		return courseList;
 	}
 
 	@Override
-	public void onMyLocationChange(Location arg0) {
+	public void onMyLocationChange(Location lastKnowLocation) {
 		// TODO Auto-generated method stub
-		
+		/*
+         *  Make camera on map keep tracking user.
+         */
+        LatLng latLng = new LatLng(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
+		map.setOnCameraChangeListener(null);
 	}
 }
