@@ -85,6 +85,8 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	}
 
 	private void getCourseList(){
+		ParseQuery<ParseObject> currentMission = ParseQuery.getQuery("Course");
+		
 		ParseQuery<ParseObject> courseList = ParseQuery.getQuery("Course");
 		courseList.whereEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
 		courseList.findInBackground(new FindCallback<ParseObject>() {	
