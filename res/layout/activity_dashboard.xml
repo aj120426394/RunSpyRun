@@ -323,7 +323,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="db_attack"
+                android:id="@+id/db_attack"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
