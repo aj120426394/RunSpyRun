@@ -114,12 +114,26 @@ public class LoginActivity extends Activity {
 				if(user != null){
 					startActivity(intent);
 					showContent();
-				}else{
+				}else if(e.getMessage().startsWith("i/o failure")){
 					/*
 					 * if there is a exception from parse, show in dialog box
 					 */
 					builder.setTitle("Alert");
-					builder.setMessage("Username or Password is invalid");
+					builder.setMessage("Connection fail");
+					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.cancel();
+							showContent();
+						}
+					});
+					//show the dialog box
+					AlertDialog alert = builder.create();
+					alert.show();
+				}else{
+					builder.setTitle("Alert");
+					builder.setMessage("Invalid username or password");
 					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {

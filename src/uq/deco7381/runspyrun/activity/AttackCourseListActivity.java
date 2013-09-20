@@ -3,13 +3,26 @@ package uq.deco7381.runspyrun.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.model.ListAdapter_attackcourse;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
@@ -17,21 +30,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import uq.deco7381.runspyrun.R;
-import uq.deco7381.runspyrun.R.layout;
-import uq.deco7381.runspyrun.R.menu;
-import uq.deco7381.runspyrun.model.ListAdapter_attackcourse;
-import uq.deco7381.runspyrun.model.ListAdapter_newmission;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.view.Menu;
-import android.widget.ListView;
-import android.widget.Toast;
 
 public class AttackCourseListActivity extends Activity implements OnMyLocationChangeListener {
 	private GoogleMap map;
@@ -51,9 +49,7 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
 		currentLocation.setLongitude(longitude);
-		
-		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
-		ParseAnalytics.trackAppOpened(getIntent());
+
 		
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
@@ -76,9 +72,19 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
+		
 		ArrayList<ParseObject> courseList = getCourseList(pCurrentLocation);
-		System.out.println(courseList.size());
 		attackCourseListView = (ListView)findViewById(R.id.courseList);
+		if(courseList.size() == 0){
+			TextView noCourse = (TextView)findViewById(R.id.textView2);
+			noCourse.setVisibility(View.VISIBLE);
+			attackCourseListView.setVisibility(View.GONE);
+		}else{
+			TextView noCourse = (TextView)findViewById(R.id.textView2);
+			noCourse.setVisibility(View.GONE);
+			attackCourseListView.setVisibility(View.VISIBLE);
+		}
+		
 		adapter = new ListAdapter_attackcourse(this,currentLocation,courseList);
 		attackCourseListView.setAdapter(adapter);
 	}

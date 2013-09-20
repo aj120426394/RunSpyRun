@@ -78,7 +78,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		setContentView(R.layout.activity_dashboard);
 		
 		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
-		ParseAnalytics.trackAppOpened(getIntent());
 		
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
