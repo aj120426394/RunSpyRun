@@ -73,6 +73,10 @@
             android:name="uq.deco7381.runspyrun.activity.AttackCourseListActivity"
             android:label="@string/title_activity_attack_course_list" >
         </activity>
+        <activity
+            android:name="uq.deco7381.runspyrun.activity.AttackActivity"
+            android:label="@string/title_activity_attack" >
+        </activity>
     </application>
 
 </manifest>

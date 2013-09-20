@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
-import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -18,7 +16,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;

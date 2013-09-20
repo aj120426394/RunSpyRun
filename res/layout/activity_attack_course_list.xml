@@ -21,6 +21,7 @@
     </FrameLayout>
     
     <RelativeLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_alignParentRight="false"
@@ -40,6 +41,17 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/orangeText"
             android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="None of enemy courses close to you..."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="18sp" />
 
         <ListView
             android:id="@+id/courseList"
