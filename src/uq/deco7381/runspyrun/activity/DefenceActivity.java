@@ -175,7 +175,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 										/*
 										 * Set up a obstacle object and add it into map
 										 */
-										Guard g1 = new Guard(location.getLatitude(), location.getLongitude(), altitude, username, level);
+										Guard g1 = new Guard(location.getLatitude(), location.getLongitude(), altitude, username, level,null);
 										map.addMarker(g1.getMarkerOptions());
 									}
 								}
@@ -215,7 +215,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private void setCourse(ParseGeoPoint location){
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		course= new Course(location, currentUser.getUsername(),currentUser.getString("organization"));
-		map.addCircle(course.getCourseZone());
+		map.addCircle( course.getCourseZone());
 	}
 	/**
 	 * Set up a obstacle: Guard:
@@ -225,7 +225,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 */
 	public void setGuard(View v){;
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(),currentUser.getUsername(), currentUser.getInt("level"));
+		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(),currentUser.getUsername(), currentUser.getInt("level"),null);
 		map.addMarker(g1.getMarkerOptions());
 		
 		/*

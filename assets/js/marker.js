@@ -1,11 +1,11 @@
 var kMarker_AnimationDuration_ChangeDrawable = 500;
 var kMarker_AnimationDuration_Resize = 1000;
 
-function Marker(poiData) {
+function Marker(poiData, isSelected) {
 
 
     this.poiData = poiData;
-    this.isSelected = false;
+    this.isSelected = isSelected;
 
 
     // New: Two animation groups managing the animations used during selection/deselection 
@@ -14,10 +14,67 @@ function Marker(poiData) {
 
 
     var markerLocation = new AR.GeoLocation(poiData.latitude, poiData.longitude, poiData.altitude);
+    
+    switch (poiData.title){
+	    case "Datastream":
+	    	this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_datastream, 6.0, {
+		        zOrder: 0,
+		        opacity: 1.0,
+		        onClick: null
+		    });
+		
+		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_datastream, 2.5, {
+		        zOrder: 0,
+		        opacity: 0.0,
+		        onClick: null
+		    });
+			break;
+		default:
+			this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
+		        zOrder: 0,
+		        opacity: 1.0,
+		        onClick: null
+		    });
+		
+		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_idle, 2.5, {
+		        zOrder: 0,
+		        opacity: 0.0,
+		        onClick: null
+		    });
+			break;
+    }
+    /*
+    if(poiData.title == "Datastream"){
+	    this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_datastream, 6.0, {
+	        zOrder: 0,
+	        opacity: 1.0,
+	        onClick: Marker.prototype.getOnClickTrigger(this)
+	    });
+	
+	    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_datastream, 2.5, {
+	        zOrder: 0,
+	        opacity: 0.0,
+	        onClick: null
+	    });
+    }else if(poiData.title == "Guard"){
+	    this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
+		        zOrder: 0,
+		        opacity: 1.0,
+		        onClick: Marker.prototype.getOnClickTrigger(this)
+		    });
+		
+		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_idle, 2.5, {
+		        zOrder: 0,
+		        opacity: 0.0,
+		        onClick: null
+		    });
+    }
+    */
+    /*
     this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
         zOrder: 0,
         opacity: 1.0,
-        onClick: Marker.prototype.getOnClickTrigger(this)
+        onClick: null
     });
 
     this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_selected, 2.5, {
@@ -25,8 +82,7 @@ function Marker(poiData) {
         opacity: 0.0,
         onClick: null
     });
-
-
+    */
     this.titleLabel = new AR.Label(poiData.title.trunc(10), 0.5, {
         zOrder: 1.5,
         offsetY: 1.0,
@@ -73,7 +129,7 @@ function Marker(poiData) {
 
     return this;
 }
-
+/*
 Marker.prototype.getOnClickTrigger = function(marker) {
 
     return function() {
@@ -94,7 +150,7 @@ Marker.prototype.getOnClickTrigger = function(marker) {
         return true;
     };
 };
-
+*/
 Marker.prototype.setSelected = function(marker) {
 
     marker.isSelected = true;
@@ -103,7 +159,7 @@ Marker.prototype.setSelected = function(marker) {
     if (marker.animationGroup_selected === null) {
 
         var hideIdleDrawableAnimation = new AR.PropertyAnimation(marker.markerDrawable_idle, "opacity", null, 0.0, kMarker_AnimationDuration_ChangeDrawable);
-        var showSelectedDrawableAnimation = new AR.PropertyAnimation(marker.markerDrawable_selected, "opacity", null, 0.8, kMarker_AnimationDuration_ChangeDrawable);
+        //var showSelectedDrawableAnimation = new AR.PropertyAnimation(marker.markerDrawable_selected, "opacity", null, 0.8, kMarker_AnimationDuration_ChangeDrawable);
 
         var idleDrawableResizeAnimation = new AR.PropertyAnimation(marker.markerDrawable_idle, 'scaling', null, 1.2, kMarker_AnimationDuration_Resize, new AR.EasingCurve(AR.CONST.EASING_CURVE_TYPE.EASE_OUT_ELASTIC, {
             amplitude: 2.0

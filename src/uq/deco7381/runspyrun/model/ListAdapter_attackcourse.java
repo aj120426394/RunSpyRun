@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.activity.AttackActivity;
+import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -16,6 +19,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -175,19 +179,18 @@ public class ListAdapter_attackcourse extends BaseAdapter {
     	 */
 		String levelString = String.valueOf(course.getInt("level"));
 		holder.level.setText(levelString);
-		/*
+		
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(mContext, DefenceActivity.class);
+				Intent intent = new Intent(mContext, AttackActivity.class);
 				intent.putExtra("latitude", courseLoc.getLatitude());
 				intent.putExtra("longtitude", courseLoc.getLongitude());
-				intent.putExtra("isFrom", "existCourse");
 				mContext.startActivity(intent);
 			}
 		});
-		*/
+		
 		
 		return convertView;
 	}
