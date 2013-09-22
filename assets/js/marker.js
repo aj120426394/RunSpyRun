@@ -28,6 +28,10 @@ function Marker(poiData, isSelected) {
 		        opacity: 0.0,
 		        onClick: null
 		    });
+		    // New: Direction Indicator
+		    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
+		        enabled: true
+		    });
 			break;
 		default:
 			this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
@@ -43,47 +47,8 @@ function Marker(poiData, isSelected) {
 		    });
 			break;
     }
-    /*
-    if(poiData.title == "Datastream"){
-	    this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_datastream, 6.0, {
-	        zOrder: 0,
-	        opacity: 1.0,
-	        onClick: Marker.prototype.getOnClickTrigger(this)
-	    });
-	
-	    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_datastream, 2.5, {
-	        zOrder: 0,
-	        opacity: 0.0,
-	        onClick: null
-	    });
-    }else if(poiData.title == "Guard"){
-	    this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
-		        zOrder: 0,
-		        opacity: 1.0,
-		        onClick: Marker.prototype.getOnClickTrigger(this)
-		    });
-		
-		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_idle, 2.5, {
-		        zOrder: 0,
-		        opacity: 0.0,
-		        onClick: null
-		    });
-    }
-    */
-    /*
-    this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
-        zOrder: 0,
-        opacity: 1.0,
-        onClick: null
-    });
 
-    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_selected, 2.5, {
-        zOrder: 0,
-        opacity: 0.0,
-        onClick: null
-    });
-    */
-    this.titleLabel = new AR.Label(poiData.title.trunc(10), 0.5, {
+    this.titleLabel = new AR.Label(poiData.title.trunc(15), 0.5, {
         zOrder: 1.5,
         offsetY: 1.0,
         style: {
@@ -92,7 +57,7 @@ function Marker(poiData, isSelected) {
         }
     });
 
-    this.descriptionLabel = new AR.Label(poiData.description.trunc(15), 0.5, {
+    this.descriptionLabel = new AR.Label(poiData.description.trunc(0), 0, {
         zOrder: 1,
         offsetY: -0.55,
         style: {
@@ -101,10 +66,7 @@ function Marker(poiData, isSelected) {
     });
 
 
-    // New: Direction Indicator
-    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
-        enabled: false
-    });
+    
 
     this.radarCircle = new AR.Circle(0.03, {
         horizontalAnchor: AR.CONST.HORIZONTAL_ANCHOR.CENTER,
