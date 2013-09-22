@@ -2,6 +2,7 @@ var World = {
 
 	// identify images to use as markers in the AR view
 	markerDrawable_idle: new AR.ImageResource("assets/marker_idle.png"),
+	markerDrawable_datastream: new AR.ImageResource("assets/marker_datastream.png"),
 	markerDrawable_selected: new AR.ImageResource("assets/marker_selected.png"),
 	markerDrawable_directionIndicator: new AR.ImageResource("assets/indi.png"), 
 

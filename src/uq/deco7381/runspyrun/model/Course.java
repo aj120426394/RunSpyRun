@@ -27,6 +27,7 @@ public class Course {
 	private String owner;
 	private String organization;
 	private ParseGeoPoint location;
+	private String objectID;
 	/**
 	 * Constructor
 	 * 
@@ -41,6 +42,7 @@ public class Course {
 		this.level = 1;
 		this.owner = username;
 		this.organization = org;
+		this.objectID = "";
 	}
 	/**
 	 * Get the CircleOption to display a zone of this course
@@ -112,5 +114,15 @@ public class Course {
 	 */
 	public String getOrg(){
 		return this.organization;
+	}
+	/**
+	 * 
+	 * @param String: objectID
+	 */
+	public void setObjectID(String objectID){
+		this.objectID = objectID;
+	}
+	public String getObjectID(){
+		return this.objectID;
 	}
 }

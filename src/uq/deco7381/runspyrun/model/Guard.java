@@ -22,8 +22,8 @@ public class Guard extends Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Guard(double latitude,double longitude,double altitude, String username, int level) {
-		super(latitude, longitude, altitude, "Guard", username, level);
+	public Guard(double latitude,double longitude,double altitude, String username, int level, String objectId) {
+		super(latitude, longitude, altitude, "Guard", username, level, objectId);
 		// TODO Auto-generated constructor stub
 	}
 	/**

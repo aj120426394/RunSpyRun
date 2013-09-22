@@ -23,6 +23,7 @@ public class Obstacle {
 	private int level;			// Obstacle's level: base on creator's current level when user set it down
 	private String creator;		// Obstacle's creator
 	private int energy;			// The energy get from player who trigger the obstacle
+	private String objectID;
 
 	/**
 	 * Constructor
@@ -34,7 +35,7 @@ public class Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Obstacle(double latitude,double longitude,double altitude, String type, String username, int level) {
+	public Obstacle(double latitude,double longitude,double altitude, String type, String username, int level,String objectId) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -43,6 +44,7 @@ public class Obstacle {
 		this.type = type;
 		this.energy = 0;
 		this.creator = username;
+		this.objectID = objectId;
 	}
 	/**
 	 * Get the latitude of this obstacle
@@ -100,5 +102,12 @@ public class Obstacle {
 	 */
 	public int getEnergy(){
 		return this.energy;
+	}
+	
+	public void setObjectId(String objectId){
+		this.objectID = objectId;
+	}
+	public String getObjectId(){
+		return this.objectID;
 	}
 }

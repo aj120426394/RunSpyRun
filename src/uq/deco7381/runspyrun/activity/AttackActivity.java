@@ -1,42 +1,67 @@
 package uq.deco7381.runspyrun.activity;
 
-import org.json.JSONArray;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
-import com.wikitude.architect.ArchitectUrlListener;
-import com.wikitude.architect.ArchitectView;
-import com.wikitude.architect.SensorAccuracyChangeListener;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uq.deco7381.runspyrun.R;
-import uq.deco7381.runspyrun.R.layout;
-import uq.deco7381.runspyrun.R.menu;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
+import uq.deco7381.runspyrun.model.Course;
+import uq.deco7381.runspyrun.model.Obstacle;
+import uq.deco7381.runspyrun.model.ParseDAO;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.view.Menu;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
-public class AttackActivity extends Activity implements  LocationListener, ArchitectUrlListener{
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseGeoPoint;
+import com.wikitude.architect.ArchitectUrlListener;
+import com.wikitude.architect.ArchitectView;
+import com.wikitude.architect.ArchitectView.ArchitectConfig;
+import com.wikitude.architect.SensorAccuracyChangeListener;
+
+public class AttackActivity extends Activity implements  OnMyLocationChangeListener, ArchitectUrlListener{
 
 	private GoogleMap map;
+	private MapFragment mMapFragment;
 	protected ArchitectView architectView;
 	protected SensorAccuracyChangeListener sensorAccuracyListener;
 	protected Location lastKnownLocaton;
 	protected LocationManager locationManager;
 	protected JSONArray poiData = new JSONArray();
+	private Course course;
+	private ParseDAO dao;
+	private int viewFlag = 1; //1 = Map View 2 = Architect View
+	private int mShortAnimationDuration;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_attack);
+		Intent intent = getIntent();
+		dao = new ParseDAO();
+		
+		/*
+		 * Get the Course's center point (where to put data stream) from intent
+		 */
+		double latitude = intent.getDoubleExtra("latitude", 0.0);
+		double longitude = intent.getDoubleExtra("longtitude", 0.0);
+		course = dao.getCourseByLoc(latitude, longitude);
 		
 		locationManager = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
@@ -47,7 +72,8 @@ public class AttackActivity extends Activity implements  LocationListener, Archi
 			 *  Check the map is exist or not
 			 */
 			if (map == null){
-				map = ((MapFragment) getFragmentManager().findFragmentById(R.id.db_map)).getMap();
+				mMapFragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.db_map));
+				map = mMapFragment.getMap();
 				if(map != null){
 					setUpMap();
 				}
@@ -59,14 +85,110 @@ public class AttackActivity extends Activity implements  LocationListener, Archi
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
+		
+		/*
+		 * creates initial view using wikitude architectview
+		 */
+		
+		architectView = (ArchitectView)this.findViewById( R.id.architectView );
+		final ArchitectConfig config = new ArchitectConfig("");
+		architectView.onCreate( config );
+		architectView.setVisibility(View.GONE);
+		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		
+		/*
+		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
+		 * objects in the device view
+		 * 
+		 * advises user of accuracy level
+		 */
+		this.sensorAccuracyListener = new SensorAccuracyChangeListener() {
+			@Override
+			public void onCompassAccuracyChanged( int accuracy ) {
+				/* UNRELIABLE = 0, LOW = 1, MEDIUM = 2, Height = 3 */
+				if ( accuracy < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM && AttackActivity.this != null && !AttackActivity.this.isFinishing() ) {
+					Toast.makeText( AttackActivity.this, "Accuracy low", Toast.LENGTH_LONG ).show();
+				}
+			}
+			
+		};
+		
+		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
 	}
 	
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
+		map.setOnMyLocationChangeListener(this);
+		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		UiSettings uiSettings = map.getUiSettings();
-		uiSettings.setAllGesturesEnabled(false);
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
+	}
+	/**
+	 * Set up the screen in normal condition
+	 * 1. Set content visible
+	 * 2. set loading progress invisible
+	 */
+	private void showMap(){
+		viewFlag = 1;
+		//mMapFragment.getView().setAlpha(0f);
+		mMapFragment.getView().setVisibility(View.VISIBLE);
+		architectView.setVisibility(View.GONE);
+		/*
+		mMapFragment.getView()
+					.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
+		
+		architectView.animate()
+					.alpha(0f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+	                    public void onAnimationEnd(Animator animation) {
+	                        architectView.setVisibility(View.GONE);
+	                    }
+					});
+		*/
+		System.out.println("MAP MODE");
+		System.out.println("MAP MODE");
+		System.out.println("MAP MODE");
+		System.out.println("MAP MODE");
+		System.out.println("MAP MODE");
+	}
+	/**
+	 * Set up the screen in loading condition
+	 * 1. Set loading progress visible
+	 * 2. Set content invisible
+	 */
+	private void showAR(){
+		viewFlag = 2;
+		//architectView.setAlpha(0f);
+		architectView.setVisibility(View.VISIBLE);
+		mMapFragment.getView().setVisibility(View.GONE);
+		/*
+		architectView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
+		
+		mMapFragment.getView()
+					.animate()
+					.alpha(0.5f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							mMapFragment.getView().setVisibility(View.GONE);
+						}
+					});
+		*/
+		System.out.println("AR MODE");
+		System.out.println("AR MODE");
+		System.out.println("AR MODE");
+		System.out.println("AR MODE");
+		System.out.println("AR MODE");
 	}
 
 	@Override
@@ -75,28 +197,202 @@ public class AttackActivity extends Activity implements  LocationListener, Archi
 		return false;
 	}
 
+
+	protected void onResume() {
+		super.onResume();
+		if ( this.architectView != null ) {
+			this.architectView.onResume();
+		}
+	}
+	
 	@Override
-	public void onLocationChanged(Location location) {
-		// TODO Auto-generated method stub
+	protected void onPause() {
+		super.onPause();
+		if ( this.architectView != null ) {
+			this.architectView.onPause();
+		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if ( this.architectView != null ) {
+			if ( this.sensorAccuracyListener != null ) {
+				this.architectView.unregisterSensorAccuracyChangeListener( this.sensorAccuracyListener );
+			}
+			this.architectView.onDestroy();
+		}
+	}
+	
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		if ( this.architectView != null ) {
+			this.architectView.onLowMemory();
+		}
+	}
+	
+	/**
+	 * Starts the Attack view in the device using wikitude architect view overlaying the html file with the AR objects
+	 * 
+	 * 
+	 */
+	
+	@Override
+	protected void onPostCreate( final Bundle savedInstanceState ) {
+		super.onPostCreate( savedInstanceState );
+		if ( this.architectView != null) {
+			this.architectView.onPostCreate();
+		}
+
+		try {
+			this.architectView.load("index.html");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
+		if (!isLoading) {
+			final Thread t = new Thread(loadData);
+			t.start();
+		}
+		
+		
+	}
+	
+boolean isLoading = false;
+	
+	final Runnable loadData = new Runnable() {
+		
+		
+		
+		@Override
+		public void run() {
+			
+			isLoading = true;
+			
+			final int WAIT_FOR_LOCATION_STEP_MS = 2000;
+			
+			/**
+			 * Loop to ensure that location data is obtained before data from parse is loaded
+			 */
+			while (AttackActivity.this.lastKnownLocaton==null && !AttackActivity.this.isFinishing()) {
+			
+				AttackActivity.this.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						Toast.makeText(AttackActivity.this, "Scanning", Toast.LENGTH_SHORT).show();	
+					}
+				});
+
+				try {
+					Thread.sleep(WAIT_FOR_LOCATION_STEP_MS);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+			
+			/**
+			 * Gets data from parse database for course - preset course as this project is developed
+			 * separately to the other elements of the application
+			 * 
+			 * To be changed when integrated into the main application
+			 */
+			HashMap<String, String> courseHashMap = new HashMap<String, String>();
+			courseHashMap.put("id", course.getObjectID());
+			courseHashMap.put("name", "Datastream");
+			courseHashMap.put("description", "Objective");
+			courseHashMap.put("latitude", String.valueOf(course.getLatitude()));
+			courseHashMap.put("longitude", String.valueOf(course.getLongitude()));
+			poiData.put(new JSONObject(courseHashMap));
+			
+			ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
+			System.out.println(obstacles.toString());
+			
+			for(Obstacle obstacle: obstacles){
+				HashMap<String, String> obstacleHashMap = new HashMap<String, String>();
+				obstacleHashMap.put("id", obstacle.getObjectId());
+				obstacleHashMap.put("name", obstacle.getType());
+				obstacleHashMap.put("description", "Objective");
+				obstacleHashMap.put("latitude",String.valueOf(obstacle.getLatitude()));
+				obstacleHashMap.put("longitude", String.valueOf(obstacle.getLongitude()));
+				//testHashMap.put("altitude", String.valueOf(70f));
+				poiData.put(new JSONObject(obstacleHashMap));
+			}
+			
+			/**
+			 * If location is obtained calls javascrit file which displays the Attack View on the device
+			 * Passes poiData into the javascript function
+			 * 
+			 * @see callJavaScript
+			 */
+			if (AttackActivity.this.lastKnownLocaton!=null && !AttackActivity.this.isFinishing()) {
+				// TODO: you may replace this dummy implementation and instead load POI information e.g. from your database
+				System.out.print(poiData.toString());
+				AttackActivity.this.callJavaScript("World.loadPoisFromJsonData", new String[] { poiData.toString() });
+				
+			}
+			isLoading = false;
+		}
+	};
+
+	/**
+	 * Adds data from to the javascript file name to enable the data to be passed to the javascript file
+	 * 
+	 * @param methodName - the name of the javascript file to be called
+	 * @param arguments - the data to be passed to the javascript function in this case poiData - information about defences
+	 */
+	private void callJavaScript(final String methodName, final String[] arguments) {
+		final StringBuilder argumentsString = new StringBuilder("");
+		for (int i= 0; i<arguments.length; i++) {
+			argumentsString.append(arguments[i]);
+			if (i<arguments.length-1) {
+				argumentsString.append(", ");
+			}
+		}
+		
+		if (this.architectView!=null) {
+			final String js = ( methodName + "( " + argumentsString.toString() + " );" );
+			this.architectView.callJavascript(js);
+		}
 	}
 
 	@Override
-	public void onProviderDisabled(String provider) {
+	public void onMyLocationChange(Location location) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
+		/*
+	        *  Make camera on map keep tracking user.
+	        */
+			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+			map.animateCamera(CameraUpdateFactory.zoomTo(15));
+			map.setOnCameraChangeListener(null);
+			
+			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
+			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
+			System.out.println(distance);
+			if(distance*1000 > 400){
+				if(viewFlag == 2){
+					showMap();
+				}
+			}else{
+				if(viewFlag == 1){
+					showAR();
+				}
+			}
+			
+			if (location!=null) {
+				this.lastKnownLocaton = location;
+				if ( this.architectView != null ) {
+					if ( location.hasAltitude() ) {
+						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						System.out.println("altitude is "+ location.getAltitude());
+					} else {
+						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						
+					}
+				}
+			}
 	}
 
 }
