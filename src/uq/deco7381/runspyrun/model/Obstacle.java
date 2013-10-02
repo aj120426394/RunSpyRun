@@ -1,5 +1,10 @@
 package uq.deco7381.runspyrun.model;
 
+import uq.deco7381.runspyrun.R;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
 /**
  * This class is built for parent of any obstacle object.
@@ -109,5 +114,13 @@ public class Obstacle {
 	}
 	public String getObjectId(){
 		return this.objectID;
+	}
+	/**
+	 * Get the MarkerOption to place the icon on the Google map
+	 * 
+	 * @return MarkerOption: the MarkerOption can set on the google map
+	 */
+	public MarkerOptions getMarkerOptions(){
+		return null;								
 	}
 }

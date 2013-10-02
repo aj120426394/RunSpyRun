@@ -104,6 +104,17 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		uiSettings.setZoomControlsEnabled(false);
 	}
 
+	/**
+	 * Get the attackable course list that user haven't been to before.
+	 * 
+	 * 1. Get attackable course list
+	 * 2. Get course list exist in mission
+	 * 3. Filter attackable course list that is not in  the mission  list.
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 * @return Array list of courses
+	 */
 	private ArrayList<Course> getCourseList(double latitude, double longitude){
 		ArrayList<Course> courseList  = new ArrayList<Course>();
 		ArrayList<Course> attackList = dao.getCourseByDiffOrgIn500M(latitude, longitude, ParseUser.getCurrentUser().getString("organization"));

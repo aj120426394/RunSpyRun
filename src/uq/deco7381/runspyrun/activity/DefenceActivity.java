@@ -7,6 +7,7 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
+import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -55,6 +56,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private String isFrom; 				// Determine which Activity is user coming from
 	private ArrayList<Obstacle> newObstaclesOnCourse;	// Save the obstacle when user create new.
 	private Course course;				// Course of this mode
+	private ParseDAO dao;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		setContentView(R.layout.activity_defence);
 		newObstaclesOnCourse = new ArrayList<Obstacle>();
 		Intent intent = getIntent();
+		dao = new ParseDAO(); 
 		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
@@ -92,7 +95,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		 */
 		setCourse(new ParseGeoPoint(latitude,longitude));
 		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
-			displayObstacle();
+			this.course = dao.getCourseByLoc(latitude, longitude);
+			ArrayList<Obstacle> obstacles  = dao.getObstaclesByCourse(this.course);
+			displayObstacle(obstacles);
 		}
 	}
 
@@ -138,55 +143,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 4. Add the obstacle into Map.
 	 * 
 	 */
-	private void displayObstacle(){
-		/*
-		 *  Make query "SELECT FROM "Course" WHERE "location" = course center location "
-		 */
-		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		course.whereNear("location", this.course.getParseGeoPoint());
-		course.setLimit(1);
+	private void displayObstacle(ArrayList<Obstacle> obstacles){
 		
-		// Make query "SELECT FROM "Obstacle" WHERE "course" = course"
-		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
-		obstacleQuery.whereMatchesQuery("course", course);
-		obstacleQuery.findInBackground(new FindCallback<ParseObject>() {
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				if(objects.size() != 0 && e == null){
-					for(ParseObject obstacle: objects){
-						/*
-						 * Get location of obstacle (latitude, longitude, altitude)
-						 */
-						final ParseGeoPoint location = obstacle.getParseGeoPoint("location");
-						final double altitude = obstacle.getDouble("altitude");
-						/*
-						 * Retrieve the creator of this obstacle
-						 */
-						obstacle.getParseUser("creator")
-							.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
-								@Override
-								public void done(ParseObject object,
-										ParseException e) {
-									// TODO Auto-generated method stub
-									if(e == null){
-										String username = object.getString("username");
-										int level = object.getInt("level");
-										/*
-										 * Set up a obstacle object and add it into map
-										 */
-										Guard g1 = new Guard(location.getLatitude(), location.getLongitude(), altitude, username, level,null);
-										map.addMarker(g1.getMarkerOptions());
-									}
-								}
-							});
-	
-					}
-				}else{
-					System.out.println(e.getMessage());
-				}
-			}
-		});
+		for(Obstacle obstacle: obstacles){
+			map.addMarker(obstacle.getMarkerOptions());
+		}
 		
 	}
 	/**

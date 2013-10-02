@@ -38,8 +38,8 @@ public class ParseDAO {
 		courseQuery.include("owner");
 		try {
 			courseParseObject = courseQuery.getFirst();
-			String username = courseParseObject.getParseUser("creator").getUsername();
-			String org = courseParseObject.getParseUser("creator").getString("organization");
+			String username = courseParseObject.getParseUser("owner").getUsername();
+			String org = courseParseObject.getString("organization");
 			int level = courseParseObject.getInt("level");
 			String objectId = courseParseObject.getObjectId();
 			course = new Course(latitude, longitude, username, level, objectId, org);
@@ -208,5 +208,19 @@ public class ParseDAO {
 		
 		return courses;
 	}
-
+	/*
+	public ArrayList<Obstacle> getObstaclesOfCourseByLoc(double latitude, double longitude){
+		/*
+		 *  Make query "SELECT FROM "Course" WHERE "location" = course center location "
+		 */
+	/*
+		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
+		course.whereNear("location", this.course.getParseGeoPoint());
+		course.setLimit(1);
+		
+		// Make query "SELECT FROM "Obstacle" WHERE "course" = course"
+		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
+		obstacleQuery.whereMatchesQuery("course", course);
+	}
+*/
 }

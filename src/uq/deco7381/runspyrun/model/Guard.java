@@ -26,20 +26,19 @@ public class Guard extends Obstacle {
 		super(latitude, longitude, altitude, "Guard", username, level, objectId);
 		// TODO Auto-generated constructor stub
 	}
-	/**
-	 * Get the MarkerOption to place the icon on the Google map
-	 * 
-	 * @return MarkerOption: the MarkerOption can set on the google map
-	 */
-	public MarkerOptions getMarkerOptions(){
-		MarkerOptions markerOptions = new MarkerOptions()
-										.position(new LatLng(getLatitude(), getLongitude()))
-										.title("Guard")
-										.icon(BitmapDescriptorFactory.fromResource(R.drawable.obstacle_guard));
-		
-		return markerOptions;
-										
-	}
 	
+	
+	@Override
+	public MarkerOptions getMarkerOptions() {
+		// TODO Auto-generated method stub
+		MarkerOptions markerOptions = new MarkerOptions()
+		.position(new LatLng(getLatitude(), getLongitude()))
+		.title("Guard")
+		.icon(BitmapDescriptorFactory.fromResource(R.drawable.obstacle_guard));
 
+		return markerOptions;
+	}
+
+	
+	
 }
