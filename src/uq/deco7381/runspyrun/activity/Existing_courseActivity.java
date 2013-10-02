@@ -1,35 +1,29 @@
 package uq.deco7381.runspyrun.activity;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.model.ListAdapter_newmission;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import uq.deco7381.runspyrun.R;
-import uq.deco7381.runspyrun.R.layout;
-import uq.deco7381.runspyrun.R.menu;
-import uq.deco7381.runspyrun.model.ListAdapter_newmission;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.view.Menu;
-import android.widget.ListView;
-import android.widget.Toast;
 
 public class Existing_courseActivity extends Activity implements OnMyLocationChangeListener{
 

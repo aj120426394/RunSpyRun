@@ -31,7 +31,7 @@ import com.parse.ParseObject;
 public class ListAdapter_attackcourse extends BaseAdapter {
 
 	private LayoutInflater mInflater;
-	private ArrayList<ParseObject> mAppList;
+	private ArrayList<Course> mAppList;
 	private Context mContext;
 	private Location currentLocation;
 	private Bitmap bitmap;
@@ -107,7 +107,7 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		}
 		
     }
-	public ListAdapter_attackcourse(Context c,Location location, ArrayList<ParseObject> list) {
+	public ListAdapter_attackcourse(Context c,Location location, ArrayList<Course> list) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
 		mContext = c;
@@ -120,7 +120,7 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		this.currentLocation = currenLocation;
 		this.notifyDataSetChanged();
 	}
-	public void addCourse(ParseObject course){
+	public void addCourse(Course course){
     	mAppList.add(course);
     	this.notifyDataSetChanged();
     }
@@ -166,18 +166,18 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		/*
 		 * Get the course from the list
 		 */
-		ParseObject course = mAppList.get(position);
+		Course course = mAppList.get(position);
 		holder.type.setText("Attack");
 
 		/*
 		 * Computing the "locality", "bearing", "distance" in an Asynchrony Task
 		 */
-		final ParseGeoPoint courseLoc = course.getParseGeoPoint("location");
+		final ParseGeoPoint courseLoc = course.getParseGeoPoint();
 		new locationComputing().execute(new Object[]{holder,position,courseLoc});
     	/*
     	 * Get level of the course
     	 */
-		String levelString = String.valueOf(course.getInt("level"));
+		String levelString = String.valueOf(course.getLevel());
 		holder.level.setText(levelString);
 		
 		convertView.setOnClickListener(new OnClickListener() {

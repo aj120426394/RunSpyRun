@@ -135,6 +135,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		ParseQuery<ParseObject> missionListQuery = ParseQuery.getQuery("Mission"); 
 		missionListQuery.whereEqualTo("username", ParseUser.getCurrentUser());
 		missionListQuery.include("course");
+		missionListQuery.include("course.owner");
 		if(missionListQuery.hasCachedResult()){
 			missionListQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
 		}else{

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_attackcourse;
+import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +15,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,8 +24,6 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -36,15 +35,19 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 	private LocationManager status;
 	private ListView attackCourseListView;
 	private ListAdapter_attackcourse adapter;
+	private ParseDAO dao;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_attack_course_list);
 		
 		Intent intent = getIntent();
+		dao = new  ParseDAO();
+		/*
+		 * Get the Course's center point (where to put data stream) from intent
+		 */
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
-		ParseGeoPoint pCurrentLocation = new ParseGeoPoint(latitude,longitude);
 		
 		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
@@ -73,7 +76,9 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
 		
-		ArrayList<ParseObject> courseList = getCourseList(pCurrentLocation);
+		
+		ArrayList<Course> courseList = getCourseList(latitude, longitude);
+		
 		attackCourseListView = (ListView)findViewById(R.id.courseList);
 		if(courseList.size() == 0){
 			TextView noCourse = (TextView)findViewById(R.id.textView2);
@@ -99,37 +104,22 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		uiSettings.setZoomControlsEnabled(false);
 	}
 
-	private ArrayList<ParseObject> getCourseList(ParseGeoPoint loc){
-		final ArrayList<ParseObject> courseList = new ArrayList<ParseObject>();
-		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		course.whereWithinKilometers("location", loc, 0.5);
-		course.whereNotEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
-		try {
-			List<ParseObject> objects =  course.find();
-			for(ParseObject courseObject: objects){
-				courseList.add(courseObject);
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*
-		course.findInBackground(new FindCallback<ParseObject>() {
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				if(e == null){
-					for(ParseObject courseObject: objects){
-						courseList.add(courseObject);
-					}
-				}else{
-					System.out.println(e.getMessage());
+	private ArrayList<Course> getCourseList(double latitude, double longitude){
+		ArrayList<Course> courseList  = new ArrayList<Course>();
+		ArrayList<Course> attackList = dao.getCourseByDiffOrgIn500M(latitude, longitude, ParseUser.getCurrentUser().getString("organization"));
+		ArrayList<Course> missionList = dao.getCourseByMissionFromCache(ParseUser.getCurrentUser());
+		for(Course attackCourse:  attackList){
+			boolean flag = false;
+			for(Course missionCourse: missionList){
+				if(attackCourse.getObjectID().equals(missionCourse.getObjectID())){
+					flag = true;
 				}
-				
 			}
-		});
-		*/
-		System.out.println(courseList.size());
+			if(flag == false){
+				courseList.add(attackCourse);
+			}
+		}
+		
 		return courseList;
 	}
 

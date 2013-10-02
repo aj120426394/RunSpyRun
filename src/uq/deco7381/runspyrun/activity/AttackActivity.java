@@ -128,28 +128,14 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	 */
 	private void showMap(){
 		viewFlag = 1;
+		
 		// Force the View redraw
 		architectView.invalidate();
+		
 		//mMapFragment.getView().setAlpha(0f);
 		mMapFragment.getView().setVisibility(View.VISIBLE);
 		architectView.setVisibility(View.GONE);
-		/*
-		mMapFragment.getView()
-					.animate()
-					.alpha(1f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(null);
-		
-		architectView.animate()
-					.alpha(0f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-	                    public void onAnimationEnd(Animator animation) {
-	                        architectView.setVisibility(View.GONE);
-	                    }
-					});
-		*/
+
 		System.out.println("MAP MODE");
 		System.out.println("MAP MODE");
 		System.out.println("MAP MODE");
@@ -164,26 +150,9 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private void showAR(){
 		viewFlag = 2;
 		architectView.invalidate();
-		//architectView.setAlpha(0f);
 		architectView.setVisibility(View.VISIBLE);
 		mMapFragment.getView().setVisibility(View.GONE);
-		/*
-		architectView.animate()
-					.alpha(1f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(null);
-		
-		mMapFragment.getView()
-					.animate()
-					.alpha(0.5f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							mMapFragment.getView().setVisibility(View.GONE);
-						}
-					});
-		*/
+
 		System.out.println("AR MODE");
 		System.out.println("AR MODE");
 		System.out.println("AR MODE");
