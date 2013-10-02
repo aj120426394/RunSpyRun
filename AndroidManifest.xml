@@ -47,7 +47,8 @@
         <activity
             android:name="uq.deco7381.runspyrun.activity.LoginActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,40 +57,49 @@
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.SuccessActivity"
-            android:label="@string/title_activity_success" >
+            android:label="@string/title_activity_success"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.SignupActivity"
-            android:label="@string/title_activity_signup" >
+            android:label="@string/title_activity_signup"
+            android:screenOrientation="portrait" >
         </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAlVF6wnRm90WMQ4Jf5psAGrpQQdAz7zKM" />
+            android:value="AIzaSyAlVF6wnRm90WMQ4Jf5psAGrpQQdAz7zKM"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="uq.deco7381.runspyrun.activity.DashboardActivity"
-            android:label="@string/title_activity_dashboard" >
+            android:label="@string/title_activity_dashboard"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.DefenceActivity"
-            android:label="@string/title_activity_defence" >
+            android:label="@string/title_activity_defence"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.EquipmentActivity"
-            android:label="@string/title_activity_equipment" >
+            android:label="@string/title_activity_equipment"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.Existing_courseActivity"
-            android:label="@string/title_activity_existing_course" >
+            android:label="@string/title_activity_existing_course"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.AttackCourseListActivity"
-            android:label="@string/title_activity_attack_course_list" >
+            android:label="@string/title_activity_attack_course_list"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="uq.deco7381.runspyrun.activity.AttackActivity"
-            android:label="@string/title_activity_attack" >
+            android:label="@string/title_activity_attack"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

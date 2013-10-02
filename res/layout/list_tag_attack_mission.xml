@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView2"
         android:layout_toRightOf="@+id/textView3"
-        android:text="Runcorn"
+        android:text="computing..."
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/gray"
         android:textSize="15sp" />

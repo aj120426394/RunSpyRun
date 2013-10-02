@@ -214,7 +214,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 */
 	private void setCourse(ParseGeoPoint location){
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		course= new Course(location, currentUser.getUsername(),currentUser.getString("organization"));
+		course= new Course(location.getLatitude(),location.getLongitude(), currentUser.getUsername(),currentUser.getInt("level"),null,currentUser.getString("organization"));
 		map.addCircle( course.getCourseZone());
 	}
 	/**

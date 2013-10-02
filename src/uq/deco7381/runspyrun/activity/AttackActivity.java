@@ -1,3 +1,4 @@
+
 package uq.deco7381.runspyrun.activity;
 
 import java.io.IOException;
@@ -11,8 +12,6 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +46,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private Course course;
 	private ParseDAO dao;
 	private int viewFlag = 1; //1 = Map View 2 = Architect View
-	private int mShortAnimationDuration;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +92,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		final ArchitectConfig config = new ArchitectConfig("");
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
-		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 		
 		/*
 		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
@@ -131,6 +128,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	 */
 	private void showMap(){
 		viewFlag = 1;
+		// Force the View redraw
+		architectView.invalidate();
 		//mMapFragment.getView().setAlpha(0f);
 		mMapFragment.getView().setVisibility(View.VISIBLE);
 		architectView.setVisibility(View.GONE);
@@ -164,6 +163,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	 */
 	private void showAR(){
 		viewFlag = 2;
+		architectView.invalidate();
 		//architectView.setAlpha(0f);
 		architectView.setVisibility(View.VISIBLE);
 		mMapFragment.getView().setVisibility(View.GONE);

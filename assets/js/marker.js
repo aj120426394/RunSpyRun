@@ -17,37 +17,32 @@ function Marker(poiData, isSelected) {
     
     switch (poiData.title){
 	    case "Datastream":
-	    	this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_datastream, 6.0, {
-		        zOrder: 0,
-		        opacity: 1.0,
-		        onClick: null
-		    });
-		
-		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_datastream, 2.5, {
-		        zOrder: 0,
-		        opacity: 0.0,
-		        onClick: null
-		    });
-		    // New: Direction Indicator
-		    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
-		        enabled: true
-		    });
+	    	this.radarScale = 1;
+	    	this.radarOpacity = 0.0;
+	    	this.radarColor = "#ff0000";
+	    	this.markerDraawble = World.markerDrawable_datastream;
 			break;
+			
 		default:
-			this.markerDrawable_idle = new AR.ImageDrawable(World.markerDrawable_idle, 6.0, {
-		        zOrder: 0,
-		        opacity: 1.0,
-		        onClick: null
-		    });
-		
-		    this.markerDrawable_selected = new AR.ImageDrawable(World.markerDrawable_idle, 2.5, {
-		        zOrder: 0,
-		        opacity: 0.0,
-		        onClick: null
-		    });
+			this.radarScale = 0.03;
+			this.radarOpacity = 0.8;
+			this.radarColor = "#ffffff";
+			this.markerDraawble = World.markerDrawable_idle;
 			break;
     }
 
+    this.markerDrawable_idle = new AR.ImageDrawable(this.markerDraawble, 6.0, {
+        zOrder: 0,
+        opacity: 1.0,
+        onClick: null
+    });
+
+    this.markerDrawable_selected = new AR.ImageDrawable(this.markerDraawble, 2.5, {
+        zOrder: 0,
+        opacity: 0.0,
+        onClick: null
+    });
+    
     this.titleLabel = new AR.Label(poiData.title.trunc(15), 0.5, {
         zOrder: 1.5,
         offsetY: 1.0,
@@ -65,14 +60,11 @@ function Marker(poiData, isSelected) {
         }
     });
 
-
-    
-
-    this.radarCircle = new AR.Circle(0.03, {
+    this.radarCircle = new AR.Circle(this.radarScale, {
         horizontalAnchor: AR.CONST.HORIZONTAL_ANCHOR.CENTER,
-        opacity: 0.8,
+        opacity: this.radarOpacity,
         style: {
-            fillColor: "#ffffff"
+            fillColor: this.radarColor
         }
     });
 

@@ -22,11 +22,12 @@ import com.parse.ParseGeoPoint;
  */
 public class Course {
 
+	private double latitude;   	// Course's latitude
+	private double longitude;	// Course's longitude
 	private int radius;
 	private int level;
 	private String owner;
 	private String organization;
-	private ParseGeoPoint location;
 	private String objectID;
 	/**
 	 * Constructor
@@ -35,9 +36,10 @@ public class Course {
 	 * @param username	// Owner(creator) of this course
 	 * @param org		// Organization of this couse's owner
 	 */
-	public Course(ParseGeoPoint location, String username, String org) {
+	public Course(double latitude, double longitude, String username,int level, String objectId, String org) {
 		// TODO Auto-generated constructor stub
-		this.location = location;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.radius = 400; //400 meter
 		this.level = 1;
 		this.owner = username;
@@ -63,7 +65,8 @@ public class Course {
 	 * @return	ParseGeoPoing: geolocation of this course in Parse format
 	 */
 	public ParseGeoPoint getParseGeoPoint(){
-		return this.location;
+		ParseGeoPoint location = new ParseGeoPoint(this.latitude,this.longitude);
+		return location;
 	}
 	/**
 	 * Because course is set up with a equipment "Datasourse", 
@@ -97,7 +100,7 @@ public class Course {
 	 * @return  double: latitude
 	 */
 	public double getLatitude(){
-		return this.location.getLatitude();
+		return latitude;
 	}
 	/**
 	 * Get the longitude of this course
@@ -105,7 +108,7 @@ public class Course {
 	 * @return double: longitude
 	 */
 	public double getLongitude(){
-		return this.location.getLongitude();
+		return longitude;
 	}
 	/**
 	 * Get the organization of this course belong to

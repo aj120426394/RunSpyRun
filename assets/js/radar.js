@@ -25,12 +25,7 @@
 			AR.radar.maxDistance = 100;
 
 			// set the onClick-trigger for the radar.
-			AR.radar.onClick = PoiRadar.clickedRadar;
-		},
-
-		// you may define some custom action when user pressed radar, e.g. display distance, custom filtering etc.
-		clickedRadar: function clickedRadarFn() {
-			alert("Radar Clicked");
+			//AR.radar.onClick = PoiRadar.clickedRadar;
 		}
 	};
 
