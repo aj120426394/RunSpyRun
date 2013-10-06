@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 /**
  * This class is built for parent of any obstacle object.
  * Every obstacle should include
@@ -29,6 +30,7 @@ public class Obstacle {
 	private String creator;		// Obstacle's creator
 	private int energy;			// The energy get from player who trigger the obstacle
 	private String objectID;
+	private ParseUser parseUser;
 
 	/**
 	 * Constructor
@@ -40,7 +42,7 @@ public class Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Obstacle(double latitude,double longitude,double altitude, String type, String username, int level,String objectId) {
+	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -48,8 +50,8 @@ public class Obstacle {
 		this.level = level;
 		this.type = type;
 		this.energy = 0;
-		this.creator = username;
 		this.objectID = objectId;
+		this.parseUser = creator;
 	}
 	/**
 	 * Get the latitude of this obstacle
@@ -82,10 +84,10 @@ public class Obstacle {
 	}
 	/**
 	 * Get the Creator of this obstacle
-	 * @return String: creator of obstacle
+	 * @return ParseUser: creator of obstacle
 	 */
-	public String getCreator(){
-		return this.creator;
+	public ParseUser getCreator(){
+		return this.parseUser;
 	}
 	/**
 	 * Get the type of this obstacle

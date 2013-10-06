@@ -3,22 +3,129 @@ package uq.deco7381.runspyrun.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.integer;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 public class ParseDAO {
 
 	public ParseDAO() {
 		// TODO Auto-generated constructor stub
 		
+	}
+	/**
+	 * Insert  a course into table
+	 * 
+	 * SQL: INSERT INTO Course(level,location,organization,owner) 
+	 * VALUES (
+	 * course.getLevel(),
+	 * course.getParseGeoPoint(),
+	 * course.getOrg(),
+	 * course.getOnwer()
+	 * )
+	 * @param course
+	 * @return ParseObejct: To let other Query point this object.
+	 */
+	public ParseObject insertCourse(Course course){
+		ParseObject parseCourse = new ParseObject("Course");
+		parseCourse.put("owner", course.getOnwer());
+		parseCourse.put("location", course.getParseGeoPoint());
+		parseCourse.put("level", course.getLevel());
+		parseCourse.put("organization", course.getOrg());
+		parseCourse.saveInBackground();
+		
+		return parseCourse;
+	}
+	/**
+	 * Insert an obstacle into table
+	 * SQL:
+	 * INSERT INTO Obstacle(creator, energy, location, altitude, type, course)
+	 * VALUES(
+	 * obstacle.getCreator(),
+	 * obstacle.getEnergy(),
+	 * obstacle.getParseGeoPoint(),
+	 * obstacle.getAltitude(),
+	 * obstacle.getType(),
+	 * course
+	 * )
+	 * 
+	 * @param Obstacle: obstacle - The obstacle that need to save in to database.
+	 * @param ParseObject: course  - The course used for pointer of the course.
+	 */
+	public void insertObstaclesByNewCourse(Obstacle obstacle, ParseObject course){
+		ParseObject object = new ParseObject("Obstacle");
+		object.put("creator", obstacle.getCreator());
+		object.put("energy", obstacle.getEnergy());
+		object.put("location", obstacle.getParseGeoPoint());
+		object.put("altitude", obstacle.getAltitude());
+		object.put("type", obstacle.getType());
+		object.put("course", course);
+		object.saveInBackground();
+	}
+	
+	public void insertObstacle(Course course, Obstacle obstacle){
+		ParseObject object = new ParseObject("Obstacle");
+		object.put("creator", obstacle.getCreator());
+		object.put("energy", obstacle.getEnergy());
+		object.put("location", obstacle.getParseGeoPoint());
+		object.put("altitude", obstacle.getAltitude());
+		object.put("type", obstacle.getType());
+		object.put("course", ParseObject.createWithoutData("Course", course.getObjectID()));
+		object.saveInBackground();
+	}
+	/**
+	 * INSERT INTO Mission(course,username)
+	 * VALUE(
+	 *     course,
+	 *     user
+	 * )
+	 * 
+	 * @param ParseUser: currentUser
+	 * @param course
+	 */
+	public void insertMissionByNewCourse(ParseUser currentUser, ParseObject course){
+		ParseObject mission = new ParseObject("Mission");
+		mission.put("course", course);
+		mission.put("username", currentUser);
+		mission.saveInBackground();
+	}
+	public void insertMission(ParseUser currentUser, Course course){
+		ParseObject mission = new ParseObject("Mission");
+		mission.put("course", course);
+		mission.put("username", currentUser);
+		mission.saveInBackground();
+	}
+	
+	public void updateEquipment(ParseUser user, ArrayList<Obstacle> obstacles){
+		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
+		equipment.whereEqualTo("username", user);
+		equipment.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				for(ParseObject equipmentObject: objects){
+					String eType = equipmentObject.getString("eq_name");
+					if(eType.equals("Datasource")){
+						equipmentObject.put("number", equipmentObject.getInt("number")-1);
+						equipmentObject.saveInBackground();
+					}else{
+						/*
+						for(Obstacle obstacle: obstacles){
+							if(obstacle.getType().equals(eType)){
+								equipmentObject.put("number", equipmentObject.getInt("number")-1);
+							}
+						}*/
+					}
+				}
+			}
+		});
 	}
 	/**
 	 * Get Course by location from Parse
@@ -38,7 +145,7 @@ public class ParseDAO {
 		courseQuery.include("owner");
 		try {
 			courseParseObject = courseQuery.getFirst();
-			String username = courseParseObject.getParseUser("owner").getUsername();
+			ParseUser username = courseParseObject.getParseUser("owner");
 			String org = courseParseObject.getString("organization");
 			int level = courseParseObject.getInt("level");
 			String objectId = courseParseObject.getObjectId();
@@ -48,63 +155,6 @@ public class ParseDAO {
 			e.printStackTrace();
 		}
 		return course;
-	}
-	/**
-	 * Delete Course
-	 * 
-	 * 1. SQL: DELETE FROW Course WHERE
-	 * @param course - Course
-	 */
-	public void deleteCourse(Course course){
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Course");
-		query.whereNear("location", course.getParseGeoPoint());
-		query.getFirstInBackground(new GetCallback<ParseObject>() {
-			@Override
-			public void done(ParseObject object, ParseException e) {
-				object.deleteInBackground();
-			}
-		});
-	}
-
-	/**
-	 * Get obstacles by course from Parse
-	 * SQL: SELECT obstacle FROM Course WHERE course = "course"
-	 * 
-	 * 
-	 * @param course
-	 * @return ArrayList of obstacles in different type
-	 */
-	
-	public ArrayList<Obstacle> getObstaclesByCourse(Course course){
-		ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
-		ParseQuery<ParseObject> courseQuery = ParseQuery.getQuery("Course");
-		courseQuery.whereEqualTo("objectId", course.getObjectID());
-		
-		ParseQuery<ParseObject> obstaclesQuery = ParseQuery.getQuery("Obstacle");
-		obstaclesQuery.whereMatchesQuery("course", courseQuery);
-		obstaclesQuery.include("creator");
-		try {
-			List<ParseObject> pList =  obstaclesQuery.find();
-			for(ParseObject object: pList){
-				Obstacle obstacle = null;
-				double latitude = object.getParseGeoPoint("location").getLatitude();
-				double longitude = object.getParseGeoPoint("location").getLongitude();
-				double altitude = object.getDouble("altitude");
-				String username = object.getParseUser("creator").getUsername();
-				int level = object.getInt("level");
-				String objectId = object.getObjectId();
-				
-				if(object.getString("type").equals("Guard")){
-					obstacle = new Guard(latitude, longitude, altitude, username, level, objectId);
-				}
-				
-				obstacles.add(obstacle);
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return obstacles;
 	}
 	/**
 	 * Get course by mission from cache
@@ -120,7 +170,6 @@ public class ParseDAO {
 		ParseQuery<ParseObject> missionListQuery = ParseQuery.getQuery("Mission"); 
 		missionListQuery.whereEqualTo("username", user);
 		missionListQuery.include("course");
-		missionListQuery.include("course.owner");
 		if(missionListQuery.hasCachedResult()){
 			missionListQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
 			try {
@@ -128,8 +177,8 @@ public class ParseDAO {
 				for(ParseObject object: pList){
 					double latitude = object.getParseObject("course").getParseGeoPoint("location").getLatitude();
 					double longitude = object.getParseObject("course").getParseGeoPoint("location").getLongitude();
-					String username = object.getParseObject("course").getParseUser("owner").getUsername();
-					String org = object.getParseObject("course").getParseUser("owner").getString("organization");
+					ParseUser username = object.getParseObject("course").getParseUser("owner");
+					String org = object.getParseObject("course").getString("organization");
 					int level = object.getParseObject("course").getInt("level");
 					String objectId = object.getParseObject("course").getObjectId();
 					Course course = new Course(latitude, longitude, username, level, objectId, org);
@@ -154,14 +203,15 @@ public class ParseDAO {
 		ParseQuery<ParseObject> missionListQuery = ParseQuery.getQuery("Mission"); 
 		missionListQuery.whereEqualTo("username", user);
 		missionListQuery.include("course");
+		missionListQuery.include("course.owner");
 		missionListQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
 		try {
 			List<ParseObject> pList = missionListQuery.find();
 			for(ParseObject object: pList){
 				double latitude = object.getParseObject("course").getParseGeoPoint("location").getLatitude();
 				double longitude = object.getParseObject("course").getParseGeoPoint("location").getLongitude();
-				String username = object.getParseObject("course").getParseUser("creator").getUsername();
-				String org = object.getParseObject("course").getParseUser("creator").getString("organization");
+				ParseUser username = object.getParseObject("course").getParseUser("owner");
+				String org = object.getParseObject("course").getString("organization");
 				int level = object.getParseObject("course").getInt("level");
 				String objectId = object.getParseObject("course").getObjectId();
 				Course course = new Course(latitude, longitude, username, level, objectId, org);
@@ -181,21 +231,21 @@ public class ParseDAO {
 	 * @param org
 	 * @return ArrayList of Course
 	 */
-	public ArrayList<Course> getCourseByDiffOrgIn500M(double latitude, double longitude, String org){
+	public ArrayList<Course> getCourseByDiffOrgInDistance(double latitude, double longitude, String org, double distance){
 		ArrayList<Course> courses = new ArrayList<Course>();
 		
 		ParseGeoPoint loc = new ParseGeoPoint(latitude,longitude);
 		
 		ParseQuery<ParseObject> courseList = ParseQuery.getQuery("Course");
-		courseList.whereWithinKilometers("location", loc, 0.5);
-		courseList.whereNotEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
+		courseList.whereWithinKilometers("location", loc, distance);
+		courseList.whereNotEqualTo("organization", org);
 		try {
 			List<ParseObject> objects =  courseList.find();
 			for(ParseObject object: objects){
 				double cLatitude = object.getParseGeoPoint("location").getLatitude();
 				double cLongitude = object.getParseGeoPoint("location").getLongitude();
-				String username = object.getParseUser("creator").getUsername();
-				String cOrg = object.getParseUser("creator").getString("organization");
+				ParseUser username = object.getParseUser("owner");
+				String cOrg = object.getString("organization");
 				int level = object.getInt("level");
 				String objectId = object.getObjectId();
 				Course course = new Course(cLatitude, cLongitude, username, level, objectId, cOrg);
@@ -208,19 +258,89 @@ public class ParseDAO {
 		
 		return courses;
 	}
-	/*
-	public ArrayList<Obstacle> getObstaclesOfCourseByLoc(double latitude, double longitude){
-		/*
-		 *  Make query "SELECT FROM "Course" WHERE "location" = course center location "
-		 */
-	/*
-		ParseQuery<ParseObject> course = ParseQuery.getQuery("Course");
-		course.whereNear("location", this.course.getParseGeoPoint());
-		course.setLimit(1);
+	public ArrayList<Course> getCourseByOrgInDistance(double latitude, double longitude, String org, double distance){
+		ArrayList<Course> courses = new ArrayList<Course>();
 		
-		// Make query "SELECT FROM "Obstacle" WHERE "course" = course"
-		ParseQuery<ParseObject> obstacleQuery = ParseQuery.getQuery("Obstacle");
-		obstacleQuery.whereMatchesQuery("course", course);
+		ParseGeoPoint loc = new ParseGeoPoint(latitude,longitude);
+		
+		ParseQuery<ParseObject> courseList = ParseQuery.getQuery("Course");
+		courseList.whereWithinKilometers("location", loc, distance);
+		courseList.whereEqualTo("organization", org);
+		try {
+			List<ParseObject> objects =  courseList.find();
+			for(ParseObject object: objects){
+				double cLatitude = object.getParseGeoPoint("location").getLatitude();
+				double cLongitude = object.getParseGeoPoint("location").getLongitude();
+				ParseUser username = object.getParseUser("owner");
+				String cOrg = object.getString("organization");
+				int level = object.getInt("level");
+				String objectId = object.getObjectId();
+				Course course = new Course(cLatitude, cLongitude, username, level, objectId, cOrg);
+				courses.add(course);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return courses;
 	}
-*/
+	/**
+	 * Get obstacles by course from Parse
+	 * SQL: SELECT obstacle FROM Course WHERE course = "course"
+	 * 
+	 * 
+	 * @param course
+	 * @return ArrayList of obstacles in different type
+	 */
+	
+	public ArrayList<Obstacle> getObstaclesByCourse(Course course){
+		ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+		ParseQuery<ParseObject> courseQuery = ParseQuery.getQuery("Course");
+		courseQuery.whereEqualTo("objectId", course.getObjectID());
+		
+		ParseQuery<ParseObject> obstaclesQuery = ParseQuery.getQuery("Obstacle");
+		obstaclesQuery.whereMatchesQuery("course", courseQuery);
+		obstaclesQuery.include("creator");
+		try {
+			List<ParseObject> pList =  obstaclesQuery.find();
+			for(ParseObject object: pList){
+				Obstacle obstacle = null;
+				double latitude = object.getParseGeoPoint("location").getLatitude();
+				double longitude = object.getParseGeoPoint("location").getLongitude();
+				double altitude = object.getDouble("altitude");
+				ParseUser username = object.getParseUser("creator");
+				int level = object.getInt("level");
+				String objectId = object.getObjectId();
+				
+				if(object.getString("type").equals("Guard")){
+					obstacle = new Guard(latitude, longitude, altitude, username, level, objectId);
+				}
+				
+				obstacles.add(obstacle);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return obstacles;
+	}
+	/**
+	 * Delete Course
+	 * 
+	 * 1. SQL: DELETE FROM Course WHERE
+	 * @param course - Course
+	 */
+	public void deleteCourse(Course course){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Course");
+		query.whereNear("location", course.getParseGeoPoint());
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+			@Override
+			public void done(ParseObject object, ParseException e) {
+				object.deleteInBackground();
+			}
+		});
+	}
+	
+	
 }

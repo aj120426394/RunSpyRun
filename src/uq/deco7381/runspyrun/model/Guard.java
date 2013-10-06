@@ -5,6 +5,7 @@ import uq.deco7381.runspyrun.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseUser;
 
 /**
  * This class is a type of obstacle, most of the function are inherited from Obstacle.class
@@ -22,8 +23,8 @@ public class Guard extends Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Guard(double latitude,double longitude,double altitude, String username, int level, String objectId) {
-		super(latitude, longitude, altitude, "Guard", username, level, objectId);
+	public Guard(double latitude,double longitude,double altitude, ParseUser creator, int level, String objectId) {
+		super(latitude, longitude, altitude, "Guard", creator, level, objectId);
 		// TODO Auto-generated constructor stub
 	}
 	

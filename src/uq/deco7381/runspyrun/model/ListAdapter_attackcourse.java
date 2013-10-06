@@ -36,77 +36,6 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 	private Location currentLocation;
 	private Bitmap bitmap;
 	
-	/*private view holder class*/
-    private class ViewHolder {
-        ImageView compass;
-        TextView type;
-        TextView distance;
-        TextView locality;
-        TextView level;
-        int position;
-    }
-    private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
-    	private ViewHolder holder;
-    	private int position;
-    	private String distanceString;
-    	private String locality;
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			super.onPostExecute(result);
-			if(holder.position == position){
-				this.holder.compass.setImageBitmap(result);
-				this.holder.distance.setText(distanceString);
-				this.holder.locality.setText(locality);
-			}
-		}
-		@Override
-		protected Bitmap doInBackground(Object... params) {
-			// TODO Auto-generated method stub
-			holder = (ViewHolder)params[0];
-			position = (Integer) params[1];
-			ParseGeoPoint courseLoc = (ParseGeoPoint)params[2];
-			
-			/*
-			 * Computing the distance between current location to each course
-			 */
-			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
-			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
-	    	distanceString = "";
-	    	if(distanceDouble*1000 < 400){
-	    		distanceString = "you are in the course";
-	    	}else{
-	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
-	    	}
-			
-			/*
-			 * Get the locality of each course
-			 */
-			locality = "";
-			Geocoder geocoder = new Geocoder(mContext);
-			try {
-				List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
-				locality = addresses.get(0).getLocality();
-				locality += ", " + addresses.get(0).getAdminArea();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			/*
-			 * Get the compass direction of each course
-			 */
-	    	Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
-	    	tempLoc.setLatitude(courseLoc.getLatitude());
-	    	tempLoc.setLongitude(courseLoc.getLongitude());
-	    	
-			Matrix matrix = new Matrix();
-			matrix.postRotate(currentLocation.bearingTo(tempLoc));
-			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-			return bmp;
-		}
-		
-    }
 	public ListAdapter_attackcourse(Context c,Location location, ArrayList<Course> list) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
@@ -193,6 +122,78 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		
 		
 		return convertView;
+	}
+
+	/*private view holder class*/
+	private class ViewHolder {
+	    ImageView compass;
+	    TextView type;
+	    TextView distance;
+	    TextView locality;
+	    TextView level;
+	    int position;
+	}
+	private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
+		private ViewHolder holder;
+		private int position;
+		private String distanceString;
+		private String locality;
+	
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			if(holder.position == position){
+				this.holder.compass.setImageBitmap(result);
+				this.holder.distance.setText(distanceString);
+				this.holder.locality.setText(locality);
+			}
+		}
+		@Override
+		protected Bitmap doInBackground(Object... params) {
+			// TODO Auto-generated method stub
+			holder = (ViewHolder)params[0];
+			position = (Integer) params[1];
+			ParseGeoPoint courseLoc = (ParseGeoPoint)params[2];
+			
+			/*
+			 * Computing the distance between current location to each course
+			 */
+			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
+			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
+	    	distanceString = "";
+	    	if(distanceDouble*1000 < 400){
+	    		distanceString = "you are in the course";
+	    	}else{
+	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
+	    	}
+			
+			/*
+			 * Get the locality of each course
+			 */
+			locality = "";
+			Geocoder geocoder = new Geocoder(mContext);
+			try {
+				List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
+				locality = addresses.get(0).getLocality();
+				locality += ", " + addresses.get(0).getAdminArea();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			/*
+			 * Get the compass direction of each course
+			 */
+	    	Location tempLoc = new Location(LocationManager.GPS_PROVIDER);
+	    	tempLoc.setLatitude(courseLoc.getLatitude());
+	    	tempLoc.setLongitude(courseLoc.getLongitude());
+	    	
+			Matrix matrix = new Matrix();
+			matrix.postRotate(currentLocation.bearingTo(tempLoc));
+			Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+			return bmp;
+		}
+		
 	}
 
 }

@@ -176,20 +176,30 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/orangeText" />
 
-                <LinearLayout
+                <ListView
                     android:id="@+id/db_mission_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="300dp"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/textView5"
                     android:layout_marginBottom="20dp"
-                    android:orientation="vertical"
-                    android:paddingRight="15dp" >
+                    android:divider="@color/white"
+                    android:dividerHeight="10dp"
+                    android:paddingRight="10dp" >
 
-                </LinearLayout>
+                </ListView>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="You don&apos;t have any mission."
+                    android:textSize="20sp" />
 
             </RelativeLayout>
-<!-- Both of this for view are the shadow of the display screen, it will display under each part of display box -->
+            <!-- Both of this for view are the shadow of the display screen, it will display under each part of display box -->
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dip"
@@ -219,7 +229,7 @@
                 android:layout_height="2dip"
                 android:layout_below="@+id/db_settings"
                 android:background="?android:attr/dividerHorizontal" />
-<!-- Shadow above  -->
+            <!-- Shadow above -->
 
             <RelativeLayout
                 android:id="@+id/db_messages"
@@ -355,9 +365,7 @@
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/orangeText" />
-
             </RelativeLayout>
-
         </RelativeLayout>
     </ScrollView>
 

@@ -1,9 +1,12 @@
 package uq.deco7381.runspyrun.activity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_newmission;
+import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,14 +34,17 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private LocationManager status;
 	private ListView existingCourseListView;
 	private ListAdapter_newmission adapter;
+	private ParseDAO dao;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_existing_course);
+		dao = new ParseDAO();
 		
 		Intent intent = getIntent();
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
+		
 		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
 		currentLocation.setLongitude(longitude);
@@ -65,35 +71,36 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
-		getCourseList();
 		
+		
+		ArrayList<Course> courseList = getCourseList(latitude, longitude);
 		existingCourseListView = (ListView) findViewById(R.id.ListOFCourse);
 		existingCourseListView.setScrollingCacheEnabled(false);
-		adapter = new ListAdapter_newmission(this,currentLocation);
+		adapter = new ListAdapter_newmission(this,currentLocation,courseList);
 		existingCourseListView.setAdapter(adapter);
 		
 		
 		
 	}
 
-	private void getCourseList(){
-		ParseQuery<ParseObject> currentMission = ParseQuery.getQuery("Course");
+	private ArrayList<Course> getCourseList(double latitude, double longitude){
+		ArrayList<Course> courseList  = new ArrayList<Course>();
+		ArrayList<Course> missionList = dao.getCourseByMissionFromNetwork(ParseUser.getCurrentUser());
+		ArrayList<Course> orgList = dao.getCourseByOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 2);
 		
-		ParseQuery<ParseObject> courseList = ParseQuery.getQuery("Course");
-		courseList.whereEqualTo("organization", ParseUser.getCurrentUser().getString("organization"));
-		courseList.findInBackground(new FindCallback<ParseObject>() {	
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				if(e == null){
-					for(ParseObject mission: objects){
-						adapter.addCourse(mission);
-					}
-				}else{
-					System.out.println(e.getMessage());
+		for(Course course:  orgList){
+			boolean flag = false;
+			for(Course missionCourse: missionList){
+				if(course.getObjectID().equals(missionCourse.getObjectID())){
+					flag = true;
 				}
 			}
-		});
+			if(flag == false){
+				courseList.add(course);
+			}
+		}
+		
+		return courseList;
 	}
 	
 	/**

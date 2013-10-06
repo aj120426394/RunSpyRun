@@ -93,12 +93,14 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Set the course (make it visible on the map)
 		 */
-		setCourse(new ParseGeoPoint(latitude,longitude));
 		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
 			this.course = dao.getCourseByLoc(latitude, longitude);
 			ArrayList<Obstacle> obstacles  = dao.getObstaclesByCourse(this.course);
 			displayObstacle(obstacles);
+		}else{
+			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
+		displayCourse(this.course);
 	}
 
 	/**
@@ -137,18 +139,13 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	/**
 	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.
 	 * 
-	 * 1. Fetch Course base on location which pass from last Activity
-	 * 2. Fetch the list of Obstacle base on Course
-	 * 3. Create each Obstacle object depends on the "Type" retrieved from database
-	 * 4. Add the obstacle into Map.
+	 * 1. Add the obstacle into Map.
 	 * 
 	 */
 	private void displayObstacle(ArrayList<Obstacle> obstacles){
-		
 		for(Obstacle obstacle: obstacles){
 			map.addMarker(obstacle.getMarkerOptions());
 		}
-		
 	}
 	/**
 	 * Set up a Google map.
@@ -173,20 +170,18 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 * @param latLng
 	 */
-	private void setCourse(ParseGeoPoint location){
-		ParseUser currentUser = ParseUser.getCurrentUser();
-		course= new Course(location.getLatitude(),location.getLongitude(), currentUser.getUsername(),currentUser.getInt("level"),null,currentUser.getString("organization"));
-		map.addCircle( course.getCourseZone());
+	private void displayCourse(Course course){
+		map.addCircle(course.getCourseZone());
 	}
 	/**
-	 * Set up a obstacle: Guard:
+	 * Set up a new obstacle: Guard:
 	 * Base on your current location
 	 * 
 	 * @param v
 	 */
 	public void setGuard(View v){;
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(),currentUser.getUsername(), currentUser.getInt("level"),null);
+		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
 		map.addMarker(g1.getMarkerOptions());
 		
 		/*
@@ -245,69 +240,25 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Save new Course
 		 */
-		ParseObject parseCourse = new ParseObject("Course");
-		parseCourse.put("owner",ParseUser.getCurrentUser());
-		parseCourse.put("location", course.getParseGeoPoint());
-		parseCourse.put("level", course.getLevel());
-		parseCourse.put("organization", course.getOrg());
-		parseCourse.saveInBackground();
+		
+		ParseObject courseParseObject = dao.insertCourse(this.course);
 		
 		/*
 		 *  Save new Obstacle
 		 */
 		for(Obstacle obstacle: newObstaclesOnCourse){
-			ParseObject object = new ParseObject("Obstacle");
-			object.put("creator", ParseUser.getCurrentUser());
-			object.put("energy", obstacle.getEnergy());
-			object.put("location", obstacle.getParseGeoPoint());
-			object.put("altitude", obstacle.getAltitude());
-			object.put("type", obstacle.getType());
-			object.put("course", parseCourse);
-			object.saveInBackground(new SaveCallback() {
-				@Override
-				public void done(ParseException e) {
-					// TODO Auto-generated method stub
-					if(e == null){
-						System.out.println("SUCCESS");
-					}else{
-						Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-					}
-				}
-			});
+			dao.insertObstaclesByNewCourse(obstacle, courseParseObject);
 		}
 		/*
 		 *  Save new mission to mission list
 		 */
-		ParseObject mission = new ParseObject("Mission");
-		mission.put("course", parseCourse);
-		mission.put("username", ParseUser.getCurrentUser());
-		mission.saveInBackground();
+		
+		dao.insertMissionByNewCourse(ParseUser.getCurrentUser(), courseParseObject);
 		
 		/*
 		 *  Update equipment
 		 */
-		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
-		equipment.whereEqualTo("username", ParseUser.getCurrentUser());
-		equipment.findInBackground(new FindCallback<ParseObject>() {
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				// TODO Auto-generated method stub
-				for(ParseObject equipmentObject: objects){
-					String eType = equipmentObject.getString("eq_name");
-					if(eType.equals("Datasource")){
-						equipmentObject.put("number", equipmentObject.getInt("number")-1);
-						equipmentObject.saveInBackground();
-					}else{
-						/*
-						for(Obstacle obstacle: obstaclesOnCourse){
-							if(obstacle.getType().equals(eType)){
-								equipmentObject.put("number", equipmentObject.getInt("number")-1);
-							}
-						}*/
-					}
-				}
-			}
-		});
+		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
 
 	}
 	/**
@@ -320,41 +271,10 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Get the current course data from database
 		 */
-		ParseQuery<ParseObject> courseQuery = ParseQuery.getQuery("Course");
-		courseQuery.whereNear("location", this.course.getParseGeoPoint());
-		courseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-			@Override
-			public void done(ParseObject course, ParseException e) {
-				// TODO Auto-generated method stub
-				if(e == null){
-					for(Obstacle obstacle: newObstaclesOnCourse){
-						/*
-						 * Save each new obstacle to database
-						 */
-						ParseObject temp = new ParseObject("Obstacle");
-						course.put("creator", ParseUser.getCurrentUser());
-						course.put("energy", obstacle.getEnergy());
-						course.put("location", obstacle.getParseGeoPoint());
-						course.put("altitude", obstacle.getAltitude());
-						course.put("type", obstacle.getType());
-						course.put("course", course);
-						temp.saveInBackground(new SaveCallback() {
-							@Override
-							public void done(ParseException e) {
-								// TODO Auto-generated method stub
-								if(e == null){
-									System.out.println("SUCCESS");
-								}else{
-									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-								}
-							}
-						});
-					}
-				}else{
-					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-				}
-			}
-		});
+		for(Obstacle obstacle: newObstaclesOnCourse){
+			dao.insertObstacle(this.course, obstacle);
+		}
+		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
 	}
 	
 	/**
@@ -364,50 +284,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * @see missionDecide(View v)
 	 */
 	public void existCourse(){
-		ParseQuery<ParseObject> courseQuery = ParseQuery.getQuery("Course");
-		courseQuery.whereEqualTo("location", this.course.getParseGeoPoint());
-		courseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-			@Override
-			public void done(ParseObject course, ParseException e) {
-				// TODO Auto-generated method stub
-				if(e == null){
-					/*
-					 *  Save the obstacle
-					 */
-					for(Obstacle obstacle: newObstaclesOnCourse){
-						ParseObject temp = new ParseObject("Obstacle");
-						course.put("creator", ParseUser.getCurrentUser());
-						course.put("energy", obstacle.getEnergy());
-						course.put("location", obstacle.getParseGeoPoint());
-						course.put("altitude", obstacle.getAltitude());
-						course.put("type", obstacle.getType());
-						course.put("course", course);
-						temp.saveInBackground(new SaveCallback() {
-							@Override
-							public void done(ParseException e) {
-								// TODO Auto-generated method stub
-								if(e == null){
-									System.out.println("SUCCESS");
-								}else{
-									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-								}
-							}
-						});
-					}
-					/*
-					 *  Save new mission to mission list
-					 */
-					ParseObject mission = new ParseObject("Mission");
-					mission.put("course",course);
-					mission.put("username", ParseUser.getCurrentUser());
-					mission.saveInBackground();
-				}else{
-					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-				}
-			}
-		});
-		
-		
+		for(Obstacle obstacle: newObstaclesOnCourse){
+			dao.insertObstacle(this.course, obstacle);
+		}
+		dao.insertMission(ParseUser.getCurrentUser(), this.course);
+		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
 	}
 
 

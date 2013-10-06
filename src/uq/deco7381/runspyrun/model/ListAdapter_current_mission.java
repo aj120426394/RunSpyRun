@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
-import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -18,16 +16,15 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
+import com.parse.ParseUser;
 
-public class ListAdapter_newmission extends BaseAdapter {
+public class ListAdapter_current_mission extends BaseAdapter {
 
 	private LayoutInflater mInflater;
 	private ArrayList<Course> mAppList;
@@ -35,24 +32,15 @@ public class ListAdapter_newmission extends BaseAdapter {
 	private Location currentLocation;
 	private Bitmap bitmap;
 	
-	public ListAdapter_newmission(Context c, Location location, ArrayList<Course> courseList) {
+	public ListAdapter_current_mission(Context c, Location location, ArrayList<Course> course) {
 		// TODO Auto-generated constructor stub
-		mAppList = courseList;
+		mAppList = course;
 		mContext = c;
 		mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
 		currentLocation = location;
 	}
 
-	
-	public void setCurrentLocation(Location currenLocation){
-		this.currentLocation = currenLocation;
-		this.notifyDataSetChanged();
-	}
-    public void addCourse(Course course){
-    	mAppList.add(course);
-    	this.notifyDataSetChanged();
-    }
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -60,7 +48,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public Course getItem(int position) {
 		// TODO Auto-generated method stub
 		return mAppList.get(position);
 	}
@@ -70,10 +58,15 @@ public class ListAdapter_newmission extends BaseAdapter {
 		// TODO Auto-generated method stub
 		return position;
 	}
+	public void changeLocation(Location loc){
+		this.currentLocation = loc;
+		this.notifyDataSetChanged();
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		
 		/*
 		 * Set up view holder
 		 */
@@ -81,7 +74,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 		if (convertView != null){
 			holder = (ViewHolder) convertView.getTag();
 		}else {
-			convertView = mInflater.inflate(R.layout.list_tag_new_mission, null);
+			convertView = mInflater.inflate(R.layout.list_tag_current_mission, null);
 			
 			holder = new ViewHolder();
 			holder.type = (TextView) convertView.findViewById(R.id.textView1);
@@ -92,39 +85,37 @@ public class ListAdapter_newmission extends BaseAdapter {
 			holder.position = position;
 			convertView.setTag(holder);
 		}
+		
 		/*
 		 * Get the course from the list
 		 */
 		Course course = mAppList.get(position);
-		holder.type.setText("DEFENCE");
+		if(course.getOrg().equals(ParseUser.getCurrentUser().getString("organization"))){
+			holder.type.setText("Defence");
+		}else{
+			holder.type.setText("Attack");
+		}
+		
 
 		/*
 		 * Computing the "locality", "bearing", "distance" in an Asynchrony Task
 		 */
 		final ParseGeoPoint courseLoc = course.getParseGeoPoint();
-		new locationComputing().execute(new Object[]{holder,position,courseLoc});
+		if(currentLocation !=  null){
+			new locationComputing().execute(new Object[]{holder,position,courseLoc});
+		}
     	/*
     	 * Get level of the course
     	 */
 		String levelString = String.valueOf(course.getLevel());
 		holder.level.setText(levelString);
 		
-		convertView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(mContext, DefenceActivity.class);
-				intent.putExtra("latitude", courseLoc.getLatitude());
-				intent.putExtra("longtitude", courseLoc.getLongitude());
-				intent.putExtra("isFrom", "existCourse");
-				mContext.startActivity(intent);
-			}
-		});
-		
 		return convertView;
 	}
-	
-	/*private view holder class*/
+
+	/*
+	 * private view holder class
+	 */
     private class ViewHolder {
         ImageView compass;
         TextView type;
@@ -133,12 +124,13 @@ public class ListAdapter_newmission extends BaseAdapter {
         TextView level;
         int position;
     }
+    
     private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
-    	private ViewHolder holder;
-    	private int position;
-    	private String distanceString;
-    	private String locality;
-
+		private ViewHolder holder;
+		private int position;
+		private String distanceString;
+		private String locality;
+	
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
@@ -194,6 +186,5 @@ public class ListAdapter_newmission extends BaseAdapter {
 			return bmp;
 		}
 		
-    }
-
+	}
 }

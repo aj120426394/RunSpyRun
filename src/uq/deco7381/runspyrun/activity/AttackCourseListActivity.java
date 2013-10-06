@@ -116,8 +116,9 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 	 * @return Array list of courses
 	 */
 	private ArrayList<Course> getCourseList(double latitude, double longitude){
+		
 		ArrayList<Course> courseList  = new ArrayList<Course>();
-		ArrayList<Course> attackList = dao.getCourseByDiffOrgIn500M(latitude, longitude, ParseUser.getCurrentUser().getString("organization"));
+		ArrayList<Course> attackList = dao.getCourseByDiffOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 0.5);
 		ArrayList<Course> missionList = dao.getCourseByMissionFromCache(ParseUser.getCurrentUser());
 		for(Course attackCourse:  attackList){
 			boolean flag = false;
@@ -130,6 +131,7 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 				courseList.add(attackCourse);
 			}
 		}
+		
 		
 		return courseList;
 	}

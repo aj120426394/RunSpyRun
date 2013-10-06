@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 /**
  * This class is the object to store information of course.
  * 
@@ -26,7 +27,7 @@ public class Course {
 	private double longitude;	// Course's longitude
 	private int radius;
 	private int level;
-	private String owner;
+	private ParseUser creator;
 	private String organization;
 	private String objectID;
 	/**
@@ -36,15 +37,15 @@ public class Course {
 	 * @param username	// Owner(creator) of this course
 	 * @param org		// Organization of this couse's owner
 	 */
-	public Course(double latitude, double longitude, String username,int level, String objectId, String org) {
+	public Course(double latitude, double longitude, ParseUser creator, int level, String objectId, String org) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = 400; //400 meter
 		this.level = 1;
-		this.owner = username;
+		this.creator = creator;
 		this.organization = org;
-		this.objectID = "";
+		this.objectID = objectId;
 	}
 	/**
 	 * Get the CircleOption to display a zone of this course
@@ -83,8 +84,8 @@ public class Course {
 	 * @return String: username of owner(creator) of this course
 	 * 
 	 */
-	public String getOnwer(){
-		return this.owner;
+	public ParseUser getOnwer(){
+		return this.creator;
 	}
 	/**
 	 * Get the level of this course
