@@ -1,6 +1,7 @@
 package uq.deco7381.runspyrun.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.widget.Toast;
@@ -20,91 +21,6 @@ public class ParseDAO {
 		// TODO Auto-generated constructor stub
 		
 	}
-	/**
-	 * Insert  a course into table
-	 * 
-	 * SQL: INSERT INTO Course(level,location,organization,owner) 
-	 * VALUES (
-	 * course.getLevel(),
-	 * course.getParseGeoPoint(),
-	 * course.getOrg(),
-	 * course.getOnwer()
-	 * )
-	 * @param course
-	 * @return ParseObejct: To let other Query point this object.
-	 */
-	public ParseObject insertCourse(Course course){
-		ParseObject parseCourse = new ParseObject("Course");
-		parseCourse.put("owner", course.getOnwer());
-		parseCourse.put("location", course.getParseGeoPoint());
-		parseCourse.put("level", course.getLevel());
-		parseCourse.put("organization", course.getOrg());
-		parseCourse.saveInBackground();
-		
-		return parseCourse;
-	}
-	/**
-	 * Insert an obstacle into table
-	 * SQL:
-	 * INSERT INTO Obstacle(creator, energy, location, altitude, type, course)
-	 * VALUES(
-	 * obstacle.getCreator(),
-	 * obstacle.getEnergy(),
-	 * obstacle.getParseGeoPoint(),
-	 * obstacle.getAltitude(),
-	 * obstacle.getType(),
-	 * course
-	 * )
-	 * 
-	 * @param Obstacle: obstacle - The obstacle that need to save in to database.
-	 * @param ParseObject: course  - The course used for pointer of the course.
-	 */
-	public void insertObstaclesByNewCourse(Obstacle obstacle, ParseObject course){
-		ParseObject object = new ParseObject("Obstacle");
-		object.put("creator", obstacle.getCreator());
-		object.put("energy", obstacle.getEnergy());
-		object.put("location", obstacle.getParseGeoPoint());
-		object.put("altitude", obstacle.getAltitude());
-		object.put("type", obstacle.getType());
-		object.put("course", course);
-		object.saveInBackground();
-	}
-	
-	public void insertObstacle(Course course, Obstacle obstacle){
-		ParseObject object = new ParseObject("Obstacle");
-		object.put("creator", obstacle.getCreator());
-		object.put("energy", obstacle.getEnergy());
-		object.put("location", obstacle.getParseGeoPoint());
-		object.put("altitude", obstacle.getAltitude());
-		object.put("type", obstacle.getType());
-		object.put("course", ParseObject.createWithoutData("Course", course.getObjectID()));
-		object.saveInBackground();
-	}
-	/**
-	 * INSERT INTO Mission(course,username)
-	 * VALUE(
-	 *     course,
-	 *     user
-	 * )
-	 * 
-	 * @param ParseUser: currentUser
-	 * @param course
-	 */
-	public void insertMissionByNewCourse(ParseUser currentUser, ParseObject course){
-		ParseObject mission = new ParseObject("Mission");
-		mission.put("course", course);
-		mission.put("username", currentUser);
-		mission.saveInBackground();
-	}
-	public void insertMission(ParseUser currentUser, Course course){
-		ParseObject mission = new ParseObject("Mission");
-		mission.put("course", course);
-		mission.put("username", currentUser);
-		mission.saveInBackground();
-	}
-	
-	
-	
 	public ParseObject createCourseParseObject(Course course){
 		ParseObject parseCourse = new ParseObject("Course");
 		parseCourse.put("owner", course.getOnwer());
@@ -156,6 +72,25 @@ public class ParseDAO {
 				}
 			}
 		});
+	}
+	/**
+	 * Update user's energy by time
+	 * @param user
+	 */
+	public void updateEnergyByTime(ParseUser user){
+		Date lastLogin = user.getUpdatedAt();
+		Date currentDate = new Date();
+		long difference = currentDate.getTime() - lastLogin.getTime();
+		long differenceBack = difference;
+		differenceBack = difference / 1000;
+		int mins = (int)differenceBack / 60;
+		int extraEnerty = mins/10 * 500;
+		int energy = ParseUser.getCurrentUser().getInt("energyLevel")+extraEnerty;
+		if(energy >= ParseUser.getCurrentUser().getInt("level")*100){
+			energy = ParseUser.getCurrentUser().getInt("level")*100;
+		}
+		ParseUser.getCurrentUser().put("energyLevel", energy);
+		ParseUser.getCurrentUser().saveInBackground();
 	}
 	/**
 	 * Get Course by location from Parse

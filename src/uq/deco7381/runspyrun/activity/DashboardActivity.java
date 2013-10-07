@@ -1,19 +1,25 @@
 package uq.deco7381.runspyrun.activity;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_current_mission;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -60,6 +66,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private ListView missionListView;
 	private ListAdapter_current_mission adapter;
 	private ParseDAO dao;
+	private boolean isCurrLocExist;
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -67,6 +74,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 		dao = new ParseDAO();
+		isCurrLocExist = false;
 		
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
@@ -93,12 +101,38 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		/*
 		 *  Get user info from Parse server
 		 */
+		
+		dao.updateEnergyByTime(ParseUser.getCurrentUser());
 		setUserInfo();
 		
 		
 		ArrayList<Course> missionList = getMissionList();
 		missionListView = (ListView)findViewById(R.id.db_mission_list);
 		missionListView.setScrollingCacheEnabled(false);
+		missionListView.setOnTouchListener(new ListView.OnTouchListener(){
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				int action = event.getAction();
+	            switch (action) {
+	            case MotionEvent.ACTION_DOWN:
+	                // Disallow ScrollView to intercept touch events.
+	                v.getParent().requestDisallowInterceptTouchEvent(true);
+	                break;
+
+	            case MotionEvent.ACTION_UP:
+	                // Allow ScrollView to intercept touch events.
+	                v.getParent().requestDisallowInterceptTouchEvent(false);
+	                break;
+	            }
+
+	            // Handle ListView touch events.
+	            v.onTouchEvent(event);
+	            return true;
+			}
+			
+		});
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);
@@ -177,6 +211,25 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				}
 			}
 		});
+		
+		/*
+		 * Set the locality
+		 */
+		if(currentLocation != null){
+			
+			String locality = "";
+			Geocoder geocoder = new Geocoder(this);
+			try {
+				List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+				locality = addresses.get(0).getLocality();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			TextView localityTextView = (TextView)findViewById(R.id.basicInfo_location);
+			localityTextView.setText(locality);
+		}
+		
 	}
 	/**
 	 * Basic map set up
@@ -250,6 +303,11 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
          */
         double longitude = lastKnownLocation.getLongitude();
  
+        if(isCurrLocExist == false){
+        	adapter.changeLocation(lastKnownLocation);
+        	setUserInfo();
+        	isCurrLocExist = true;
+        }
         adapter.changeLocation(lastKnownLocation);
         /*
          *  Make camera on map keep tracking user.

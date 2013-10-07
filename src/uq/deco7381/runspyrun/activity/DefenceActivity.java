@@ -345,27 +345,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 2. Set content invisible
 	 */
 	private void showLoading(){
-		/*
-		mLoadingView.setAlpha(0f);
-		mLoadingView.setVisibility(View.VISIBLE);
-		
-		mLoadingView.animate()
-					.alpha(1f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(null);
-		
-		mContentView.animate()
-					.alpha(0.5f)
-					.setDuration(mShortAnimationDuration)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-	                    public void onAnimationEnd(Animator animation) {
-							mContentView.setVisibility(View.GONE);
-							mContentView.invalidate();
-	                    }
-					});
-					*/
-		
 		mContentView.setVisibility(View.GONE);
 		mLoadingView.setVisibility(View.VISIBLE);
 		
