@@ -1,7 +1,6 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
@@ -9,11 +8,13 @@ import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,14 +24,8 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 /**
  * This is an Activity with Defense mode, it inherit from OnMyLocationChangeListener
  * which is going to track user's current location.
@@ -57,6 +52,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private ArrayList<Obstacle> newObstaclesOnCourse;	// Save the obstacle when user create new.
 	private Course course;				// Course of this mode
 	private ParseDAO dao;
+	private View mContentView;	// The view contain the whole content.
+	private View mLoadingView;	// The view contain the process animation.
+	private int mShortAnimationDuration;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +99,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
 		displayCourse(this.course);
+		
+		mContentView = findViewById(R.id.content);
+		mLoadingView = findViewById(R.id.loading);
+		mLoadingView.setVisibility(View.GONE);
+		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 	}
 
 	/**
@@ -115,6 +118,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 */
 	public void missionDecide(View v){
+		
+		
 		if(isFrom.equals("newCourse")){
 			newCourse();
 		}else if(isFrom.equals("existMission")){
@@ -124,16 +129,28 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 		Intent intent = new Intent(this, DashboardActivity.class);
+		final ProgressDialog dialog = ProgressDialog.show(this, "","Loading..Wait.." , true);
+		dialog.show();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+		    public void run() {
+		        //your code here
+		                dialog.dismiss();
+		    }   
+		}, 10000);
+		
 		/*
 		 * Because some database connection time issue.
 		 * Force program sleep for 5 second.
 		 */
+		
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		startActivity(intent);
 	}
 	/**
@@ -291,5 +308,18 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
 	}
 
+	/**
+	 * Set up the screen in loading condition
+	 * 1. Set loading progress visible
+	 * 2. Set content invisible
+	 */
+	private void showLoading(){				
+		mContentView.setVisibility(View.GONE);
+		mLoadingView.setVisibility(View.VISIBLE);
+		
+		mContentView.invalidate();
+		mLoadingView.invalidate();
+		
+	}
 
 }

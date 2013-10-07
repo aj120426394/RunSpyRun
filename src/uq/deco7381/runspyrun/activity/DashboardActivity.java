@@ -1,6 +1,5 @@
 package uq.deco7381.runspyrun.activity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +11,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +27,6 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -69,8 +56,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	
 	private GoogleMap map;
 	private LocationManager status;
-	private Bitmap bitmap;
-	private ArrayList<ParseObject> missionList;
 	private Location currentLocation;
 	private ListView missionListView;
 	private ListAdapter_current_mission adapter;
@@ -106,11 +91,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		}
 
 		/*
-		 *  Set the compass images.
-		 */
-		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
-		missionList = new ArrayList<ParseObject>();
-		/*
 		 *  Get user info from Parse server
 		 */
 		setUserInfo();
@@ -118,6 +98,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		
 		ArrayList<Course> missionList = getMissionList();
 		missionListView = (ListView)findViewById(R.id.db_mission_list);
+		missionListView.setScrollingCacheEnabled(false);
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);
