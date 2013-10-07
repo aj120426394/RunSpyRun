@@ -1,12 +1,15 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,8 +27,10 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 /**
  * This is an Activity with Defense mode, it inherit from OnMyLocationChangeListener
  * which is going to track user's current location.
@@ -118,40 +123,30 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 */
 	public void missionDecide(View v){
+		showLoading();
 		
+		final Intent intent = new Intent(this, DashboardActivity.class);
+		SaveCallback saveCallback = new SaveCallback() {
+			
+			@Override
+			public void done(ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					startActivity(intent);
+				}else{
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+			}
+		};
 		
 		if(isFrom.equals("newCourse")){
-			newCourse();
+			newCourse(saveCallback);
 		}else if(isFrom.equals("existMission")){
-			existMission();
+			existMission(saveCallback);
 		}else if(isFrom.equals("existCourse")){
-			existCourse();
+			existCourse(saveCallback);
 		}
 		
-		Intent intent = new Intent(this, DashboardActivity.class);
-		final ProgressDialog dialog = ProgressDialog.show(this, "","Loading..Wait.." , true);
-		dialog.show();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-		    public void run() {
-		        //your code here
-		                dialog.dismiss();
-		    }   
-		}, 10000);
-		
-		/*
-		 * Because some database connection time issue.
-		 * Force program sleep for 5 second.
-		 */
-		
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		startActivity(intent);
 	}
 	/**
 	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.
@@ -253,29 +248,38 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 * @see missionDecide(View v)
 	 */
-	public void newCourse(){
+	public void newCourse(SaveCallback saveCallback){
+		
+		List<ParseObject> objectList = new ArrayList<ParseObject>();
 		/*
-		 *  Save new Course
+		 *  Transfer Course to parse object
 		 */
-		
-		ParseObject courseParseObject = dao.insertCourse(this.course);
+		ParseObject courseParseObject = dao.createCourseParseObject(this.course);
+		objectList.add(courseParseObject);
 		
 		/*
-		 *  Save new Obstacle
+		 * Transfer Obstacle to parse object
 		 */
 		for(Obstacle obstacle: newObstaclesOnCourse){
-			dao.insertObstaclesByNewCourse(obstacle, courseParseObject);
+			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, courseParseObject);
+			objectList.add(obstacleParseObject);
 		}
 		/*
-		 *  Save new mission to mission list
+		 *  Transfer Mission to parse object
 		 */
 		
-		dao.insertMissionByNewCourse(ParseUser.getCurrentUser(), courseParseObject);
+		//dao.insertMissionByNewCourse(ParseUser.getCurrentUser(), courseParseObject);
+		ParseObject missionParseObject = dao.createMissionParseObject(ParseUser.getCurrentUser(), courseParseObject);
+		objectList.add(missionParseObject);
 		
 		/*
 		 *  Update equipment
 		 */
 		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		/*
+		 * save all all Course,Obstacle,Mission to server.
+		 */
+		dao.insertToServer(objectList,saveCallback);
 
 	}
 	/**
@@ -284,14 +288,23 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 * @see missionDecide(View v)
 	 */
-	public void existMission(){
+	public void existMission(SaveCallback saveCallback){
+		List<ParseObject> objectList = new ArrayList<ParseObject>();
 		/*
-		 * Get the current course data from database
+		 * Transfer Obstacle to parse object
 		 */
 		for(Obstacle obstacle: newObstaclesOnCourse){
-			dao.insertObstacle(this.course, obstacle);
+			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, ParseObject.createWithoutData("Course", this.course.getObjectID()));
+			objectList.add(obstacleParseObject);
 		}
+		/*
+		 *  Update equipment
+		 */
 		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		/*
+		 * save all all Course,Obstacle,Mission to server.
+		 */
+		dao.insertToServer(objectList,saveCallback);
 	}
 	
 	/**
@@ -300,12 +313,30 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 2. Save Mission
 	 * @see missionDecide(View v)
 	 */
-	public void existCourse(){
+	public void existCourse(SaveCallback saveCallback){
+		List<ParseObject> objectList = new ArrayList<ParseObject>();
+		
+		/*
+		 * Transfer Obstacle to parse object
+		 */
 		for(Obstacle obstacle: newObstaclesOnCourse){
-			dao.insertObstacle(this.course, obstacle);
+			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, ParseObject.createWithoutData("Course", this.course.getObjectID()));
+			objectList.add(obstacleParseObject);
 		}
-		dao.insertMission(ParseUser.getCurrentUser(), this.course);
+		/*
+		 *  Transfer Mission to parse object
+		 */
+		
+		ParseObject missionParseObject = dao.createMissionParseObject(ParseUser.getCurrentUser(), ParseObject.createWithoutData("Course", this.course.getObjectID()));
+		objectList.add(missionParseObject);
+		/*
+		 *  Update equipment
+		 */
 		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		/*
+		 * save all all Course,Obstacle,Mission to server.
+		 */
+		dao.insertToServer(objectList,saveCallback);
 	}
 
 	/**
@@ -313,13 +344,34 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 1. Set loading progress visible
 	 * 2. Set content invisible
 	 */
-	private void showLoading(){				
+	private void showLoading(){
+		/*
+		mLoadingView.setAlpha(0f);
+		mLoadingView.setVisibility(View.VISIBLE);
+		
+		mLoadingView.animate()
+					.alpha(1f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(null);
+		
+		mContentView.animate()
+					.alpha(0.5f)
+					.setDuration(mShortAnimationDuration)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+	                    public void onAnimationEnd(Animator animation) {
+							mContentView.setVisibility(View.GONE);
+							mContentView.invalidate();
+	                    }
+					});
+					*/
+		
 		mContentView.setVisibility(View.GONE);
 		mLoadingView.setVisibility(View.VISIBLE);
 		
 		mContentView.invalidate();
 		mLoadingView.invalidate();
-		
+			
 	}
 
 }

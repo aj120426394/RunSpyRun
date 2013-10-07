@@ -103,6 +103,36 @@ public class ParseDAO {
 		mission.saveInBackground();
 	}
 	
+	
+	
+	public ParseObject createCourseParseObject(Course course){
+		ParseObject parseCourse = new ParseObject("Course");
+		parseCourse.put("owner", course.getOnwer());
+		parseCourse.put("location", course.getParseGeoPoint());
+		parseCourse.put("level", course.getLevel());
+		parseCourse.put("organization", course.getOrg());
+		
+		return parseCourse;
+	}
+	public ParseObject createObstacleParseObject(Obstacle obstacle, ParseObject course){
+		ParseObject object = new ParseObject("Obstacle");
+		object.put("creator", obstacle.getCreator());
+		object.put("energy", obstacle.getEnergy());
+		object.put("location", obstacle.getParseGeoPoint());
+		object.put("altitude", obstacle.getAltitude());
+		object.put("type", obstacle.getType());
+		object.put("course", course);
+		return object;
+	}
+	public ParseObject createMissionParseObject(ParseUser currentUser, ParseObject course){
+		ParseObject mission = new ParseObject("Mission");
+		mission.put("course", course);
+		mission.put("username", currentUser);
+		return mission;
+	}
+	public void insertToServer(List<ParseObject> list,SaveCallback saveCallback){
+		ParseObject.saveAllInBackground(list, saveCallback);
+	}
 	public void updateEquipment(ParseUser user, ArrayList<Obstacle> obstacles){
 		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
 		equipment.whereEqualTo("username", user);
