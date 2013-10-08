@@ -77,7 +77,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			convertView = mInflater.inflate(R.layout.list_tag_current_mission, null);
 			
 			holder = new ViewHolder();
-			holder.type = (TextView) convertView.findViewById(R.id.textView1);
+			holder.type = (TextView) convertView.findViewById(R.id.energy);
 			holder.compass = (ImageView) convertView.findViewById(R.id.imageView1);
 			holder.locality = (TextView) convertView.findViewById(R.id.textView4);
 			holder.distance = (TextView) convertView.findViewById(R.id.textView2);

@@ -31,7 +31,7 @@
         android:background="@color/white" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/energy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -57,7 +57,7 @@
             android:id="@+id/courseList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView1"
+            android:layout_below="@+id/energy"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"

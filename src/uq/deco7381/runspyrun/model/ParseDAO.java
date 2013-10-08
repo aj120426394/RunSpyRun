@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.R.integer;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -114,6 +115,10 @@ public class ParseDAO {
 		if(energy >= user.getInt("level")*100){
 			energy = user.getInt("level")*100;
 		}
+		user.put("energyLevel", energy);
+		user.saveInBackground();
+	}
+	public void updateEnergyByEnergy(ParseUser user, int energy){
 		user.put("energyLevel", energy);
 		user.saveInBackground();
 	}

@@ -8,6 +8,7 @@ import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Guard;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.R.integer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -19,6 +20,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -59,7 +61,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private ParseDAO dao;
 	private View mContentView;	// The view contain the whole content.
 	private View mLoadingView;	// The view contain the process animation.
-	private int mShortAnimationDuration;
+	private int userEnergy;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
+		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 
 		/*
 		 *  Map set up
@@ -104,11 +107,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
 		displayCourse(this.course);
+		displayEnergy();
 		
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
 		mLoadingView.setVisibility(View.GONE);
-		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 	}
 
 	/**
@@ -159,6 +162,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			map.addMarker(obstacle.getMarkerOptions());
 		}
 	}
+	private void displayEnergy(){
+		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
+		TextView energy = (TextView)findViewById(R.id.energy);
+		energy.setText(energyString);
+	}
 	/**
 	 * Set up a Google map.
 	 * Remove the button: zoom
@@ -192,14 +200,27 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * @param v
 	 */
 	public void setGuard(View v){;
-		ParseUser currentUser = ParseUser.getCurrentUser();
-		Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
-		map.addMarker(g1.getMarkerOptions());
+		int COST = 40; //Cost 40 energy to set a guard in lv 1
+		int userLevel = ParseUser.getCurrentUser().getInt("level");
+		int userSpend = COST * userLevel;
+		if(userSpend > 1000){
+			userSpend  = 1000; // Maximum cost of a guard is 1000 energy.
+		}
+		if(userSpend < this.userEnergy){
+			ParseUser currentUser = ParseUser.getCurrentUser();
+			Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+			map.addMarker(g1.getMarkerOptions());
+			
+			/*
+			 *  Add to the list of new obstacle
+			 */
+			newObstaclesOnCourse.add(g1);
+			this.userEnergy -= userSpend;
+			displayEnergy();
+		}else{
+			Toast.makeText(getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+		}
 		
-		/*
-		 *  Add to the list of new obstacle
-		 */
-		newObstaclesOnCourse.add(g1);
 	}
 	
 	/**
@@ -276,6 +297,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		 *  Update equipment
 		 */
 		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), this.userEnergy);
 		/*
 		 * save all all Course,Obstacle,Mission to server.
 		 */

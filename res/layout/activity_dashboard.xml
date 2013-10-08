@@ -70,7 +70,7 @@
                     android:typeface="normal" />
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/energy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@+id/basicInfo_name"
@@ -81,8 +81,8 @@
                     android:id="@+id/equipment_numOfData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/textView1"
-                    android:layout_below="@+id/textView1"
+                    android:layout_alignLeft="@+id/energy"
+                    android:layout_below="@+id/energy"
                     android:text="Energy:" />
 
                 <TextView
@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/basicInfo_name"
                     android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@+id/textView1"
+                    android:layout_toRightOf="@+id/energy"
                     android:text="5" />
 
                 <TextView
