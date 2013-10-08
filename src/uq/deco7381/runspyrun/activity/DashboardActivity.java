@@ -103,6 +103,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 */
 		
 		dao.updateEnergyByTime(ParseUser.getCurrentUser());
+		dao.updateEnergyByObstacle(ParseUser.getCurrentUser());
 		setUserInfo();
 		
 		

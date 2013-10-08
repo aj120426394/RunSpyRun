@@ -1,9 +1,7 @@
 package uq.deco7381.runspyrun.model;
 
-import uq.deco7381.runspyrun.R;
+import android.R.integer;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
@@ -27,10 +25,11 @@ public class Obstacle {
 	private double altitude;	// Obstacle's altitude
 	private String type;		// Obstacle's type
 	private int level;			// Obstacle's level: base on creator's current level when user set it down
-	private String creator;		// Obstacle's creator
 	private int energy;			// The energy get from player who trigger the obstacle
 	private String objectID;
 	private ParseUser parseUser;
+	private int COST;
+	
 
 	/**
 	 * Constructor
@@ -42,7 +41,7 @@ public class Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId) {
+	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId, int COST) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -52,6 +51,7 @@ public class Obstacle {
 		this.energy = 0;
 		this.objectID = objectId;
 		this.parseUser = creator;
+		this.COST = COST;
 	}
 	/**
 	 * Get the latitude of this obstacle
@@ -124,5 +124,13 @@ public class Obstacle {
 	 */
 	public MarkerOptions getMarkerOptions(){
 		return null;								
+	}
+	public int getLevel(){
+		return this.level;
+	}
+	public void setLevel(int level){
+		this.level = level;
+	}
+	public void setCost(int cost){
 	}
 }

@@ -84,13 +84,38 @@ public class ParseDAO {
 		long differenceBack = difference;
 		differenceBack = difference / 1000;
 		int mins = (int)differenceBack / 60;
-		int extraEnerty = mins/10 * 500;
-		int energy = ParseUser.getCurrentUser().getInt("energyLevel")+extraEnerty;
-		if(energy >= ParseUser.getCurrentUser().getInt("level")*100){
-			energy = ParseUser.getCurrentUser().getInt("level")*100;
+		int extraEnergy = mins/10 * 500;
+		int energy = user.getInt("energyLevel")+extraEnergy;
+		
+		if(energy >= user.getInt("level")*100){
+			energy = user.getInt("level")*100;
 		}
-		ParseUser.getCurrentUser().put("energyLevel", energy);
-		ParseUser.getCurrentUser().saveInBackground();
+		user.put("energyLevel", energy);
+		user.saveInBackground();
+	}
+	/**
+	 * User can regenerate energy from people who trigger the obstacle he set.
+	 * @param user
+	 */
+	public void updateEnergyByObstacle(ParseUser user){
+		int energy = user.getInt("energyLevel");
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
+		query.whereEqualTo("creator", user);
+		try {
+			List<ParseObject> obstaclesList = query.find();
+			for(ParseObject obstacle: obstaclesList){
+				int extraEnergy = obstacle.getInt("energy");
+				energy += extraEnergy;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(energy >= user.getInt("level")*100){
+			energy = user.getInt("level")*100;
+		}
+		user.put("energyLevel", energy);
+		user.saveInBackground();
 	}
 	/**
 	 * Get Course by location from Parse
@@ -306,6 +331,5 @@ public class ParseDAO {
 			}
 		});
 	}
-	
 	
 }

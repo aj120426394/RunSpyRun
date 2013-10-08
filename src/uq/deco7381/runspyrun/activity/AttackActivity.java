@@ -278,6 +278,7 @@ boolean isLoading = false;
 			ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
 			System.out.println(obstacles.toString());
 			
+			
 			for(Obstacle obstacle: obstacles){
 				HashMap<String, String> obstacleHashMap = new HashMap<String, String>();
 				obstacleHashMap.put("id", obstacle.getObjectId());
