@@ -15,9 +15,8 @@
 	
 	<RelativeLayout
 	    android:id="@+id/RelativeLayout1"
-	    android:layout_width="450dp"
-	    android:layout_height="match_parent"
-	    android:layout_weight="1" >
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
 	
 	    <RelativeLayout
 	        android:id="@id/content"
@@ -30,15 +29,14 @@
 	            android:layout_height="match_parent"
 	            class="com.google.android.gms.maps.MapFragment" />
 	
-	        
 	        <Button
 	            android:id="@+id/button1"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:onClick="setGuard"
 	            android:text="Guard" />
-	        
-	        
+	
+>>>>>>> 8efb68b added a list sliding panel to defend mode
 	        <Button
 	            android:id="@+id/button2"
 	            style="@color/yellow"
