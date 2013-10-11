@@ -4,6 +4,7 @@ package uq.deco7381.runspyrun.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.security.auth.PrivateCredentialPermission;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,6 +13,8 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.R.integer;
+import android.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +22,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Toast;
 
@@ -48,6 +52,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private int viewFlag = 1; //1 = Map View 2 = Architect View
 	private boolean firstLoc;
 	private boolean outsideZone; // Detec user start the game  out of the zone;
+	private Double triggerdistance = 30.0; // distance to trigger an obstacle
+	private int counter1 = 1; // counter for checking distance to obstacles
+	private HashMap<Integer, Boolean> obshash = new HashMap<Integer, Boolean>();
+	private Boolean triggered = false; // for checking if defense already triggered
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -373,6 +381,62 @@ boolean isLoading = false;
 						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
 						
 					}
+				}
+			}
+			
+			/** 
+			 * checking to see if obstacles have been triggered 
+			 */
+			
+			if (viewFlag == 2) {
+				
+				System.out.println("Checking distance to obstacles");
+				
+				ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
+				triggered = false;
+				
+				counter1 = 1;
+				
+				// check whether obstacle has been triggered
+				for(Obstacle obstacle: obstacles){
+					//check distance between current location and all obstacles
+				
+					// get obstacle type
+					String obs_type = obstacle.getType();
+				
+					// get distance from currentLoc to obstacle
+					double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
+					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
+					
+					// check if obstacle already triggered
+					triggered = obshash.containsKey(counter1);
+					System.out.println("****** triggered value is "+triggered);
+
+					// check if user within distance to trigger obstacle
+					// only do this if not already triggered
+					// reduce users energy
+					if ((obsdistance < triggerdistance) && (triggered==false)) {
+						// obstacle is triggered
+						System.out.println("obstacle triggered for the first time and energy reduced");
+						Toast.makeText(AttackActivity.this, "Obstacle triggered", Toast.LENGTH_SHORT).show();
+						obshash.put(counter1, true);
+						//do something here to reduce energy
+						System.out.println("energy to be reduced");
+					}
+					
+					// debug code
+					if (obsdistance < triggerdistance) {
+						System.out.println("still within obs distance but not doing anything");
+					}
+					
+					// if outside of distance to trigger object
+					// reset obshash so that obstacle can be triggered again
+					if (obsdistance > triggerdistance && triggered){
+						obshash.remove(counter1);
+						System.out.println("obstacle no longer triggered");
+					}
+					
+					counter1 += 1;
 				}
 			}
 	}
