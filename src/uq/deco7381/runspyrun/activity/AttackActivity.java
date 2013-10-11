@@ -46,6 +46,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private Course course;
 	private ParseDAO dao;
 	private int viewFlag = 1; //1 = Map View 2 = Architect View
+	private boolean firstLoc;
+	private boolean outsideZone; // Detec user start the game  out of the zone;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		setContentView(R.layout.activity_attack);
 		Intent intent = getIntent();
 		dao = new ParseDAO();
+		firstLoc = false;
+		outsideZone = false;
 		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
@@ -120,6 +124,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
+		
+		map.addCircle(course.getCourseZone());
 	}
 	/**
 	 * Set up the screen in normal condition
@@ -335,19 +341,25 @@ boolean isLoading = false;
 	        */
 			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-			map.animateCamera(CameraUpdateFactory.zoomTo(15));
+			if(firstLoc == false){
+				map.animateCamera(CameraUpdateFactory.zoomTo(15));
+				firstLoc = true;
+			}
 			map.setOnCameraChangeListener(null);
 			
 			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
 			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
 			System.out.println(distance);
 			if(distance*1000 > 400){
+				outsideZone = true;
 				if(viewFlag == 2){
 					showMap();
 				}
 			}else{
-				if(viewFlag == 1){
+				if(viewFlag == 1 && outsideZone == true){
 					showAR();
+				}else{
+					Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
 				}
 			}
 			

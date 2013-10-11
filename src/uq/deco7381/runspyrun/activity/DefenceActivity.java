@@ -62,6 +62,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private View mContentView;	// The view contain the whole content.
 	private View mLoadingView;	// The view contain the process animation.
 	private int userEnergy;
+	private boolean firstLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		newObstaclesOnCourse = new ArrayList<Obstacle>();
 		Intent intent = getIntent();
 		dao = new ParseDAO(); 
+		firstLocation = false;
 		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
@@ -254,7 +256,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         LatLng latLng = new LatLng(latitude, longitude);
 		
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        if(firstLocation == false){
+        	map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        	firstLocation = true;
+        }
+        
 		
 		map.setOnCameraChangeListener(null);
 		
