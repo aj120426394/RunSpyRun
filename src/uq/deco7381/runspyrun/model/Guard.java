@@ -23,10 +23,10 @@ public class Guard extends Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	private static int COST = 40;
+	private static int triggerDistance = 30;
 	
 	public Guard(double latitude,double longitude,double altitude, ParseUser creator, int level, String objectId) {
-		super(latitude, longitude, altitude, "Guard", creator, level, objectId, COST);
+		super(latitude, longitude, altitude, "Guard", creator, level, objectId, triggerDistance);
 		// TODO Auto-generated constructor stub
 	}
 	

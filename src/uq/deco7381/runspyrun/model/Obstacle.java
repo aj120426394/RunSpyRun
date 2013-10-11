@@ -28,7 +28,7 @@ public class Obstacle {
 	private int energy;			// The energy get from player who trigger the obstacle
 	private String objectID;
 	private ParseUser parseUser;
-	private int COST;
+	private int triggerDistance;
 	
 
 	/**
@@ -41,7 +41,7 @@ public class Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId, int COST) {
+	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId,int triggerDistance) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -51,7 +51,7 @@ public class Obstacle {
 		this.energy = 0;
 		this.objectID = objectId;
 		this.parseUser = creator;
-		this.COST = COST;
+		this.triggerDistance = triggerDistance;
 	}
 	/**
 	 * Get the latitude of this obstacle
@@ -132,5 +132,8 @@ public class Obstacle {
 		this.level = level;
 	}
 	public void setCost(int cost){
+	}
+	public int getTriggerDistance() {
+		return this.triggerDistance;
 	}
 }
