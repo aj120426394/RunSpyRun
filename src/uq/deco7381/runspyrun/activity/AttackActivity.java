@@ -4,7 +4,6 @@ package uq.deco7381.runspyrun.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.security.auth.PrivateCredentialPermission;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,8 +12,6 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import android.R.integer;
-import android.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +19,6 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,9 +50,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private boolean outsideZone; // Detec user start the game  out of the zone;
 	private Double triggerdistance = 30.0; // distance to trigger an obstacle
 	private int counter1 = 1; // counter for checking distance to obstacles
-	private HashMap<Integer, Boolean> obshash = new HashMap<Integer, Boolean>();
+	private HashMap<Obstacle, Boolean> obshash = new HashMap<Obstacle, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
 	private int dog_dist; // starting distance for guard dog
+	ArrayList<Obstacle> obstacles;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -393,8 +390,6 @@ boolean isLoading = false;
 			if (viewFlag == 2) {
 				
 				System.out.println("Checking distance to obstacles");
-				
-				ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
 
 				triggered = false;
 				
@@ -414,7 +409,7 @@ boolean isLoading = false;
 					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
 					
 					// check if obstacle already triggered
-					triggered = obshash.containsKey(counter1);
+					triggered = obshash.containsKey(obstacle);
 					System.out.println("****** triggered value is "+triggered);
 
 					// check if user within distance to trigger obstacle
@@ -431,7 +426,7 @@ boolean isLoading = false;
 							System.out.println("You have been seen by a Guard Dog");
 							dog_dist = 30;
 						}
-						obshash.put(counter1, true);
+						obshash.put(obstacle, true);
 						//do something here to reduce energy
 						System.out.println("energy to be reduced");
 					}
@@ -451,7 +446,7 @@ boolean isLoading = false;
 					// if outside of distance to trigger object
 					// reset obshash so that obstacle can be triggered again
 					if (obsdistance > obs_td && triggered){
-						obshash.remove(counter1);
+						obshash.remove(obstacle);
 						System.out.println("obstacle no longer triggered");
 					}
 					
