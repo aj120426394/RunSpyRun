@@ -12,6 +12,7 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,7 +56,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private HashMap<Obstacle, Boolean> obshash = new HashMap<Obstacle, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
 	private int dog_dist; // starting distance for guard dog
-	ArrayList<Obstacle> obstacles;
+	private ArrayList<Obstacle> obstacles;
+	private RelativeLayout test;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		course = dao.getCourseByLoc(latitude, longitude);
-		
+		obstacles = dao.getObstaclesByCourse(course);
 		locationManager = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available
@@ -97,7 +101,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		/*
 		 * creates initial view using wikitude architectview
 		 */
-		
+		test = (RelativeLayout)findViewById(R.id.RelativeLayout1);
 		architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig("");
 		architectView.onCreate( config );
@@ -141,12 +145,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private void showMap(){
 		viewFlag = 1;
 		
-		// Force the View redraw
-		architectView.invalidate();
-		
-		//mMapFragment.getView().setAlpha(0f);
 		mMapFragment.getView().setVisibility(View.VISIBLE);
 		architectView.setVisibility(View.GONE);
+		// Force the View redraw
+		test.invalidate();
 
 		System.out.println("MAP MODE");
 		System.out.println("MAP MODE");
@@ -161,9 +163,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	 */
 	private void showAR(){
 		viewFlag = 2;
-		architectView.invalidate();
+		
+		
 		architectView.setVisibility(View.VISIBLE);
 		mMapFragment.getView().setVisibility(View.GONE);
+		
+		// Force the View redraw
+		test.invalidate();
 
 		System.out.println("AR MODE");
 		System.out.println("AR MODE");
@@ -287,7 +293,7 @@ boolean isLoading = false;
 			courseHashMap.put("longitude", String.valueOf(course.getLongitude()));
 			poiData.put(new JSONObject(courseHashMap));
 			
-			ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
+			
 			System.out.println(obstacles.toString());
 			System.out.println(course.getObjectID());
 			
@@ -363,10 +369,12 @@ boolean isLoading = false;
 					showMap();
 				}
 			}else{
-				if(viewFlag == 1 && outsideZone == true){
-					showAR();
-				}else{
-					Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
+				if(viewFlag == 1){
+					if(outsideZone == true){
+						showAR();
+					}else{
+						Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
+					}
 				}
 			}
 			
