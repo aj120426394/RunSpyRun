@@ -56,6 +56,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private int counter1 = 1; // counter for checking distance to obstacles
 	private HashMap<Integer, Boolean> obshash = new HashMap<Integer, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
+	private int dog_dist; // starting distance for guard dog
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -291,6 +292,7 @@ boolean isLoading = false;
 			
 			ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
 			System.out.println(obstacles.toString());
+			System.out.println(course.getObjectID());
 			
 			
 			for(Obstacle obstacle: obstacles){
@@ -393,6 +395,7 @@ boolean isLoading = false;
 				System.out.println("Checking distance to obstacles");
 				
 				ArrayList<Obstacle> obstacles = dao.getObstaclesByCourse(course);
+
 				triggered = false;
 				
 				counter1 = 1;
@@ -403,6 +406,8 @@ boolean isLoading = false;
 				
 					// get obstacle type
 					String obs_type = obstacle.getType();
+					double obs_td = obstacle.getTriggerDistance();
+					System.out.println(obs_td);
 				
 					// get distance from currentLoc to obstacle
 					double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
@@ -415,28 +420,48 @@ boolean isLoading = false;
 					// check if user within distance to trigger obstacle
 					// only do this if not already triggered
 					// reduce users energy
-					if ((obsdistance < triggerdistance) && (triggered==false)) {
+					if ((obsdistance < obs_td) && (triggered==false)) {
 						// obstacle is triggered
-						System.out.println("obstacle triggered for the first time and energy reduced");
+						// System.out.println("obstacle triggered for the first time and energy reduced");
 						Toast.makeText(AttackActivity.this, "Obstacle triggered", Toast.LENGTH_SHORT).show();
+						if (obs_type=="Guard") {
+							System.out.println("You have been seen by a Guard");
+						}
+						if (obs_type=="Dog") {
+							System.out.println("You have been seen by a Guard Dog");
+							dog_dist = 30;
+						}
 						obshash.put(counter1, true);
 						//do something here to reduce energy
 						System.out.println("energy to be reduced");
 					}
 					
 					// debug code
-					if (obsdistance < triggerdistance) {
-						System.out.println("still within obs distance but not doing anything");
+					if (obsdistance < obs_td) {
+						//System.out.println("still within obs distance but not doing anything");
+						if (obs_type=="Guard") {
+							System.out.println("The Guard can still see you!");
+						}
+						if (obs_type=="Dog") {
+							dog_dist -= 1;
+							System.out.println("The dog is chasing you and is only "+dog_dist+"m away");
+						}
 					}
 					
 					// if outside of distance to trigger object
 					// reset obshash so that obstacle can be triggered again
-					if (obsdistance > triggerdistance && triggered){
+					if (obsdistance > obs_td && triggered){
 						obshash.remove(counter1);
 						System.out.println("obstacle no longer triggered");
 					}
 					
 					counter1 += 1;
+				}
+				/**
+				 * Check to see if at data source
+				 */
+				if (distance*1000<10) {
+					System.out.println("you have reached the data source");
 				}
 			}
 	}
