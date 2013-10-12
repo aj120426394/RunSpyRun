@@ -384,7 +384,7 @@ boolean isLoading = false;
 				}
 			}
 			
-			/** 
+			/*
 			 * checking to see if obstacles have been triggered 
 			 */
 			
