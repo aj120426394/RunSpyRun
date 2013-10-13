@@ -17,7 +17,7 @@ var World = {
 
 
 		// message to user whilst loading data for defences
-		document.getElementById("statusElement").innerHTML = 'Scanning for defences';
+		document.getElementById("statusElementLeft").innerHTML = 'Attack Mode Initialising';
 		
 		// image for the radar
 		var poiImage = new AR.ImageResource("img/marker.png", {
@@ -39,7 +39,7 @@ var World = {
 		}
 		
 		// message to user on loading of data for defences
-		document.getElementById("statusElement").innerHTML = 'Virtual Defences have been located';
+		document.getElementById("statusElementLeft").innerHTML = 'Virtual Defences Located';
 
 	},
 
@@ -54,6 +54,22 @@ var World = {
 			//'altitude': alt,
 			'accuracy': acc
 		};
+	},
+	
+	updateStatusMsg: function updateStatusMsgFn(statusMsgText) {
+		document.getElementById("statusElementLeft").innerHTML = statusMsgText;
+	},
+	
+	updateEnergyValue: function updateEnergyValueFn(energyval) {
+		document.getElementById("energyvalue").innerHTML = energyval;
+	},
+	
+	updateAlertElementLeft: function updateAlertElementLeftFn(alertLeftText) {
+		document.getElementById("alertElementLeft").innerHTML = alertLeftText;
+	},
+	
+	updateAlertElementRight: function updateAlertElementRightFn(alertRightText) {
+		document.getElementById("alertElementRight").innerHTML = alertRightText;
 	}
 
 };

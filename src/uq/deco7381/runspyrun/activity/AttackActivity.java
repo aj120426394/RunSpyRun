@@ -56,16 +56,12 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private HashMap<Obstacle, Boolean> obshash = new HashMap<Obstacle, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
 	private int dog_dist; // starting distance for guard dog
-<<<<<<< Upstream, based on master
 	private ArrayList<Obstacle> obstacles;
 	private RelativeLayout viewGroup;
-=======
-	ArrayList<Obstacle> obstacles;
 	private String alertmessage = "In mission - undetected";
 	private int energy = 500;
 	private int obs_energycost = 0;
 	private String alertFlag = "";
->>>>>>> 2b448d3 adding code for triggering obstacles
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -423,7 +419,6 @@ boolean isLoading = false;
 				// check whether obstacle has been triggered
 				for(Obstacle obstacle: obstacles){
 					//check distance between current location and all obstacles
-					System.out.println("Did we get into the obs checking code?");
 				
 					// get obstacle type
 					String obs_type = obstacle.getType();
@@ -437,28 +432,26 @@ boolean isLoading = false;
 					
 					// check if obstacle already triggered
 					triggered = obshash.containsKey(obstacle);
-					System.out.println("****** triggered value is "+triggered);
+					System.out.println("triggered value is "+triggered);
 
 					// check if user within distance to trigger obstacle
 					// only do this if not already triggered
 					// reduce users energy
 					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
 						// obstacle is triggered
-						// System.out.println("obstacle triggered for the first time and energy reduced");
-						//Toast.makeText(AttackActivity.this, "Obstacle triggered", Toast.LENGTH_SHORT).show();
+
 						if (obs_type=="Guard") {
-							//System.out.println("You have been seen by a Guard");
 							obs_energycost = 50;
-							alertmessage = "Guard has seen you - "+obs_energycost+" energy lost";
+							alertmessage = "Detection: Guard - energy reduction: "+obs_energycost;
 						}
 						if (obs_type=="Dog") {
-							//System.out.println("You have been seen by a Guard Dog");
 							obs_energycost = 30;
-							alertmessage = "Detected by a Dog - "+obs_energycost+" energy lost";
+							alertmessage = "Detection: Dog - energy reduction: "+obs_energycost;
 							dog_dist = 30;
 						}
+						
 						obshash.put(obstacle, true);
-						//do something here to reduce energy
+						// to be updated by Jafo - reduce user's energy
 						energy -= obs_energycost;
 						
 						// vibrate phone
@@ -475,25 +468,22 @@ boolean isLoading = false;
 						//System.out.println("still within obs distance but not doing anything");
 						if (obs_type=="Guard") {
 							//System.out.println("The Guard can still see you!");
-							alertmessage = "Guard is approaching";
+							alertmessage = "Guard approaching";
 						}
 						if (obs_type=="Dog") {
 							dog_dist -= 1;
-							//System.out.println("The dog is chasing you and is only "+dog_dist+"m away");
-							alertmessage = "Dog is chasing you - "+dog_dist+"m away";
+							alertmessage = "Dog chasing you - "+dog_dist+"m away";
 						}
 						alertFlag = "ALERT!";
 						System.out.println("Second Trigger - "+alertFlag+" "+alertmessage);
 					}
 					
-					// if triggered obstacle but now moved outside of trigger distance
+					// obstacle no longer triggered
 					// reset obshash so that obstacle can be triggered again
 					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
-						//System.out.println("obstacle no longer triggered");
 						alertmessage ="In mission - undetected";
 						alertFlag = "";
-						System.out.println("Third Trigger - "+alertFlag+" "+alertmessage);
 					}
 					
 					counter1 += 1;
@@ -502,9 +492,17 @@ boolean isLoading = false;
 				 * Check to see if at data source
 				 */
 				if (distance*1000<10) {
-					System.out.println("you have reached the data source");
 					alertmessage = "You have reached the data stream";
 					alertFlag = "ALERT!";
+				}
+				
+				// update energy and alerts in AR view
+				if (this.architectView!=null) {
+					this.architectView.callJavascript("World.updateEnergyValue( '"+energy+"' );");			
+					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
+					this.architectView.callJavascript(alertRightText);
+					final String alertLeftText = ( "World.updateAlertElementLeft( '"+alertFlag.toString()+"' );" );
+					this.architectView.callJavascript(alertLeftText);
 				}
 			}
 	}

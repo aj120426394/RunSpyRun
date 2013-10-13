@@ -25,9 +25,23 @@
         
         <!-- status element showing app progress -->
         <div id="statusElement" class="status">
-            Initialising Attack Mode
+            <div id="statusElementLeft">
+	            Initialising Attack Mode
+	        </div>
+	        <div id="statusElementRight">
+	        	Energy: <span id="energyvalue">000</span>
+	        </div>
+    	</div>
+    	
+    	<!-- alert element showing game interactions -->
+    	<div id="alertElement">
+    		<div id="alertElementLeft">
+    			ALERT
+    		</div>
+    		<div id="alertElementRight">
+    			Everything normal
+    		</div>
         </div>
-        
         <!-- main JS code of this scene -->
         <script src="js/poisFromNative.js"></script>
 
