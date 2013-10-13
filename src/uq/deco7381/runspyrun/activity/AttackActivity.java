@@ -307,8 +307,8 @@ boolean isLoading = false;
 			poiData.put(new JSONObject(courseHashMap));
 			
 			
-			System.out.println(obstacles.toString());
-			System.out.println(course.getObjectID());
+			// System.out.println(obstacles.toString());
+			// System.out.println(course.getObjectID());
 			
 			
 			for(Obstacle obstacle: obstacles){
