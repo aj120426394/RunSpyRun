@@ -37,6 +37,9 @@
 
 	<!-- compass -->
 	<uses-feature android:name="android.hardware.sensor.compass" android:required="true" />
+	
+	<!--  vibrator -->
+	<uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
