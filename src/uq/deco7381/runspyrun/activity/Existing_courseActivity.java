@@ -1,12 +1,12 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_newmission;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import uq.deco7381.runspyrun.model.SwipeDismissListViewTouchListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +22,6 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 public class Existing_courseActivity extends Activity implements OnMyLocationChangeListener{
@@ -74,15 +70,38 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		
 		
 		ArrayList<Course> courseList = getCourseList(latitude, longitude);
-		existingCourseListView = (ListView) findViewById(R.id.ListOFCourse);
+		existingCourseListView = (ListView)findViewById(R.id.listView);
 		existingCourseListView.setScrollingCacheEnabled(false);
+		
 		adapter = new ListAdapter_newmission(this,currentLocation,courseList);
 		existingCourseListView.setAdapter(adapter);
+		/*
+		SwipeDismissListViewTouchListener touchListener = 
+				new SwipeDismissListViewTouchListener(existingCourseListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
+					
+					@Override
+					public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+						// TODO Auto-generated method stub
+						for (int position : reverseSortedPositions) {
+							adapter.remove(adapter.getItem(position));
+                        }
+						adapter.notifyDataSetChanged();
+					}
+					
+					@Override
+					public boolean canDismiss(int position) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				});
 		
-		
+		existingCourseListView.setOnTouchListener(touchListener);
+		existingCourseListView.setOnScrollListener(touchListener.makeScrollListener());
+		*/
 		
 	}
 
+	
 	private ArrayList<Course> getCourseList(double latitude, double longitude){
 		ArrayList<Course> courseList  = new ArrayList<Course>();
 		ArrayList<Course> missionList = dao.getCourseByMissionFromNetwork(ParseUser.getCurrentUser());

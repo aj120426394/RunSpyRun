@@ -14,12 +14,12 @@
         android:layout_alignParentRight="true"
         class="com.google.android.gms.maps.MapFragment" />
 
-    <View
-        android:id="@+id/scrollView1"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:background="@color/transparentBackground" />
+        android:background="@color/transparentBackground" >
+
+    </FrameLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"

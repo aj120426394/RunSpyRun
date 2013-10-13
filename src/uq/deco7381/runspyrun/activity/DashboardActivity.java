@@ -9,6 +9,7 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_current_mission;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import uq.deco7381.runspyrun.model.SwipeDismissListViewTouchListener;
 import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -110,6 +111,12 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		ArrayList<Course> missionList = getMissionList();
 		missionListView = (ListView)findViewById(R.id.db_mission_list);
 		missionListView.setScrollingCacheEnabled(false);
+		adapter = new ListAdapter_current_mission(this, currentLocation, missionList);
+		missionListView.setAdapter(adapter);
+		/*
+		 * Constrain the scroll view when list view is scrollable 
+		 */
+		
 		missionListView.setOnTouchListener(new ListView.OnTouchListener(){
 
 			@Override
@@ -134,6 +141,32 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			}
 			
 		});
+		
+		/*
+		 * Swipe to delete the element in list view.
+		 */
+		SwipeDismissListViewTouchListener touchListener = 
+				new SwipeDismissListViewTouchListener(missionListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
+					
+					@Override
+					public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+						System.out.println("DEBUG:swipe");
+						// TODO Auto-generated method stub
+						for(int position: reverseSortedPositions){
+							adapter.removeItem(adapter.getItem(position));
+						}
+						adapter.notifyDataSetChanged();
+					}
+					
+					@Override
+					public boolean canDismiss(int position) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				});
+		missionListView.setOnTouchListener(touchListener);
+		missionListView.setOnScrollListener(touchListener.makeScrollListener());
+		
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);
@@ -142,8 +175,8 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			noMission.setVisibility(View.GONE);
 			missionListView.setVisibility(View.VISIBLE);
 		}
-		adapter = new ListAdapter_current_mission(this, currentLocation, missionList);
-		missionListView.setAdapter(adapter);
+		
+		
 		
 	}
 	

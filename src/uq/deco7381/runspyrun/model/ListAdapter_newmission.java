@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 
 public class ListAdapter_newmission extends BaseAdapter {
 
@@ -53,6 +52,9 @@ public class ListAdapter_newmission extends BaseAdapter {
     	mAppList.add(course);
     	this.notifyDataSetChanged();
     }
+    public void remove(Object object){
+		this.mAppList.remove(object);
+	}
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -72,7 +74,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		/*
 		 * Set up view holder
@@ -96,7 +98,7 @@ public class ListAdapter_newmission extends BaseAdapter {
 		 * Get the course from the list
 		 */
 		Course course = mAppList.get(position);
-		holder.type.setText("DEFENCE");
+		holder.type.setText(course.getObjectID());
 
 		/*
 		 * Computing the "locality", "bearing", "distance" in an Asynchrony Task
@@ -120,6 +122,8 @@ public class ListAdapter_newmission extends BaseAdapter {
 				mContext.startActivity(intent);
 			}
 		});
+		
+		
 		
 		return convertView;
 	}

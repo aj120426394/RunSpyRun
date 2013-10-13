@@ -15,7 +15,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -53,6 +55,9 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		return mAppList.get(position);
 	}
 
+	public void removeItem(Object object){
+		this.mAppList.remove(object);
+	}
 	@Override
 	public long getItemId(int position) {
 		// TODO Auto-generated method stub
@@ -64,7 +69,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		
 		/*
@@ -89,9 +94,9 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		/*
 		 * Get the course from the list
 		 */
-		Course course = mAppList.get(position);
+		final Course course = mAppList.get(position);
 		if(course.getOrg().equals(ParseUser.getCurrentUser().getString("organization"))){
-			holder.type.setText("Defence");
+			holder.type.setText(course.getObjectID());
 		}else{
 			holder.type.setText("Attack");
 		}
@@ -110,6 +115,46 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		String levelString = String.valueOf(course.getLevel());
 		holder.level.setText(levelString);
 		
+		
+		final SwipeDismissTouchListener swipeDismissTouchListener;
+
+	    swipeDismissTouchListener = new SwipeDismissTouchListener(convertView, null, new SwipeDismissTouchListener.DismissCallbacks() {
+			
+			@Override
+			public void onDismiss(View view, Object token) {
+				// TODO Auto-generated method stub
+				System.out.println(position);
+				removeItem(getItem(position));
+				notifyDataSetChanged();
+			}
+			
+			@Override
+			public boolean canDismiss(Object token) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		});
+		
+		convertView.setOnTouchListener(new View.OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				return swipeDismissTouchListener.onTouch(v, event);
+			}
+		});
+		
+		/*
+		convertView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				System.out.println(position);
+				removeItem(getItem(position));
+				notifyDataSetChanged();
+			}
+		});
+		*/
 		return convertView;
 	}
 
