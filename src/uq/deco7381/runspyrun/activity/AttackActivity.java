@@ -12,6 +12,7 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
+import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.RelativeLayout;
@@ -54,8 +56,16 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private HashMap<Obstacle, Boolean> obshash = new HashMap<Obstacle, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
 	private int dog_dist; // starting distance for guard dog
+<<<<<<< Upstream, based on master
 	private ArrayList<Obstacle> obstacles;
 	private RelativeLayout viewGroup;
+=======
+	ArrayList<Obstacle> obstacles;
+	private String alertmessage = "In mission - undetected";
+	private int energy = 500;
+	private int obs_energycost = 0;
+	private String alertFlag = "";
+>>>>>>> 2b448d3 adding code for triggering obstacles
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -390,7 +400,7 @@ boolean isLoading = false;
 				if ( this.architectView != null ) {
 					if ( location.hasAltitude() ) {
 						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-						System.out.println("altitude is "+ location.getAltitude());
+						//System.out.println("altitude is "+ location.getAltitude());
 					} else {
 						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
 						
@@ -413,15 +423,17 @@ boolean isLoading = false;
 				// check whether obstacle has been triggered
 				for(Obstacle obstacle: obstacles){
 					//check distance between current location and all obstacles
+					System.out.println("Did we get into the obs checking code?");
 				
 					// get obstacle type
 					String obs_type = obstacle.getType();
-					double obs_td = obstacle.getTriggerDistance();
-					System.out.println(obs_td);
+					double obs_triggerdistance = obstacle.getTriggerDistance();
+					//System.out.println(obs_triggerdistance);
 				
 					// get distance from currentLoc to obstacle
 					double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
 					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
+					System.out.println("Trigger distance is "+obs_triggerdistance);
 					
 					// check if obstacle already triggered
 					triggered = obshash.containsKey(obstacle);
@@ -430,39 +442,58 @@ boolean isLoading = false;
 					// check if user within distance to trigger obstacle
 					// only do this if not already triggered
 					// reduce users energy
-					if ((obsdistance < obs_td) && (triggered==false)) {
+					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
 						// obstacle is triggered
 						// System.out.println("obstacle triggered for the first time and energy reduced");
-						Toast.makeText(AttackActivity.this, "Obstacle triggered", Toast.LENGTH_SHORT).show();
+						//Toast.makeText(AttackActivity.this, "Obstacle triggered", Toast.LENGTH_SHORT).show();
 						if (obs_type=="Guard") {
-							System.out.println("You have been seen by a Guard");
+							//System.out.println("You have been seen by a Guard");
+							obs_energycost = 50;
+							alertmessage = "Guard has seen you - "+obs_energycost+" energy lost";
 						}
 						if (obs_type=="Dog") {
-							System.out.println("You have been seen by a Guard Dog");
+							//System.out.println("You have been seen by a Guard Dog");
+							obs_energycost = 30;
+							alertmessage = "Detected by a Dog - "+obs_energycost+" energy lost";
 							dog_dist = 30;
 						}
 						obshash.put(obstacle, true);
 						//do something here to reduce energy
-						System.out.println("energy to be reduced");
+						energy -= obs_energycost;
+						
+						// vibrate phone
+						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+						vibrator.vibrate(500);
+						
+						// set alertFlag
+						alertFlag = "ALERT!";
+						System.out.println("First Triggered - "+alertFlag+" "+alertmessage);
 					}
 					
-					// debug code
-					if (obsdistance < obs_td) {
+					// events when already detected still within trigger distance
+					if ((obsdistance < obs_triggerdistance) && (triggered)) {
 						//System.out.println("still within obs distance but not doing anything");
 						if (obs_type=="Guard") {
-							System.out.println("The Guard can still see you!");
+							//System.out.println("The Guard can still see you!");
+							alertmessage = "Guard is approaching";
 						}
 						if (obs_type=="Dog") {
 							dog_dist -= 1;
-							System.out.println("The dog is chasing you and is only "+dog_dist+"m away");
+							//System.out.println("The dog is chasing you and is only "+dog_dist+"m away");
+							alertmessage = "Dog is chasing you - "+dog_dist+"m away";
 						}
+						alertFlag = "ALERT!";
+						System.out.println("Second Trigger - "+alertFlag+" "+alertmessage);
 					}
 					
-					// if outside of distance to trigger object
+					// if triggered obstacle but now moved outside of trigger distance
 					// reset obshash so that obstacle can be triggered again
-					if (obsdistance > obs_td && triggered){
+					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
-						System.out.println("obstacle no longer triggered");
+						//System.out.println("obstacle no longer triggered");
+						alertmessage ="In mission - undetected";
+						alertFlag = "";
+						System.out.println("Third Trigger - "+alertFlag+" "+alertmessage);
 					}
 					
 					counter1 += 1;
@@ -472,6 +503,8 @@ boolean isLoading = false;
 				 */
 				if (distance*1000<10) {
 					System.out.println("you have reached the data source");
+					alertmessage = "You have reached the data stream";
+					alertFlag = "ALERT!";
 				}
 			}
 	}
