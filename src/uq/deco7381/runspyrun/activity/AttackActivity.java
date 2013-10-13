@@ -12,7 +12,6 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -51,13 +50,12 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private int viewFlag = 1; //1 = Map View 2 = Architect View
 	private boolean firstLoc;
 	private boolean outsideZone; // Detec user start the game  out of the zone;
-	private Double triggerdistance = 30.0; // distance to trigger an obstacle
 	private int counter1 = 1; // counter for checking distance to obstacles
 	private HashMap<Obstacle, Boolean> obshash = new HashMap<Obstacle, Boolean>();
 	private Boolean triggered = false; // for checking if defense already triggered
 	private int dog_dist; // starting distance for guard dog
 	private ArrayList<Obstacle> obstacles;
-	private RelativeLayout test;
+	private RelativeLayout viewGroup;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,12 +99,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		/*
 		 * creates initial view using wikitude architectview
 		 */
-		test = (RelativeLayout)findViewById(R.id.RelativeLayout1);
+		viewGroup = (RelativeLayout)findViewById(R.id.RelativeLayout1);
+		
 		architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig("");
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
-		
+			
 		/*
 		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
 		 * objects in the device view
@@ -146,9 +145,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		viewFlag = 1;
 		
 		mMapFragment.getView().setVisibility(View.VISIBLE);
-		architectView.setVisibility(View.GONE);
+		architectView.setVisibility(View.INVISIBLE);
+		
+		this.viewGroup.removeView( this.architectView );
+		
+		
 		// Force the View redraw
-		test.invalidate();
+		architectView.invalidate();
 
 		System.out.println("MAP MODE");
 		System.out.println("MAP MODE");
@@ -164,12 +167,16 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private void showAR(){
 		viewFlag = 2;
 		
-		
+		if(this.viewGroup.getChildCount() < 3){
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+			this.viewGroup.addView(this.architectView, params);
+		}
+
 		architectView.setVisibility(View.VISIBLE);
 		mMapFragment.getView().setVisibility(View.GONE);
 		
 		// Force the View redraw
-		test.invalidate();
+		architectView.invalidate();
 
 		System.out.println("AR MODE");
 		System.out.println("AR MODE");
