@@ -34,7 +34,7 @@ public class ParseDAO {
 	public ParseObject createObstacleParseObject(Obstacle obstacle, ParseObject course){
 		ParseObject object = new ParseObject("Obstacle");
 		object.put("creator", obstacle.getCreator());
-		object.put("energy", obstacle.getEnergy());
+		object.put("energy", 0);
 		object.put("location", obstacle.getParseGeoPoint());
 		object.put("altitude", obstacle.getAltitude());
 		object.put("type", obstacle.getType());
@@ -107,7 +107,9 @@ public class ParseDAO {
 			for(ParseObject obstacle: obstaclesList){
 				int extraEnergy = obstacle.getInt("energy");
 				energy += extraEnergy;
+				obstacle.put("energy", 0);
 			}
+			ParseObject.saveAllInBackground(obstaclesList);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,9 +120,27 @@ public class ParseDAO {
 		user.put("energyLevel", energy);
 		user.saveInBackground();
 	}
+	
 	public void updateEnergyByEnergy(ParseUser user, int energy){
 		user.put("energyLevel", energy);
 		user.saveInBackground();
+	}
+	
+	public void updateObstacleEnergy(final Obstacle obstacle,final int stolenEnergy){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
+		query.getInBackground(obstacle.getObjectId(), new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject object, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					object.increment("energy", stolenEnergy);
+					object.saveInBackground();
+				}else{
+					System.out.println();
+				}
+			}
+		});
 	}
 	/**
 	 * Get Course by location from Parse

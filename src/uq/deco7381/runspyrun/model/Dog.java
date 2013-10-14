@@ -1,6 +1,7 @@
 package uq.deco7381.runspyrun.model;
 
 import uq.deco7381.runspyrun.R;
+import android.R.integer;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,9 +26,10 @@ public class Dog extends Obstacle {
 	 * @param level
 	 */
 	private static int triggerDistance = 30;
+	private static int energyCost = 30;
 	
 	public Dog(double latitude,double longitude,double altitude, ParseUser creator, int level, String objectId) {
-		super(latitude, longitude, altitude, "Dog", creator, level, objectId, triggerDistance);
+		super(latitude, longitude, altitude, "Dog", creator, level, objectId, triggerDistance,energyCost);
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -33,6 +33,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 import com.wikitude.architect.ArchitectUrlListener;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
@@ -59,8 +60,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private ArrayList<Obstacle> obstacles;
 	private RelativeLayout viewGroup;
 	private String alertmessage = "In mission - undetected";
-	private int energy = 500;
-	private int obs_energycost = 0;
+	private int userEnergy;
 	private String alertFlag = "";
 	
 	@Override
@@ -79,6 +79,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		course = dao.getCourseByLoc(latitude, longitude);
 		obstacles = dao.getObstaclesByCourse(course);
+		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
+		
 		locationManager = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available
@@ -416,6 +418,8 @@ boolean isLoading = false;
 				
 				counter1 = 1;
 				
+				int obs_energycost = 0;
+				
 				// check whether obstacle has been triggered
 				for(Obstacle obstacle: obstacles){
 					//check distance between current location and all obstacles
@@ -439,20 +443,21 @@ boolean isLoading = false;
 					// reduce users energy
 					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
 						// obstacle is triggered
-
+						//
+						
+						
 						if (obs_type=="Guard") {
-							obs_energycost = 50;
 							alertmessage = "Detection: Guard - energy reduction: "+obs_energycost;
 						}
 						if (obs_type=="Dog") {
-							obs_energycost = 30;
 							alertmessage = "Detection: Dog - energy reduction: "+obs_energycost;
 							dog_dist = 30;
 						}
 						
 						obshash.put(obstacle, true);
 						// to be updated by Jafo - reduce user's energy
-						energy -= obs_energycost;
+						obs_energycost += (obstacle.getEnergyCost());
+						dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost());
 						
 						// vibrate phone
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -488,6 +493,15 @@ boolean isLoading = false;
 					
 					counter1 += 1;
 				}
+				/*
+				 * If user have trigger any obstacl, call to update user's energy in Sever
+				 */
+				if(obs_energycost > 0){
+					userEnergy -= obs_energycost;
+					dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), userEnergy);
+				}
+				
+				
 				/**
 				 * Check to see if at data source
 				 */
@@ -498,7 +512,7 @@ boolean isLoading = false;
 				
 				// update energy and alerts in AR view
 				if (this.architectView!=null) {
-					this.architectView.callJavascript("World.updateEnergyValue( '"+energy+"' );");			
+					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
 					this.architectView.callJavascript(alertRightText);
 					final String alertLeftText = ( "World.updateAlertElementLeft( '"+alertFlag.toString()+"' );" );

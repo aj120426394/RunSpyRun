@@ -1,7 +1,5 @@
 package uq.deco7381.runspyrun.model;
 
-import android.R.integer;
-
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
@@ -25,10 +23,10 @@ public class Obstacle {
 	private double altitude;	// Obstacle's altitude
 	private String type;		// Obstacle's type
 	private int level;			// Obstacle's level: base on creator's current level when user set it down
-	private int energy;			// The energy get from player who trigger the obstacle
 	private String objectID;
 	private ParseUser parseUser;
 	private int triggerDistance;
+	private int energyCost;
 	
 
 	/**
@@ -41,17 +39,17 @@ public class Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId,int triggerDistance) {
+	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId,int triggerDistance, int energyCost) {
 		// TODO Auto-generated constructor stub
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.altitude = altitude;
 		this.level = level;
 		this.type = type;
-		this.energy = 0;
 		this.objectID = objectId;
 		this.parseUser = creator;
 		this.triggerDistance = triggerDistance;
+		this.energyCost = energyCost;
 	}
 	/**
 	 * Get the latitude of this obstacle
@@ -96,20 +94,6 @@ public class Obstacle {
 	public String getType(){
 		return this.type;
 	}
-	/**
-	 * Set the energy get from the player who trigger this obstacle
-	 * @param energy
-	 */
-	public void setEnergy(int energy){
-		this.energy = energy;
-	}
-	/**
-	 * Get the energy get from the player who trigger this obstacle
-	 * @return
-	 */
-	public int getEnergy(){
-		return this.energy;
-	}
 	
 	public void setObjectId(String objectId){
 		this.objectID = objectId;
@@ -135,5 +119,8 @@ public class Obstacle {
 	}
 	public int getTriggerDistance() {
 		return this.triggerDistance;
+	}
+	public int getEnergyCost(){
+		return this.energyCost * this.level;
 	}
 }
