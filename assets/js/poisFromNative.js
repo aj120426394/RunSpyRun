@@ -17,7 +17,7 @@ var World = {
 
 
 		// message to user whilst loading data for defences
-		document.getElementById("statusElementLeft").innerHTML = 'Attack Mode Initialising';
+		document.getElementById("statusElementLeft").innerHTML = 'AttackMode Init';
 		
 		// image for the radar
 		var poiImage = new AR.ImageResource("img/marker.png", {
@@ -39,7 +39,7 @@ var World = {
 		}
 		
 		// message to user on loading of data for defences
-		document.getElementById("statusElementLeft").innerHTML = 'Virtual Defences Located';
+		document.getElementById("statusElementLeft").innerHTML = 'Defences Located';
 
 	},
 

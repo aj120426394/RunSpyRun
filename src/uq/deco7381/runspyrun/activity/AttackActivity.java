@@ -447,10 +447,10 @@ boolean isLoading = false;
 						
 						
 						if (obs_type=="Guard") {
-							alertmessage = "Detection: Guard - energy reduction: "+obs_energycost;
+							alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
 						}
 						if (obs_type=="Dog") {
-							alertmessage = "Detection: Dog - energy reduction: "+obs_energycost;
+							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
 							dog_dist = 30;
 						}
 						
@@ -497,7 +497,7 @@ boolean isLoading = false;
 					counter1 += 1;
 				}
 				/*
-				 * If user have trigger any obstacl, call to update user's energy in Sever
+				 * If user have trigger any obstacle, call to update user's energy in Sever
 				 */
 				if(obs_energycost > 0){
 					userEnergy -= obs_energycost;
