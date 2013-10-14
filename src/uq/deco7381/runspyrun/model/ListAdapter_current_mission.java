@@ -207,9 +207,10 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
 			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
 	    	distanceString = "";
-	    	if(distanceDouble*1000 < 400){
+	    	if(distanceDouble*100 < 500){
 	    		triggable = true;
-
+	    	}
+	    	if(distanceDouble*1000 < 400){
 	    		distanceString = "you are in the course";
 	    	}else{
 	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
