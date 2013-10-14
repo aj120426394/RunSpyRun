@@ -7,6 +7,7 @@ import java.util.List;
 import android.R.integer;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -355,6 +356,50 @@ public class ParseDAO {
 			@Override
 			public void done(ParseObject object, ParseException e) {
 				object.deleteInBackground();
+			}
+		});
+	}
+	
+	public void deleteMission(Course course, ParseUser user){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Mission");
+		query.whereEqualTo("course", ParseObject.createWithoutData("Course", course.getObjectID()));
+		query.whereEqualTo("username", user);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject object, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					object.deleteInBackground();
+				}else{
+					System.out.println(e.getMessage());
+				}
+			}
+		});
+	}
+	
+	public void deleteObstacleByUser(Course course, ParseUser user){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
+		query.whereEqualTo("course", ParseObject.createWithoutData("Course", course.getObjectID()));
+		query.whereEqualTo("username", user);
+		query.findInBackground(new FindCallback<ParseObject>() {
+
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					ParseObject.deleteAllInBackground(objects, new DeleteCallback() {
+						
+						@Override
+						public void done(ParseException e) {
+							// TODO Auto-generated method stub
+							if(e != null){
+								System.out.println(e.getMessage());
+							}
+						}
+					});
+				}
+				
 			}
 		});
 	}
