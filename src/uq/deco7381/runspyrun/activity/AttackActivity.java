@@ -455,9 +455,12 @@ boolean isLoading = false;
 						}
 						
 						obshash.put(obstacle, true);
-						// to be updated by Jafo - reduce user's energy
+						/*
+						 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
+						 * Also put half of stolen energy to player who create it.
+						 */
 						obs_energycost += (obstacle.getEnergyCost());
-						dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost());
+						dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 						
 						// vibrate phone
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
