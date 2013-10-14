@@ -13,7 +13,7 @@
         android:layout_marginLeft="5dp"
         android:text="Mission"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/orangeText"
+        android:textColor="@color/gray"
         android:textSize="18sp" />
 
     <ImageView
