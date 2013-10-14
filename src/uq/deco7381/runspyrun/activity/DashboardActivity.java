@@ -145,6 +145,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		/*
 		 * Swipe to delete the element in list view.
 		 */
+		/*
 		SwipeDismissListViewTouchListener touchListener = 
 				new SwipeDismissListViewTouchListener(missionListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
 					
@@ -166,7 +167,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				});
 		missionListView.setOnTouchListener(touchListener);
 		missionListView.setOnScrollListener(touchListener.makeScrollListener());
-		
+		*/
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);
