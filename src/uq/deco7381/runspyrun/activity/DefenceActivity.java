@@ -30,6 +30,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -63,6 +64,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private View mLoadingView;	// The view contain the process animation.
 	private int userEnergy;
 	private boolean firstLocation;
+	private double distanceToStream;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		Intent intent = getIntent();
 		dao = new ParseDAO(); 
 		firstLocation = false;
-		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
@@ -201,27 +202,32 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 * @param v
 	 */
-	public void setGuard(View v){;
-		int COST = 40; //Cost 40 energy to set a guard in lv 1
-		int userLevel = ParseUser.getCurrentUser().getInt("level");
-		int userSpend = COST * userLevel;
-		if(userSpend > 1000){
-			userSpend  = 1000; // Maximum cost of a guard is 1000 energy.
-		}
-		if(userSpend < this.userEnergy){
-			ParseUser currentUser = ParseUser.getCurrentUser();
-			Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
-			map.addMarker(g1.getMarkerOptions());
-			
-			/*
-			 *  Add to the list of new obstacle
-			 */
-			newObstaclesOnCourse.add(g1);
-			this.userEnergy -= userSpend;
-			displayEnergy();
+	public void setGuard(View v){
+		if(this.distanceToStream <= 400){
+			int COST = 40; //Cost 40 energy to set a guard in lv 1
+			int userLevel = ParseUser.getCurrentUser().getInt("level");
+			int userSpend = COST * userLevel;
+			if(userSpend > 1000){
+				userSpend  = 1000; // Maximum cost of a guard is 1000 energy.
+			}
+			if(userSpend < this.userEnergy){
+				ParseUser currentUser = ParseUser.getCurrentUser();
+				Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+				map.addMarker(g1.getMarkerOptions());
+				
+				/*
+				 *  Add to the list of new obstacle
+				 */
+				newObstaclesOnCourse.add(g1);
+				this.userEnergy -= userSpend;
+				displayEnergy();
+			}else{
+				Toast.makeText(getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+			}
 		}else{
-			Toast.makeText(getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();
 		}
+		
 		
 	}
 	
@@ -233,6 +239,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * @see onMyLocationChange(Location lastKnownLocation)
 	 */
 	private void setCurrentLocation(Location location){
+		this.distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
 		this.currentLocation = location;
 	}
 	
