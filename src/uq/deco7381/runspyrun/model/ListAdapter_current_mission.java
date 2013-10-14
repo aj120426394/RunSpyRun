@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -33,6 +35,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 	private Context mContext;
 	private Location currentLocation;
 	private Bitmap bitmap;
+	private ParseDAO dao;
 	
 	public ListAdapter_current_mission(Context c, Location location, ArrayList<Course> course) {
 		// TODO Auto-generated constructor stub
@@ -41,6 +44,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
 		currentLocation = location;
+		dao = new ParseDAO();
 	}
 
 	@Override
@@ -124,6 +128,8 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			public void onDismiss(View view, Object token) {
 				// TODO Auto-generated method stub
 				System.out.println(position);
+				dao.deleteMission(getItem(position), ParseUser.getCurrentUser());
+				dao.deleteObstacleByUser(getItem(position), ParseUser.getCurrentUser());
 				removeItem(getItem(position));
 				notifyDataSetChanged();
 			}
@@ -135,26 +141,21 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			}
 		});
 		
-		convertView.setOnTouchListener(new View.OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
-				return swipeDismissTouchListener.onTouch(v, event);
-			}
-		});
+		convertView.setOnTouchListener(swipeDismissTouchListener);
 		
-		/*
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println(position);
-				removeItem(getItem(position));
-				notifyDataSetChanged();
+				Intent intent = new Intent(mContext, DefenceActivity.class);
+				intent.putExtra("latitude", courseLoc.getLatitude());
+				intent.putExtra("longtitude", courseLoc.getLongitude());
+				intent.putExtra("isFrom", "existMission");
+				mContext.startActivity(intent);
 			}
 		});
-		*/
+		
+		
 		return convertView;
 	}
 

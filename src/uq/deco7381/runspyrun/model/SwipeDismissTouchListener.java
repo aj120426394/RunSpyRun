@@ -127,11 +127,11 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
         switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
                 // TODO: ensure this is a finger, and set a flag
+            	System.out.println("Down");
                 mDownX = motionEvent.getRawX();
-                if (mCallbacks.canDismiss(mToken)) {
                     mVelocityTracker = VelocityTracker.obtain();
                     mVelocityTracker.addMovement(motionEvent);
-                }
+                
                 return false;
             }
 
@@ -139,7 +139,6 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
                 if (mVelocityTracker == null) {
                     break;
                 }
-
                 float deltaX = motionEvent.getRawX() - mDownX;
                 mVelocityTracker.addMovement(motionEvent);
                 mVelocityTracker.computeCurrentVelocity(1000);
@@ -189,7 +188,6 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
                 if (mVelocityTracker == null) {
                     break;
                 }
-
                 mVelocityTracker.addMovement(motionEvent);
                 float deltaX = motionEvent.getRawX() - mDownX;
                 if (Math.abs(deltaX) > mSlop) {

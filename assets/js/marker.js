@@ -21,6 +21,7 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.0;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_datastream;
+			this.indicator = true;
 			break;
 			
 		case "Guard":
@@ -42,6 +43,8 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.8;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_motionDetector;
+	    	
+
 			break;
 			
 		default:
@@ -49,6 +52,7 @@ function Marker(poiData, isSelected) {
 			this.radarOpacity = 0.8;
 			this.radarColor = "#ffffff";
 			this.markerDraawble = World.markerDrawable_idle;
+			this.indicator = false;
 			break;
     }
 
@@ -91,7 +95,11 @@ function Marker(poiData, isSelected) {
 
     this.radardrawables = [];
     this.radardrawables.push(this.radarCircle);
-
+	
+	// New: Direction Indicator
+    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
+        enabled: this.indicator
+    });
 
     // Changed: 
     var markerObject = new AR.GeoObject(markerLocation, {
