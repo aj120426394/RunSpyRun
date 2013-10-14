@@ -25,6 +25,8 @@ public class Guard extends Obstacle {
 	 */
 	private static int triggerDistance = 10;
 	private static int energyCost = 50;
+	public int MAX_ENERGY_SPEND = 1000;
+	public int ENERGY_SPEND = 40;
 	
 	public Guard(double latitude,double longitude,double altitude, ParseUser creator, int level, String objectId) {
 		super(latitude, longitude, altitude, "Guard", creator, level, objectId, triggerDistance,energyCost);

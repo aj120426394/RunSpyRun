@@ -27,6 +27,8 @@ public class Obstacle {
 	private ParseUser parseUser;
 	private int triggerDistance;
 	private int energyCost;
+	public int MAX_ENERGY_SPEND;
+	public int ENERGY_SPEND;
 	
 
 	/**

@@ -8,8 +8,10 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.activity.DefenceActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,6 +38,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 	private Location currentLocation;
 	private Bitmap bitmap;
 	private ParseDAO dao;
+	private boolean triggable;
 	
 	public ListAdapter_current_mission(Context c, Location location, ArrayList<Course> course) {
 		// TODO Auto-generated constructor stub
@@ -45,6 +48,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
 		currentLocation = location;
 		dao = new ParseDAO();
+		triggable = false;
 	}
 
 	@Override
@@ -143,17 +147,21 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		
 		convertView.setOnTouchListener(swipeDismissTouchListener);
 		
-		convertView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(mContext, DefenceActivity.class);
-				intent.putExtra("latitude", courseLoc.getLatitude());
-				intent.putExtra("longtitude", courseLoc.getLongitude());
-				intent.putExtra("isFrom", "existMission");
-				mContext.startActivity(intent);
-			}
-		});
+		if(triggable){
+    		holder.type.setTextColor(mContext.getResources().getColor(R.color.orangeText));
+			convertView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(mContext, DefenceActivity.class);
+					intent.putExtra("latitude", courseLoc.getLatitude());
+					intent.putExtra("longtitude", courseLoc.getLongitude());
+					intent.putExtra("isFrom", "existMission");
+					mContext.startActivity(intent);
+				}
+			});
+		}
+		
 		
 		
 		return convertView;
@@ -200,6 +208,8 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
 	    	distanceString = "";
 	    	if(distanceDouble*1000 < 400){
+	    		triggable = true;
+
 	    		distanceString = "you are in the course";
 	    	}else{
 	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
