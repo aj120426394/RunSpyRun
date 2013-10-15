@@ -86,7 +86,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 
 	private ImageView reachData;
 	private ProgressBar hackProgressBar;
-
+	private String alertFlag;
 	private int hackProgress;
 	private Handler handler = new Handler();
 
@@ -143,12 +143,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		
 		
-		reachData = (ImageView)findViewById(R.id.imageView1);
-		hackProgressBar = (ProgressBar)findViewById(R.id.progressBar1);
-		hackProgress = hackProgressBar.getProgress();
-		handler.postDelayed(runnable, 500);
-		
-		reachData.setOnTouchListener(new ReachData());
 		
 			
 		/*
@@ -187,6 +181,24 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		map.addCircle(course.getCourseZone());
 	}
 	/**
+	 * Start the special task when user reach the data stream.
+	 * 
+	 * @see onMyLocationChange()
+	 */
+	private void reachData(){
+		/*
+		 * Setup special task view for people who reach the data stream 
+		 */
+		RelativeLayout viewGroup = (RelativeLayout)findViewById(R.id.reachData);
+		viewGroup.setVisibility(View.VISIBLE);
+		reachData = (ImageView)findViewById(R.id.imageView1);
+		hackProgressBar = (ProgressBar)findViewById(R.id.progressBar1);
+		hackProgress = hackProgressBar.getProgress();
+		reachData.setOnTouchListener(new ReachData());
+		handler.postDelayed(runnable, 500);
+	}
+	
+	/**
 	 * Set up the screen in normal condition
 	 * 1. Set content visible
 	 * 2. set loading progress invisible
@@ -203,6 +215,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		// Force the View redraw
 		architectView.invalidate();
 	}
+	
+	
 	/**
 	 * Set up the screen in loading condition
 	 * 1. Set loading progress visible
@@ -594,6 +608,10 @@ boolean isLoading = false;
 				 */
 				if (distance*1000<10) {
 					alertmessage = "You have reached the data stream";
+
+					alertFlag = "ALERT!";
+					reachData();
+
 				}
 				
 				// update status, energy, energy bar and alerts in AR view 
@@ -606,6 +624,7 @@ boolean isLoading = false;
 				}
 			}
 	}
+
 	
 
 	/**
@@ -650,15 +669,20 @@ boolean isLoading = false;
 		return guardSightBearing2;
 	}
 
+
+	/**
+	 * This inner class set up a TouchListner for special task view.
+	 * Shows up when user reach the data source.
+	 * 
+	 * @author Jafo
+	 *
+	 */
+
 	private class ReachData implements OnTouchListener{
-		private int process = hackProgressBar.getProgress();
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			// TODO Auto-generated method stub
-			switch (event.getAction()) {
-	            case MotionEvent.ACTION_DOWN:
-	                break;
-	                
+			switch (event.getAction()) {   
 	            case MotionEvent.ACTION_MOVE:
 	            	//System.out.println(lastDuration);
 	            	if(hackProgress < 10000){
@@ -668,17 +692,16 @@ boolean isLoading = false;
 	            		handler.removeCallbacks(runnable);
 	            	}
 	            	break;
-	            	
-	            case MotionEvent.ACTION_UP:
-
-	                break;
-	                
             }
             return true;
 		}
 		
 	}
-	
+	/**
+	 * This Runnable is to setup a Timer to reduce the progress status when 
+	 * special task view display.
+	 * 
+	 */
 	private Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
@@ -690,8 +713,6 @@ boolean isLoading = false;
 				}
 				hackProgressBar.setProgress(hackProgress);
 				handler.postDelayed(this, 500);
-			}else{
-				//handler.removeCallbacks(this);
 			}
 			System.out.println("show:" + hackProgress);
 		}
