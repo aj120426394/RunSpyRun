@@ -346,6 +346,38 @@ public class ParseDAO {
 		return obstacles;
 	}
 	/**
+	 * Get user's equipment.
+	 * SQL:
+	 * SELECT *
+	 * FROM equipment
+	 * WHERE username = current user
+	 * 
+	 * @param ParseUser
+	 * @return  ArrayList<Equipment>
+	 */
+	public ArrayList<Equipment> getEquipments(ParseUser user){
+		ArrayList<Equipment> equipments = new ArrayList<Equipment>();
+		
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
+		query.whereEqualTo("username", user);
+		try {
+			List<ParseObject> pList = query.find();
+			for(ParseObject object: pList){
+				String type = object.getString("eq_name");
+				int number = object.getInt("number");
+				if(!type.equals("Datasource")){
+					Equipment equipment = new Equipment(type, number);
+					equipments.add(equipment);
+				}
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return equipments;
+	}
+	/**
 	 * Delete Course
 	 * 
 	 * 1. SQL: DELETE FROM Course WHERE
