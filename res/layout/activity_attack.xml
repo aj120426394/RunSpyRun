@@ -31,4 +31,28 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/orangeText" />
 
+    <RelativeLayout
+        android:id="@+id/reachData"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:visibility="visible" >
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:longClickable="true"
+            android:text="HACK" />
+
+    </RelativeLayout>
+
 </RelativeLayout>
