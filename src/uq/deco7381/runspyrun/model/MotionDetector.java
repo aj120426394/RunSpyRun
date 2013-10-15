@@ -25,7 +25,7 @@ public class MotionDetector extends Obstacle {
 	 * @param username
 	 * @param level
 	 */
-	private static int triggerDistance = 20;
+	private static int triggerDistance = 30;
 	private static int energyCost = 40;
 	
 	public MotionDetector(double latitude,double longitude,double altitude, ParseUser creator, int level, String objectId) {

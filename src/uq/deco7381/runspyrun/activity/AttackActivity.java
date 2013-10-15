@@ -62,6 +62,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private String alertmessage = "In mission - undetected";
 	private int userEnergy;
 	private String alertFlag = "";
+	private ParseGeoPoint previouslocation; // for motion detector
+	private Boolean bitten = false; // for dog
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -443,8 +445,6 @@ boolean isLoading = false;
 					// reduce users energy
 					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
 						// obstacle is triggered
-						//
-						
 						
 						if (obs_type=="Guard") {
 							alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
@@ -453,15 +453,20 @@ boolean isLoading = false;
 							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
 							dog_dist = 30;
 						}
+						if (obs_type=="MotionDetector") {
+							alertmessage ="Detection: Motion - no energy lost: move slowly";
+							previouslocation = currentLoc;
+						}
 						
 						obshash.put(obstacle, true);
 						/*
 						 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
 						 * Also put half of stolen energy to player who create it.
 						 */
-						obs_energycost += (obstacle.getEnergyCost());
-						dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
-						
+						if (obs_type!="MotionDetector") {
+							obs_energycost += (obstacle.getEnergyCost());
+							dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+						}
 						// vibrate phone
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 						vibrator.vibrate(500);
@@ -479,8 +484,25 @@ boolean isLoading = false;
 							alertmessage = "Guard approaching";
 						}
 						if (obs_type=="Dog") {
-							dog_dist -= 1;
-							alertmessage = "Dog chasing you - "+dog_dist+"m away";
+							if (dog_dist == 5 && !(bitten)) {
+								bitten = true;
+								alertmessage = "You have been bitten by the dog - energy reduction "+obstacle.getEnergyCost();
+								obs_energycost += (obstacle.getEnergyCost());
+								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+							} else if (dog_dist > 0) {
+								dog_dist -= 5;
+								alertmessage = "Dog chasing you - "+dog_dist+"m away";
+							}
+						}
+						if (obs_type=="MotionDetector") {
+							double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
+							if (moveddistance > 5) {
+								alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
+								obs_energycost += (obstacle.getEnergyCost());
+								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+							} else {
+								alertmessage = "In range of motion detector: move slowly";
+							}
 						}
 						alertFlag = "ALERT!";
 						System.out.println("Second Trigger - "+alertFlag+" "+alertmessage);
@@ -490,6 +512,7 @@ boolean isLoading = false;
 					// reset obshash so that obstacle can be triggered again
 					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
+						bitten = false; // reset the dog
 						alertmessage ="In mission - undetected";
 						alertFlag = "";
 					}

@@ -332,6 +332,8 @@ public class ParseDAO {
 					obstacle = new Guard(latitude, longitude, altitude, username, level, objectId);
 				} else if(object.getString("type").equals("Dog")){
 					obstacle = new Dog(latitude, longitude, altitude, username, level, objectId);
+				} else if(object.getString("type").equals("MotionDetector")){
+					obstacle = new MotionDetector(latitude, longitude, altitude, username, level, objectId);
 				}
 				
 				obstacles.add(obstacle);
