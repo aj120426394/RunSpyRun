@@ -5,7 +5,8 @@ import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
-import uq.deco7381.runspyrun.model.Guard;
+import uq.deco7381.runspyrun.model.Equipment;
+import uq.deco7381.runspyrun.model.ListAdapter_defence;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
@@ -15,8 +16,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,29 +52,30 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	
 	private GoogleMap map;
 	private LocationManager status;
-	private Location currentLocation;
 	private String isFrom; 				// Determine which Activity is user coming from
 	private ArrayList<Obstacle> newObstaclesOnCourse;	// Save the obstacle when user create new.
+	private ArrayList<Equipment> equipments;
 	private Course course;				// Course of this mode
 	private ParseDAO dao;
 	private View mContentView;	// The view contain the whole content.
 	private View mLoadingView;	// The view contain the process animation.
 	private int userEnergy;
 	private boolean firstLocation;
-	private double distanceToStream;
+	private ListAdapter_defence mAdapter_defence;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_defence);
-		final ListView listview = (ListView) findViewById(R.id.listview);
+		
+		
+		
 		newObstaclesOnCourse = new ArrayList<Obstacle>();
 		Intent intent = getIntent();
-		dao = new ParseDAO(); 
-
+		dao = new ParseDAO();
 		firstLocation = false;
 
-		
+		/*
 		String[] values = new String[] { "guard", "detection plate", "dog" };
 
 		    final ArrayList<String> list = new ArrayList<String>();
@@ -94,7 +94,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		            view.animate().setDuration(2000).alpha(0);
 		          }
 		        });
-		
+		*/
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
@@ -102,7 +102,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
 		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
+		equipments = dao.getEquipments(ParseUser.getCurrentUser());
 
+		
 		/*
 		 *  Map set up
 		 */
@@ -136,6 +138,10 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
 		mLoadingView.setVisibility(View.GONE);
+		
+		final ListView listview = (ListView) findViewById(R.id.listview);
+		mAdapter_defence = new ListAdapter_defence(this,equipments,map);
+		listview.setAdapter(mAdapter_defence);
 	}
 
 	/**
@@ -223,6 +229,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 * @param v
 	 */
+	/*
 	public void setGuard(View v){
 		if(this.distanceToStream <= 400){
 			int COST = 40; //Cost 40 energy to set a guard in lv 1
@@ -239,6 +246,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 				/*
 				 *  Add to the list of new obstacle
 				 */
+	/*
 				newObstaclesOnCourse.add(g1);
 				this.userEnergy -= userSpend;
 				displayEnergy();
@@ -248,26 +256,14 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}else{
 			Toast.makeText(getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();
 		}
-		
-		
+
 	}
-	
-	/**
-	 * Set "currentLocation" to the actual current location
-	 * 1. Transform the type of location to ParseGeoPoint
-	 * 
-	 * @param location: Actual current location from OnMyLocationChange
-	 * @see onMyLocationChange(Location lastKnownLocation)
-	 */
-	private void setCurrentLocation(Location location){
-		this.distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(location.getLatitude(), location.getLongitude()))*1000;
-		this.currentLocation = location;
-	}
+	*/
 	
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
 		// TODO Auto-generated method stub
-		setCurrentLocation(lastKnownLocation);
+		
 		/*
 		 *  Getting latitude of the current location
 		 */
@@ -289,6 +285,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         	firstLocation = true;
         }
         
+        double distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))*1000;
+        mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
 		
 		map.setOnCameraChangeListener(null);
 		
