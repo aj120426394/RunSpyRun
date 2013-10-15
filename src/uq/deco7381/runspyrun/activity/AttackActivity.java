@@ -12,7 +12,6 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +19,13 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewManager;
+import android.view.View.OnTouchListener;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -39,9 +42,16 @@ import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
 import com.wikitude.architect.SensorAccuracyChangeListener;
 /**
- * AttackActivity
+ * This class will shows up when user select a course in the the AttackCourseListActivty.
+ * Displaying zone on a google map if user is out of zone or start inside the zone.
+ * Displaying AR view when user go from outside of zone to inside of zone.
+ * 
  * @author Jafo
+ * @author Peter
  * @version 1.3
+ * @since 15/10/2013
+ * 
+ * @see uq.deco.runspyrun.activity.AttackCourseListActivity
  *
  */
 public class AttackActivity extends Activity implements  OnMyLocationChangeListener, ArchitectUrlListener{
@@ -67,8 +77,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private String alertmessage = "In mission - undetected";
 	private int userEnergy;
 	private String alertFlag = "";
+
 	private ParseGeoPoint previouslocation; // for motion detector
 	private Boolean bitten = false; // for dog
+
+	private Button reachData;
+	private ProgressBar hackProgressBar;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +135,12 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		final ArchitectConfig config = new ArchitectConfig("");
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
+		
+		reachData = (Button)findViewById(R.id.button1);
+		hackProgressBar = (ProgressBar)findViewById(R.id.progressBar1);
+		
+		reachData.setOnTouchListener(new ReachData());
+		
 			
 		/*
 		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
@@ -142,6 +163,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	}
 	/**
 	 * Set up the google map for the map view.
+	 * 
 	 * @see onCreate()
 	 */
 	private void setUpMap(){
@@ -233,8 +255,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	}
 	
 	/**
-	 * Starts the Attack view in the device using wikitude architect view overlaying the html file with the AR objects
+	 * Starts the Attack view in the device using wikitude architect view overlaying the html file with the AR objects in different thread
 	 * 
+	 * @throws IOException if loading index.html failed.
+	 * @see loadData
 	 * 
 	 */
 	
@@ -258,12 +282,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		
 	}
-	
+
 boolean isLoading = false;
 	
 	final Runnable loadData = new Runnable() {
-		
-		
 		
 		@Override
 		public void run() {
@@ -292,7 +314,7 @@ boolean isLoading = false;
 				}
 			}
 			
-			/**
+			/*
 			 * Gets data from parse database for course - preset course as this project is developed
 			 * separately to the other elements of the application
 			 * 
@@ -546,6 +568,31 @@ boolean isLoading = false;
 					this.architectView.callJavascript(alertLeftText);
 				}
 			}
+	}
+	
+	private class ReachData implements OnTouchListener{
+		long lastDown;
+		long lastDuration;
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			// TODO Auto-generated method stub
+			switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            	lastDown = System.currentTimeMillis();
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                break;
+
+            case MotionEvent.ACTION_UP:
+            	lastDuration = System.currentTimeMillis() - lastDown;
+            	System.out.println(lastDuration);
+                break;
+
+            }
+            return true;
+		}
+		
 	}
 
 }
