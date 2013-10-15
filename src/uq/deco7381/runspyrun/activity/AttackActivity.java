@@ -61,9 +61,9 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private RelativeLayout viewGroup;
 	private String alertmessage = "In mission - undetected";
 	private int userEnergy;
-	private String alertFlag = "";
-	private ParseGeoPoint previouslocation; // for motion detector
-	private Boolean bitten = false; // for dog
+	private ParseGeoPoint previouslocation; // for motion detector to work out distance moved
+	private Boolean bitten = false; // for dog when triggered
+	private String alertgraphicshow = "off"; // for AR view to turn on or off the alert graphic
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +112,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		viewGroup = (RelativeLayout)findViewById(R.id.RelativeLayout1);
 		
 		architectView = (ArchitectView)this.findViewById( R.id.architectView );
-		final ArchitectConfig config = new ArchitectConfig("");
+		final ArchitectConfig config = new ArchitectConfig("S21hdBHKcTzOVEwj0WC/LWuveQEV4++9h6OxmlYTnV3c740F29gZ81Rhvj8XUva0J6S5VmDZYiTefRLzlmidxKYnw14S4QXxyyn7D6GkgU0XB46PX7Cbd15DQ0rabH/cdeQBJWmd86BeS54UwrD9/av4y7nCOaKsBgAcb54SS8BTYWx0ZWRfX8rymlXhkqpd3yQU1W+l0InsllmLNu9YO09WGsmNSbH1qLrNeWrrfxhliDGgBqcIq2jfRp6G5SgBGVqA4YHz6+EPRF6AjiKB8I19qYxXKookzVEkLe7683JmPkdxOis6o5pljhXn0TBjAP8iVynpYhM6IvyTgZjlCIDGwwvke2YGjVTd2wWO3OUeuy+a48twUfMGgjkp0mqkV/UK0icjrDXvP1vbD66m14jeQUAufWyFSRXJ/QMDdljPAKee34XmGiOtDiwEWxSdox2v/L9gf1hER4y8VBZzG5MtjnRdwEUQ8Z3rKa+TisBwwP8TGigc+slbFQJcQvtBMeclHE4vfbl7FJ7SSC5oiSYzjPyZr1jFU9kMtOZy/CxBi80ccEWBb0hIk6/Hu+OCjAZgJQfGgh4U5AcKZBCxrLlfqXj2CdKOdZkxSOVnupHw01xuRNL+MWuRJwKcRHqBTB7BVntKSGH3l806JEMOO+XP9jpt42SwVQm6EjSAUCE=");
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
 			
@@ -472,8 +472,8 @@ boolean isLoading = false;
 						vibrator.vibrate(500);
 						
 						// set alertFlag
-						alertFlag = "ALERT!";
-						System.out.println("First Triggered - "+alertFlag+" "+alertmessage);
+						alertgraphicshow = "on";
+						System.out.println("First Triggered - "+alertmessage);
 					}
 					
 					// events when already detected still within trigger distance
@@ -482,30 +482,36 @@ boolean isLoading = false;
 						if (obs_type=="Guard") {
 							//System.out.println("The Guard can still see you!");
 							alertmessage = "Guard approaching";
+							alertgraphicshow = "off";
 						}
 						if (obs_type=="Dog") {
 							if (dog_dist == 5 && !(bitten)) {
 								bitten = true;
-								alertmessage = "You have been bitten by the dog - energy reduction "+obstacle.getEnergyCost();
+								alertmessage = "You have been attacked by the dog - energy reduction "+obstacle.getEnergyCost();
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+								alertgraphicshow = "on";
 							} else if (dog_dist > 0) {
 								dog_dist -= 5;
 								alertmessage = "Dog chasing you - "+dog_dist+"m away";
+								alertgraphicshow = "off";
+							} else if ((dog_dist < 5) && (bitten)) {
+								alertmessage = "You have been attacked by the dog - move away";
 							}
 						}
 						if (obs_type=="MotionDetector") {
 							double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
 							if (moveddistance > 5) {
+								alertgraphicshow = "on";
 								alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 							} else {
 								alertmessage = "In range of motion detector: move slowly";
+								alertgraphicshow = "off";
 							}
 						}
-						alertFlag = "ALERT!";
-						System.out.println("Second Trigger - "+alertFlag+" "+alertmessage);
+						System.out.println("Second Trigger - "+alertmessage);
 					}
 					
 					// obstacle no longer triggered
@@ -514,9 +520,9 @@ boolean isLoading = false;
 						obshash.remove(obstacle);
 						bitten = false; // reset the dog
 						alertmessage ="In mission - undetected";
-						alertFlag = "";
+						alertgraphicshow = "off";
 					}
-					
+
 					counter1 += 1;
 				}
 				/*
@@ -533,16 +539,15 @@ boolean isLoading = false;
 				 */
 				if (distance*1000<10) {
 					alertmessage = "You have reached the data stream";
-					alertFlag = "ALERT!";
 				}
 				
-				// update energy and alerts in AR view
+				// update energy and alerts in AR view 
 				if (this.architectView!=null) {
 					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
 					this.architectView.callJavascript(alertRightText);
-					final String alertLeftText = ( "World.updateAlertElementLeft( '"+alertFlag.toString()+"' );" );
-					this.architectView.callJavascript(alertLeftText);
+					final String alertGraphicFlag = ( "World.updateAlertGraphic( '"+alertgraphicshow.toString()+"' );" );
+					this.architectView.callJavascript(alertGraphicFlag);
 				}
 			}
 	}

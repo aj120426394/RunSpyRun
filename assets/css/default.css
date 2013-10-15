@@ -39,6 +39,20 @@ html, body {
 	color: white;
 }
 
+/* Styling for central alert graphic */
+#alertgraphic {
+	float: left;
+	width: 40%;
+	height: 40%;
+	margin: 50% 0% 0% 30%;
+	overflow: hidden;	 
+}
+
+#alertgraphicimg {
+	width: 220px;
+	height: 200px;
+}
+
 /* CSS Style for alert messages at the bottom of the HUD */
 #alertElement {
 	background-color: rgba(255, 138, 0, 0.4);
@@ -55,15 +69,15 @@ html, body {
 
 #alertElementLeft {
 	float: left;
-	width: 28%;
+	width: 10%;
 	margin: 0% 0% 0% 12%;
 	font-size: 35px;
 	overflow: hidden;
 }
 
 #alertElementRight {
-	width: 55%;
+	width: 70%;
 	overflow: hidden;
 	font-size: 25px;
-	margin: 0% 0% 0% 40%;
+	margin: 0% 0% 0% 20%;
 }

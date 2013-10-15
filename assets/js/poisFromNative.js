@@ -64,15 +64,21 @@ var World = {
 		document.getElementById("energyvalue").innerHTML = energyval;
 	},
 	
-	updateAlertElementLeft: function updateAlertElementLeftFn(alertLeftText) {
-		document.getElementById("alertElementLeft").innerHTML = alertLeftText;
-	},
-	
 	updateAlertElementRight: function updateAlertElementRightFn(alertRightText) {
 		document.getElementById("alertElementRight").innerHTML = alertRightText;
+	},
+	
+	updateAlertGraphic: function updateAlertGraphicFn(alertgraphicflag) {
+		if (alertgraphicflag=="on") {
+			document.getElementById("alertgraphic").innerHTML = '<img id="alertgraphicimg" src="img/Alert.png">';
+		} else {
+			document.getElementById("alertgraphic").innerHTML = ' ';
+		};
 	}
 
+
 };
+
 
 /* forward locationChanges to custom function */
 AR.context.onLocationChanged = World.locationChanged;
