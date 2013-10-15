@@ -29,7 +29,13 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
+/**
+ * This Class if work for user that they can select which zone they are going to attack.
+ * The attackable course only show up when user within 500 meters.
+ * 
+ * @author Jafo
+ *
+ */
 public class AttackCourseListActivity extends Activity implements OnMyLocationChangeListener {
 	private GoogleMap map;
 	private LocationManager status;
@@ -76,9 +82,13 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
 		
-		
+		/*
+		 * Get the attackable course list 
+		 */
 		ArrayList<Course> courseList = getCourseList(latitude, longitude);
-		
+		/*
+		 * Switching between different contnet if there is an attackable coursr or not.
+		 */
 		attackCourseListView = (ListView)findViewById(R.id.courseList);
 		if(courseList.size() == 0){
 			TextView noCourse = (TextView)findViewById(R.id.textView2);
@@ -94,7 +104,10 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		attackCourseListView.setAdapter(adapter);
 	}
 
-
+	/**
+	 * Set up the google map for the map view.
+	 * @see onCreate()
+	 */
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);

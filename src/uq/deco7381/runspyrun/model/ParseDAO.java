@@ -93,7 +93,7 @@ public class ParseDAO {
 			energy = user.getInt("level")*100;
 		}
 		user.put("energyLevel", energy);
-		user.saveInBackground();
+		user.saveEventually();
 	}
 	/**
 	 * User can regenerate energy from people who trigger the obstacle he set.
@@ -119,12 +119,12 @@ public class ParseDAO {
 			energy = user.getInt("level")*100;
 		}
 		user.put("energyLevel", energy);
-		user.saveInBackground();
+		user.saveEventually();
 	}
 	
 	public void updateEnergyByEnergy(ParseUser user, int energy){
 		user.put("energyLevel", energy);
-		user.saveInBackground();
+		user.saveEventually();
 	}
 	
 	public void updateObstacleEnergy(final Obstacle obstacle,final int stolenEnergy){
@@ -136,7 +136,7 @@ public class ParseDAO {
 				// TODO Auto-generated method stub
 				if(e == null){
 					object.increment("energy", stolenEnergy);
-					object.saveInBackground();
+					object.saveEventually();
 				}else{
 					System.out.println();
 				}
@@ -355,7 +355,7 @@ public class ParseDAO {
 		query.getFirstInBackground(new GetCallback<ParseObject>() {
 			@Override
 			public void done(ParseObject object, ParseException e) {
-				object.deleteInBackground();
+				object.deleteEventually();
 			}
 		});
 	}
@@ -370,7 +370,7 @@ public class ParseDAO {
 			public void done(ParseObject object, ParseException e) {
 				// TODO Auto-generated method stub
 				if(e == null){
-					object.deleteInBackground();
+					object.deleteEventually();
 				}else{
 					System.out.println(e.getMessage());
 				}
