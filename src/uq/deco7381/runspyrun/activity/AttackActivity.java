@@ -19,11 +19,12 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -83,9 +84,11 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private Boolean seenByGuard = false; // for guard behavior
 
 
-	private Button reachData;
+	private ImageView reachData;
 	private ProgressBar hackProgressBar;
 
+	private int hackProgress;
+	private Handler handler = new Handler();
 
 	
 	@Override
@@ -133,14 +136,17 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		 * creates initial view using wikitude architectview
 		 */
 		viewGroup = (RelativeLayout)findViewById(R.id.RelativeLayout1);
-		
 		architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig("S21hdBHKcTzOVEwj0WC/LWuveQEV4++9h6OxmlYTnV3c740F29gZ81Rhvj8XUva0J6S5VmDZYiTefRLzlmidxKYnw14S4QXxyyn7D6GkgU0XB46PX7Cbd15DQ0rabH/cdeQBJWmd86BeS54UwrD9/av4y7nCOaKsBgAcb54SS8BTYWx0ZWRfX8rymlXhkqpd3yQU1W+l0InsllmLNu9YO09WGsmNSbH1qLrNeWrrfxhliDGgBqcIq2jfRp6G5SgBGVqA4YHz6+EPRF6AjiKB8I19qYxXKookzVEkLe7683JmPkdxOis6o5pljhXn0TBjAP8iVynpYhM6IvyTgZjlCIDGwwvke2YGjVTd2wWO3OUeuy+a48twUfMGgjkp0mqkV/UK0icjrDXvP1vbD66m14jeQUAufWyFSRXJ/QMDdljPAKee34XmGiOtDiwEWxSdox2v/L9gf1hER4y8VBZzG5MtjnRdwEUQ8Z3rKa+TisBwwP8TGigc+slbFQJcQvtBMeclHE4vfbl7FJ7SSC5oiSYzjPyZr1jFU9kMtOZy/CxBi80ccEWBb0hIk6/Hu+OCjAZgJQfGgh4U5AcKZBCxrLlfqXj2CdKOdZkxSOVnupHw01xuRNL+MWuRJwKcRHqBTB7BVntKSGH3l806JEMOO+XP9jpt42SwVQm6EjSAUCE=");
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
 		
-		reachData = (Button)findViewById(R.id.button1);
+		
+		
+		reachData = (ImageView)findViewById(R.id.imageView1);
 		hackProgressBar = (ProgressBar)findViewById(R.id.progressBar1);
+		hackProgress = hackProgressBar.getProgress();
+		handler.postDelayed(runnable, 500);
 		
 		reachData.setOnTouchListener(new ReachData());
 		
@@ -164,6 +170,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
 	}
+
 	/**
 	 * Set up the google map for the map view.
 	 * 
@@ -400,7 +407,7 @@ boolean isLoading = false;
 			 */
 			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
 			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
-			System.out.println(distance);
+			//System.out.println(distance);
 			if(distance*1000 > 400){
 				outsideZone = true;
 				if(viewFlag == 2){
@@ -644,28 +651,50 @@ boolean isLoading = false;
 	}
 
 	private class ReachData implements OnTouchListener{
-		long lastDown;
-		long lastDuration;
+		private int process = hackProgressBar.getProgress();
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			// TODO Auto-generated method stub
 			switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            	lastDown = System.currentTimeMillis();
-                break;
+	            case MotionEvent.ACTION_DOWN:
+	                break;
+	                
+	            case MotionEvent.ACTION_MOVE:
+	            	//System.out.println(lastDuration);
+	            	if(hackProgress < 10000){
+	            		hackProgress += 10;
+	            		hackProgressBar.setProgress(hackProgress);
+	            	}else{
+	            		handler.removeCallbacks(runnable);
+	            	}
+	            	break;
+	            	
+	            case MotionEvent.ACTION_UP:
 
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_UP:
-            	lastDuration = System.currentTimeMillis() - lastDown;
-            	System.out.println(lastDuration);
-                break;
-
+	                break;
+	                
             }
             return true;
 		}
 		
 	}
+	
+	private Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			if(hackProgress > 0 || hackProgress < 10000){
+				hackProgress -= 50;
+				if(hackProgress < 0){
+					hackProgress = 0;
+				}
+				hackProgressBar.setProgress(hackProgress);
+				handler.postDelayed(this, 500);
+			}else{
+				//handler.removeCallbacks(this);
+			}
+			System.out.println("show:" + hackProgress);
+		}
+	};
 
 }
