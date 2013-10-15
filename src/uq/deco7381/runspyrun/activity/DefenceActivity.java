@@ -95,7 +95,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		          }
 		        });
 		
-
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
