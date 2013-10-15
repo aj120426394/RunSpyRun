@@ -239,7 +239,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * @see onMyLocationChange(Location lastKnownLocation)
 	 */
 	private void setCurrentLocation(Location location){
-		this.distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
+		this.distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(location.getLatitude(), location.getLongitude()))*1000;
 		this.currentLocation = location;
 	}
 	

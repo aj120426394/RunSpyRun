@@ -39,7 +39,12 @@ import com.wikitude.architect.ArchitectUrlListener;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
 import com.wikitude.architect.SensorAccuracyChangeListener;
-
+/**
+ * AttackActivity
+ * @author Jafo
+ * @version 1.3
+ *
+ */
 public class AttackActivity extends Activity implements  OnMyLocationChangeListener, ArchitectUrlListener{
 
 	private GoogleMap map;
@@ -138,7 +143,10 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
 	}
-	
+	/**
+	 * Set up the google map for the map view.
+	 * @see onCreate()
+	 */
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
@@ -165,12 +173,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		// Force the View redraw
 		architectView.invalidate();
-
-		System.out.println("MAP MODE");
-		System.out.println("MAP MODE");
-		System.out.println("MAP MODE");
-		System.out.println("MAP MODE");
-		System.out.println("MAP MODE");
 	}
 	/**
 	 * Set up the screen in loading condition
@@ -190,12 +192,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		
 		// Force the View redraw
 		architectView.invalidate();
-
-		System.out.println("AR MODE");
-		System.out.println("AR MODE");
-		System.out.println("AR MODE");
-		System.out.println("AR MODE");
-		System.out.println("AR MODE");
 	}
 
 	@Override
@@ -204,7 +200,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		return false;
 	}
 
-
+	@Override
 	protected void onResume() {
 		super.onResume();
 		if ( this.architectView != null ) {
@@ -365,9 +361,10 @@ boolean isLoading = false;
 	@Override
 	public void onMyLocationChange(Location location) {
 		// TODO Auto-generated method stub
-		/*
-	        *  Make camera on map keep tracking user.
-	        */
+			/*
+			 * Make camera on map keep tracking user.
+			 * But only setup zoom level in first time.
+			 */
 			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 			if(firstLoc == false){
@@ -376,6 +373,9 @@ boolean isLoading = false;
 			}
 			map.setOnCameraChangeListener(null);
 			
+			/*
+			 * Detecting user is in the zone or not to swtich between AR view  and Map view.
+			 */
 			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
 			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
 			System.out.println(distance);
@@ -393,7 +393,9 @@ boolean isLoading = false;
 					}
 				}
 			}
-			
+			/*
+			 * Set location for AR view.
+			 */
 			if (location!=null) {
 				this.lastKnownLocaton = location;
 				if ( this.architectView != null ) {
@@ -409,7 +411,6 @@ boolean isLoading = false;
 			/*
 			 * check to see if obstacle has been triggered 
 			 */
-			
 			if (viewFlag == 2) {
 				
 				System.out.println("Checking distance to obstacles");
