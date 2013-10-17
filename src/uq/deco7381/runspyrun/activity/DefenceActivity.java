@@ -124,6 +124,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mLoadingView.setVisibility(View.GONE);
 		
 		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
+		mPaneLayout.openPane();
 		/*
 		ArrayListFragment list = new ArrayListFragment();
 		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
