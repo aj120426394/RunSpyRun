@@ -18,10 +18,8 @@
 
 	        <ListView
 	            android:id="@+id/listView1"
-	            android:layout_width="200dp"
-	            android:layout_height="wrap_content" 
-	            android:divider="@color/white"
-                android:dividerHeight="10dp">
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent" >
 	        </ListView>
 	        
 	    	<RelativeLayout
