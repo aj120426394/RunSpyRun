@@ -17,6 +17,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -125,6 +126,29 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		
 		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
 		mPaneLayout.openPane();
+		mPaneLayout.invalidate();
+		mPaneLayout.setPanelSlideListener(new PanelSlideListener() {
+			
+			@Override
+			public void onPanelSlide(View arg0, float arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPanelOpened(View arg0) {
+				// TODO Auto-generated method stub
+				mPaneLayout.invalidate();
+				arg0.invalidate();
+			}
+			
+			@Override
+			public void onPanelClosed(View arg0) {
+				// TODO Auto-generated method stub
+				mPaneLayout.invalidate();
+				arg0.invalidate();
+			}
+		});
 		/*
 		ArrayListFragment list = new ArrayListFragment();
 		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
