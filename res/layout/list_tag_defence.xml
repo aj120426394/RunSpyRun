@@ -10,7 +10,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="Obstacle"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/orangeText"
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -19,6 +21,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:text="10"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/orangeText"
+        android:textSize="30sp" />
 
 </RelativeLayout>
