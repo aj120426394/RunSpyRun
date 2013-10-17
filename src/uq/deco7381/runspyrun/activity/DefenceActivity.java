@@ -10,12 +10,16 @@ import uq.deco7381.runspyrun.model.ListAdapter_defence;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +66,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private int userEnergy;
 	private boolean firstLocation;
 	private ListAdapter_defence mAdapter_defence;
+	private SlidingPaneLayout mPaneLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -133,15 +138,23 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
 		displayCourse(this.course);
-		displayEnergy();
+		//displayEnergy();
 		
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
 		mLoadingView.setVisibility(View.GONE);
 		
+		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
+		mPaneLayout.openPane();
+		
+		ArrayListFragment list = new ArrayListFragment();
+		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
+		
+		/*
 		final ListView listview = (ListView) findViewById(R.id.listview);
 		mAdapter_defence = new ListAdapter_defence(this,equipments,map);
 		listview.setAdapter(mAdapter_defence);
+		*/
 	}
 
 	/**
@@ -192,11 +205,13 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			map.addMarker(obstacle.getMarkerOptions());
 		}
 	}
+	/*
 	private void displayEnergy(){
 		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
 		TextView energy = (TextView)findViewById(R.id.energy);
 		energy.setText(energyString);
 	}
+	*/
 	/**
 	 * Set up a Google map.
 	 * Remove the button: zoom
@@ -286,7 +301,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         }
         
         double distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))*1000;
-        mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
+        //mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
 		
 		map.setOnCameraChangeListener(null);
 		
@@ -406,5 +421,31 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mLoadingView.invalidate();
 			
 	}
+	
+	public static class ArrayListFragment extends ListFragment {
+		String[] countries = new String[] {
+		        "India",
+		        "Pakistan",
+		        "Sri Lanka",
+		        "China",
+		        "Bangladesh",
+		        "Nepal",
+		        "Afghanistan",
+		        "North Korea",
+		        "South Korea",
+		        "Japan"
+		    };
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            setListAdapter(new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_list_item_1, countries));
+        }
+
+        @Override
+        public void onListItemClick(ListView l, View v, int position, long id) {
+            Log.i("FragmentList", "Item clicked: " + id);
+        }
+    }
 
 }

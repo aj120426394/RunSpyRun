@@ -1,16 +1,9 @@
-<android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
 	tools:context=".DefenceActivity" >
-    
-	<ListView
-	    android:layout_width="280dp"
-	    android:layout_height="match_parent"
-	    android:background="#ffff0000"
-	    android:id="@+id/listview">
-	</ListView>
 	
 	
 	<RelativeLayout
@@ -19,47 +12,62 @@
 	    android:layout_height="match_parent"
 	    android:layout_weight="1" >
 	
-	    <RelativeLayout
+	    <android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	        android:id="@id/content"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent" >
-	
+
 	        <fragment
+	            android:id="@+id/fragment1"
+	            android:name="uq.deco7381.runspyrun.activity.DefenceActivity$ArrayListFragment"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent" />
+	        
+	        <RelativeLayout
+	            android:id="@+id/map"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:layout_centerHorizontal="false"
+	            android:layout_centerVertical="false" >
+	        	
+	            <fragment
 	            android:id="@+id/defence_map"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
 	            class="com.google.android.gms.maps.MapFragment" />
 	
 	        
-	        <Button
-	            android:id="@+id/button1"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:onClick="setGuard"
-	            android:text="Guard" />
+		        <Button
+		            android:id="@+id/button1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:onClick="setGuard"
+		            android:text="Guard" />
+		        
+		        
+		        <Button
+		            android:id="@+id/button2"
+		            style="@color/yellow"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentBottom="true"
+		            android:layout_centerHorizontal="true"
+		            android:onClick="missionDecide"
+		            android:text="Save" />
+		
+		        <TextView
+		            android:id="@+id/energy"
+		            android:layout_width="115dp"
+		            android:layout_height="wrap_content"
+		            android:layout_centerHorizontal="true"
+		            android:layout_marginTop="22dp"
+		            android:text="9900/9900"
+		            android:textAppearance="?android:attr/textAppearanceLarge"
+		            android:textColor="@color/orangeText" />
+	        </RelativeLayout>
 	        
-	        
-	        <Button
-	            android:id="@+id/button2"
-	            style="@color/yellow"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_alignParentBottom="true"
-	            android:layout_centerHorizontal="true"
-	            android:onClick="missionDecide"
-	            android:text="Save" />
 	
-	        <TextView
-	            android:id="@+id/energy"
-	            android:layout_width="115dp"
-	            android:layout_height="wrap_content"
-	            android:layout_centerHorizontal="true"
-	            android:layout_marginTop="22dp"
-	            android:text="9900/9900"
-	            android:textAppearance="?android:attr/textAppearanceLarge"
-	            android:textColor="@color/orangeText" />
-	
-	    </RelativeLayout>
+	    </android.support.v4.widget.SlidingPaneLayout>
 	
 	    <RelativeLayout
 	        android:id="@+id/loading"
@@ -89,4 +97,4 @@
 	</RelativeLayout>
 	
 
-</android.support.v4.widget.SlidingPaneLayout>
+</RelativeLayout>
