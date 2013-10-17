@@ -118,23 +118,22 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
 		displayCourse(this.course);
-		//displayEnergy();
+		displayEnergy();
 		
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
 		mLoadingView.setVisibility(View.GONE);
 		
 		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
-		mPaneLayout.openPane();
-		
+		/*
 		ArrayListFragment list = new ArrayListFragment();
 		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
-		
-		/*
-		final ListView listview = (ListView) findViewById(R.id.listview);
-		mAdapter_defence = new ListAdapter_defence(this,equipments,map);
-		listview.setAdapter(mAdapter_defence);
 		*/
+		
+		final ListView listview = (ListView) findViewById(R.id.listView1);
+		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout);
+		listview.setAdapter(mAdapter_defence);
+		
 	}
 
 	/**
@@ -185,13 +184,13 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			map.addMarker(obstacle.getMarkerOptions());
 		}
 	}
-	/*
+	
 	private void displayEnergy(){
 		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
 		TextView energy = (TextView)findViewById(R.id.energy);
 		energy.setText(energyString);
 	}
-	*/
+	
 	/**
 	 * Set up a Google map.
 	 * Remove the button: zoom
@@ -281,7 +280,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         }
         
         double distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))*1000;
-        //mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
+        mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
 		
 		map.setOnCameraChangeListener(null);
 		

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import uq.deco7381.runspyrun.R;
 import android.content.Context;
 import android.location.Location;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,9 +27,10 @@ public class ListAdapter_defence extends BaseAdapter {
 	private GoogleMap mGmap;
 	private double distanceToStream;
 	private int userEnergy;
+	private SlidingPaneLayout mPaneLayout;
 
 	
-	public ListAdapter_defence(Context c, ArrayList<Equipment> list, GoogleMap map) {
+	public ListAdapter_defence(Context c, ArrayList<Equipment> list, GoogleMap map, SlidingPaneLayout mPaneLayout) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
 		mContext = c;
@@ -36,6 +38,7 @@ public class ListAdapter_defence extends BaseAdapter {
 		mGmap = map;
 		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		newObstaclesOnCourse = new ArrayList<Obstacle>();
+		this.mPaneLayout = mPaneLayout;
 	}
 
 	@Override
@@ -112,6 +115,7 @@ public class ListAdapter_defence extends BaseAdapter {
 							obstacle = new MotionDetector(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
 						}
 						mGmap.addMarker(obstacle.getMarkerOptions());
+						mPaneLayout.closePane();
 						
 						/*
 						 *  Add to the list of new obstacle
