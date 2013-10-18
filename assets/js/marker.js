@@ -54,7 +54,7 @@ function Marker(poiData, isSelected) {
 
     this.markerDrawable_idle = new AR.ImageDrawable(this.markerDraawble, 1.5, {
         zOrder: 0,
-        opacity: 1.0,
+        opacity: 0.8,
         onClick: null
     });
 
@@ -65,11 +65,11 @@ function Marker(poiData, isSelected) {
     });
     
     this.titleLabel = new AR.Label(poiData.title.trunc(15), 0.5, {
-        zOrder: 1.5,
-        offsetY: 1.5,
+        zOrder: 2,
+        offsetY: 1.2,
         style: {
             textColor: '#ff8a00',
-            fontStyle: AR.CONST.FONT_STYLE.BOLD
+            //fontStyle: AR.CONST.FONT_STYLE.BOLD
         }
     });
 

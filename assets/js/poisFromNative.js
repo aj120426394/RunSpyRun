@@ -15,7 +15,8 @@ var World = {
 		
 		// show radar
 		PoiRadar.show();
-		AR.context.scene.cullingDistance = 100;
+		AR.context.scene.cullingDistance = 800;
+		AR.context.scene.cutoff_max = 50;
 
 
 		// message to user whilst loading data for defences

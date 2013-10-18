@@ -21,6 +21,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceActivity.Header;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.RelativeLayout;
@@ -311,10 +312,6 @@ boolean isLoading = false;
 			poiData.put(new JSONObject(courseHashMap));
 			
 			
-			// System.out.println(obstacles.toString());
-			// System.out.println(course.getObjectID());
-			
-			
 			for(Obstacle obstacle: obstacles){
 				HashMap<String, String> obstacleHashMap = new HashMap<String, String>();
 				obstacleHashMap.put("id", obstacle.getObjectId());
@@ -400,7 +397,6 @@ boolean isLoading = false;
 				if ( this.architectView != null ) {
 					if ( location.hasAltitude() ) {
 						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-						//System.out.println("altitude is "+ location.getAltitude());
 					} else {
 						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
 						
@@ -482,33 +478,35 @@ boolean isLoading = false;
 					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
 						bitten = false; // reset the dog
-						alertmessage ="In mission - undetected";
-						alertgraphicshow = "off";
+						alertmessage ="Mission active - Clear of all defences";
+						alertgraphicshow = "off"; // turn off alert graphic
 					}
 					
-					// events when already detected still within trigger distance
+					// events when already detected still within trigger distance 
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
 						//System.out.println("still within obs distance but not doing anything");
 						if (obs_type=="Guard") {
-							//System.out.println("The Guard can still see you");
 							alertmessage = "Guard approaching";
 							alertgraphicshow = "off";
 						}
 						
-						// Dog behavior when triggered
+						// Dog behavior when triggered - chases and bites
 						if (obs_type=="Dog") {
 							if (dog_dist == 5 && !(bitten)) {
 								bitten = true;
+								Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+								vibrator.vibrate(500);
 								alertmessage = "You have been attacked by the dog - energy reduction "+obstacle.getEnergyCost();
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 								alertgraphicshow = "on";
-							} else if (dog_dist > 0) {
+							} else if (dog_dist > 0 && !(bitten)) {
 								dog_dist -= 5;
 								alertmessage = "Dog chasing you - "+dog_dist+"m away";
 								alertgraphicshow = "off";
-							} else if ((dog_dist < 5) && (bitten)) {
+							} else if ((dog_dist < 6) && (bitten)) {
 								alertmessage = "You have been attacked by the dog - move away";
+								alertgraphicshow = "off";
 							}
 						}
 						// Motion Detector only triggered if the user moves more than 10m between location checks
@@ -539,7 +537,7 @@ boolean isLoading = false;
 				
 				
 				/**
-				 * Check to see if at data source
+				 * Check to see if at data stream
 				 */
 				if (distance*1000<10) {
 					alertmessage = "You have reached the data stream";
