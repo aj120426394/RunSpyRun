@@ -424,31 +424,5 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		mLoadingView.invalidate();
 			
 	}
-	
-	public static class ArrayListFragment extends ListFragment {
-		String[] countries = new String[] {
-		        "India",
-		        "Pakistan",
-		        "Sri Lanka",
-		        "China",
-		        "Bangladesh",
-		        "Nepal",
-		        "Afghanistan",
-		        "North Korea",
-		        "South Korea",
-		        "Japan"
-		    };
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            setListAdapter(new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, countries));
-        }
-
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i("FragmentList", "Item clicked: " + id);
-        }
-    }
 
 }

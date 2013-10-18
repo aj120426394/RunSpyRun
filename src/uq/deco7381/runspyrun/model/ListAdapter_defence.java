@@ -50,6 +50,7 @@ public class ListAdapter_defence extends BaseAdapter {
 	public void setCurrentLocation(Location currenLocation, double distanceToStream){
 		this.mLocation = currenLocation;
 		this.distanceToStream = distanceToStream;
+		notifyDataSetChanged();
 	}
 	public ArrayList<Obstacle> getNewObstaclesOnCourse(){
 		return this.newObstaclesOnCourse;
@@ -91,45 +92,48 @@ public class ListAdapter_defence extends BaseAdapter {
 		holder.type.setText(equipment.getType());
 		holder.number.setText(String.valueOf(equipment.getNumber()));
 		
-		convertView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if(distanceToStream <= 400){
-					int COST = equipment.getBaseCost(); //Cost 40 energy to set a guard in lv 1
-					int userLevel = ParseUser.getCurrentUser().getInt("level");
-					int userSpend = COST * userLevel;
-					if(userSpend > equipment.getMaxCost()){
-						userSpend  = equipment.getMaxCost(); 
-					}
-					if(userSpend < userEnergy){
-						ParseUser currentUser = ParseUser.getCurrentUser();
-						
-						Obstacle obstacle = null;
-						if(equipment.getType().equals("Guard")){
-							obstacle = new Guard(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
-						} else if(equipment.getType().equals("Dog")){
-							obstacle = new Dog(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
-						} else if(equipment.getType().equals("MotionDetector")){
-							obstacle = new MotionDetector(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+		if(mLocation != null){
+			convertView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					if(distanceToStream <= 400){
+						int COST = equipment.getBaseCost(); //Cost 40 energy to set a guard in lv 1
+						int userLevel = ParseUser.getCurrentUser().getInt("level");
+						int userSpend = COST * userLevel;
+						if(userSpend > equipment.getMaxCost()){
+							userSpend  = equipment.getMaxCost(); 
 						}
-						mGmap.addMarker(obstacle.getMarkerOptions());
-						mPaneLayout.closePane();
-						
-						/*
-						 *  Add to the list of new obstacle
-						 */
-						newObstaclesOnCourse.add(obstacle);
-						userEnergy -= userSpend;
+						if(userSpend < userEnergy){
+							ParseUser currentUser = ParseUser.getCurrentUser();
+							
+							Obstacle obstacle = null;
+							if(equipment.getType().equals("Guard")){
+								obstacle = new Guard(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+							} else if(equipment.getType().equals("Dog")){
+								obstacle = new Dog(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+							} else if(equipment.getType().equals("MotionDetector")){
+								obstacle = new MotionDetector(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+							}
+							mGmap.addMarker(obstacle.getMarkerOptions());
+							mPaneLayout.closePane();
+							
+							/*
+							 *  Add to the list of new obstacle
+							 */
+							newObstaclesOnCourse.add(obstacle);
+							userEnergy -= userSpend;
+						}else{
+							Toast.makeText(mContext.getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+						}
 					}else{
-						Toast.makeText(mContext.getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+						Toast.makeText(mContext.getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();
 					}
-				}else{
-					Toast.makeText(mContext.getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();
 				}
-			}
-		});
+			});
+		}
+		
 		
 		return convertView;
 	}
