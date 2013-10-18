@@ -122,6 +122,16 @@ public class SignupActivity extends Activity {
 				user.setUsername(username);
 				user.setPassword(ePassword);
 				user.setEmail(email);
+				int ramdomOrg = (int)Math.random() * 100;
+				String org = "";
+				if(ramdomOrg%2 == 0){
+					org = "iCorp";
+				}else{
+					org = "mCorp";
+				}
+				user.put("organization", org);
+				user.put("energyLevel", 100);
+				user.put("courseDone", 0);
 				user.signUpInBackground(new SignUpCallback() {
 					@Override
 					public void done(ParseException e) {
@@ -139,7 +149,7 @@ public class SignupActivity extends Activity {
 									ParseObject equipment = new ParseObject("equipment");
 									equipment.put("username", ParseUser.getCurrentUser());
 									equipment.put("eq_name", "Datasource");
-									equipment.put("number", 10);
+									equipment.put("number", 5);
 									equipment.saveInBackground();
 									startActivity(intent);
 								}
