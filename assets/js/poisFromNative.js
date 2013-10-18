@@ -1,11 +1,13 @@
 var World = {
 
 	// identify images to use as markers in the AR view
-	markerDrawable_idle: new AR.ImageResource("assets/marker_idle.png"),
-	markerDrawable_datastream: new AR.ImageResource("assets/marker_datastream.png"),
+	markerDrawable_idle: new AR.ImageResource("assets/obstaclemarker.png"),
+	markerDrawable_datastream: new AR.ImageResource("assets/markerdatastream.png"),
 	markerDrawable_selected: new AR.ImageResource("assets/marker_selected.png"),
-	markerDrawable_directionIndicator: new AR.ImageResource("assets/indi.png"), 
-
+	markerDrawable_motionDetector: new AR.ImageResource("assets/motiondetector.png"), 
+	markerDrawable_guard: new AR.ImageResource("assets/markerguard.png"), 
+	markerDrawable_dog: new AR.ImageResource("assets/dog2.png"), 
+	
 	markerList: [],
 
 	// called to inject new POI data

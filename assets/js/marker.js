@@ -17,10 +17,31 @@ function Marker(poiData, isSelected) {
     
     switch (poiData.title){
 	    case "Datastream":
-	    	this.radarScale = 1;
+	    	this.radarScale = 0.03;
 	    	this.radarOpacity = 0.0;
-	    	this.radarColor = "#ff0000";
+	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_datastream;
+			break;
+			
+		case "Guard":
+	    	this.radarScale = 0.03;
+	    	this.radarOpacity = 0.8;
+	    	this.radarColor = "#ffffff";
+	    	this.markerDraawble = World.markerDrawable_guard;
+			break;
+		
+		case "Dog":
+	    	this.radarScale = 0.03;
+	    	this.radarOpacity = 0.8;
+	    	this.radarColor = "#ffffff";
+	    	this.markerDraawble = World.markerDrawable_dog;
+			break;
+
+	    case "MotionDetector":
+	    	this.radarScale = 0.03;
+	    	this.radarOpacity = 0.8;
+	    	this.radarColor = "#ffffff";
+	    	this.markerDraawble = World.markerDrawable_motionDetector;
 			break;
 			
 		default:
@@ -31,7 +52,7 @@ function Marker(poiData, isSelected) {
 			break;
     }
 
-    this.markerDrawable_idle = new AR.ImageDrawable(this.markerDraawble, 6.0, {
+    this.markerDrawable_idle = new AR.ImageDrawable(this.markerDraawble, 1.5, {
         zOrder: 0,
         opacity: 1.0,
         onClick: null
@@ -45,9 +66,9 @@ function Marker(poiData, isSelected) {
     
     this.titleLabel = new AR.Label(poiData.title.trunc(15), 0.5, {
         zOrder: 1.5,
-        offsetY: 1.0,
+        offsetY: 1.5,
         style: {
-            textColor: '#FFFFFF',
+            textColor: '#ff8a00',
             fontStyle: AR.CONST.FONT_STYLE.BOLD
         }
     });
@@ -56,7 +77,7 @@ function Marker(poiData, isSelected) {
         zOrder: 1,
         offsetY: -0.55,
         style: {
-            textColor: '#FFFFFF'
+            textColor: '#ff8a00'
         }
     });
 

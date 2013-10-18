@@ -45,7 +45,9 @@ html, body {
 	width: 40%;
 	height: 40%;
 	margin: 50% 0% 0% 30%;
-	overflow: hidden;	 
+	overflow: hidden;
+	opacity: 0.4;
+	filter: alpha(opacity=40); /* For IE8 and earlier */	 
 }
 
 #alertgraphicimg {

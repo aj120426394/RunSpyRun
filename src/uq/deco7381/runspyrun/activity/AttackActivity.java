@@ -100,7 +100,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 			}
 		}else{
 			/*
-			 *  If GPS is no available, direct user to Setting  
+			 *  If GPS is not available, direct user to Setting  
 			 */
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -462,6 +462,7 @@ boolean isLoading = false;
 						/*
 						 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
 						 * Also put half of stolen energy to player who create it.
+						 * No energy is taken when a motion detector is triggered at this stage
 						 */
 						if (obs_type!="MotionDetector") {
 							obs_energycost += (obstacle.getEnergyCost());
@@ -471,19 +472,30 @@ boolean isLoading = false;
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 						vibrator.vibrate(500);
 						
-						// set alertFlag
+						// set alertFlag for passing to the AR view
 						alertgraphicshow = "on";
 						System.out.println("First Triggered - "+alertmessage);
+					}
+					
+					// obstacle no longer triggered
+					// reset obshash so that obstacle can be triggered again
+					if (obsdistance > obs_triggerdistance && triggered){
+						obshash.remove(obstacle);
+						bitten = false; // reset the dog
+						alertmessage ="In mission - undetected";
+						alertgraphicshow = "off";
 					}
 					
 					// events when already detected still within trigger distance
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
 						//System.out.println("still within obs distance but not doing anything");
 						if (obs_type=="Guard") {
-							//System.out.println("The Guard can still see you!");
+							//System.out.println("The Guard can still see you");
 							alertmessage = "Guard approaching";
 							alertgraphicshow = "off";
 						}
+						
+						// Dog behavior when triggered
 						if (obs_type=="Dog") {
 							if (dog_dist == 5 && !(bitten)) {
 								bitten = true;
@@ -499,9 +511,10 @@ boolean isLoading = false;
 								alertmessage = "You have been attacked by the dog - move away";
 							}
 						}
+						// Motion Detector only triggered if the user moves more than 10m between location checks
 						if (obs_type=="MotionDetector") {
 							double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
-							if (moveddistance > 5) {
+							if (moveddistance > 10) {
 								alertgraphicshow = "on";
 								alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
 								obs_energycost += (obstacle.getEnergyCost());
@@ -512,15 +525,6 @@ boolean isLoading = false;
 							}
 						}
 						System.out.println("Second Trigger - "+alertmessage);
-					}
-					
-					// obstacle no longer triggered
-					// reset obshash so that obstacle can be triggered again
-					if (obsdistance > obs_triggerdistance && triggered){
-						obshash.remove(obstacle);
-						bitten = false; // reset the dog
-						alertmessage ="In mission - undetected";
-						alertgraphicshow = "off";
 					}
 
 					counter1 += 1;
@@ -541,7 +545,7 @@ boolean isLoading = false;
 					alertmessage = "You have reached the data stream";
 				}
 				
-				// update energy and alerts in AR view 
+				// update energy and alerts in AR view
 				if (this.architectView!=null) {
 					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
