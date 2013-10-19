@@ -58,25 +58,20 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private GoogleMap map;
 	private LocationManager status;
 	private String isFrom; 				// Determine which Activity is user coming from
-	private ArrayList<Obstacle> newObstaclesOnCourse;	// Save the obstacle when user create new.
 	private ArrayList<Equipment> equipments;
 	private Course course;				// Course of this mode
 	private ParseDAO dao;
 	private View mContentView;	// The view contain the whole content.
 	private View mLoadingView;	// The view contain the process animation.
-	private int userEnergy;
 	private boolean firstLocation;
 	private ListAdapter_defence mAdapter_defence;
 	private SlidingPaneLayout mPaneLayout;
+	private TextView energy;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_defence);
-		
-		
-		
-		newObstaclesOnCourse = new ArrayList<Obstacle>();
 		Intent intent = getIntent();
 		dao = new ParseDAO();
 		firstLocation = false;
@@ -86,8 +81,12 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
-		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
+		int userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		equipments = dao.getEquipments(ParseUser.getCurrentUser());
+		
+		energy = (TextView)findViewById(R.id.energy);
+		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
+		energy.setText(energyString);
 
 		
 		/*
@@ -118,7 +117,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 		}
 		displayCourse(this.course);
-		displayEnergy();
+		//displayEnergy();
 		
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
@@ -155,7 +154,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		*/
 		
 		final ListView listview = (ListView) findViewById(R.id.listView1);
-		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout);
+		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energy);
 		listview.setAdapter(mAdapter_defence);
 		
 	}
@@ -175,6 +174,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		showLoading();
 		
 		final Intent intent = new Intent(this, DashboardActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		SaveCallback saveCallback = new SaveCallback() {
 			
 			@Override
@@ -208,12 +208,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			map.addMarker(obstacle.getMarkerOptions());
 		}
 	}
-	
-	private void displayEnergy(){
-		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
-		TextView energy = (TextView)findViewById(R.id.energy);
-		energy.setText(energyString);
-	}
+
 	
 	/**
 	 * Set up a Google map.
@@ -331,7 +326,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Transfer Obstacle to parse object
 		 */
-		for(Obstacle obstacle: newObstaclesOnCourse){
+		for(Obstacle obstacle: mAdapter_defence.getNewObstaclesOnCourse()){
 			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, courseParseObject);
 			objectList.add(obstacleParseObject);
 		}
@@ -346,8 +341,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
-		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), this.userEnergy);
+		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.add(dao.updateDatasource(ParseUser.getCurrentUser()));
+		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
 		 */
@@ -365,14 +361,15 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Transfer Obstacle to parse object
 		 */
-		for(Obstacle obstacle: newObstaclesOnCourse){
+		for(Obstacle obstacle: mAdapter_defence.getNewObstaclesOnCourse()){
 			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, ParseObject.createWithoutData("Course", this.course.getObjectID()));
 			objectList.add(obstacleParseObject);
 		}
 		/*
 		 *  Update equipment
 		 */
-		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		objectList.addAll(dao.updateEquipment(this.equipments));
+		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
 		 */
@@ -391,7 +388,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Transfer Obstacle to parse object
 		 */
-		for(Obstacle obstacle: newObstaclesOnCourse){
+		for(Obstacle obstacle: mAdapter_defence.getNewObstaclesOnCourse()){
 			ParseObject obstacleParseObject = dao.createObstacleParseObject(obstacle, ParseObject.createWithoutData("Course", this.course.getObjectID()));
 			objectList.add(obstacleParseObject);
 		}
@@ -404,7 +401,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		dao.updateEquipment(ParseUser.getCurrentUser(), newObstaclesOnCourse);
+		objectList.addAll(dao.updateEquipment(this.equipments));
+		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
 		 */

@@ -13,6 +13,7 @@ import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
@@ -23,7 +24,9 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -81,9 +84,9 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private ParseGeoPoint previouslocation; // for motion detector
 	private Boolean bitten = false; // for dog
 
-	private ImageView reachData;
-	private ProgressBar hackProgressBar;
-	private int hackProgress;
+	private ImageView reachData;	// Button of hacking task
+	private ProgressBar hackProgressBar;	// Progress of hacking task
+	private int hackProgress;	// Hacking progress
 	private Handler handler = new Handler();
 
 	
@@ -190,10 +193,44 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		reachData = (ImageView)findViewById(R.id.imageView1);
 		hackProgressBar = (ProgressBar)findViewById(R.id.progressBar1);
 		hackProgress = hackProgressBar.getProgress();
-		reachData.setOnTouchListener(new ReachData());
-		handler.postDelayed(runnable, 500);
+		if(hackProgress == 0){
+			reachData.setOnTouchListener(new ReachData());
+			handler.postDelayed(runnable, 500);
+		}
+		
 	}
-	
+	/**
+	 * Show the missionComplete dialog when user hack the datasource.
+	 */
+	private void missionComplete(){
+		RelativeLayout viewLayout = (RelativeLayout)findViewById(R.id.RelativeLaout);
+		viewLayout.setVisibility(View.VISIBLE);
+		Button get = (Button)viewLayout.findViewById(R.id.button1);
+		get.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				/*
+				 * Delete the course and update the user lv.
+				 */
+				ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
+		        progressDialog.setTitle("Loading...");
+		        progressDialog.setCancelable(false);
+		        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		        progressDialog.show();
+		        
+				Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				dao.deleteCourse(AttackActivity.this.course);
+				dao.updateUserLevel(ParseUser.getCurrentUser());
+				dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
+				dao.pushNotification(ParseUser.getCurrentUser());
+				startActivity(intent);
+			}
+		});
+	}
+
 	/**
 	 * Set up the screen in normal condition
 	 * 1. Set content visible
@@ -605,10 +642,12 @@ boolean isLoading = false;
 	            case MotionEvent.ACTION_MOVE:
 	            	//System.out.println(lastDuration);
 	            	if(hackProgress < 10000){
-	            		hackProgress += 10;
+	            		hackProgress += 20;
 	            		hackProgressBar.setProgress(hackProgress);
 	            	}else{
+	            		System.out.println("DEGUGGER");
 	            		handler.removeCallbacks(runnable);
+	            		missionComplete();
 	            	}
 	            	break;
             }
@@ -633,7 +672,7 @@ boolean isLoading = false;
 				hackProgressBar.setProgress(hackProgress);
 				handler.postDelayed(this, 500);
 			}
-			System.out.println("show:" + hackProgress);
+			//System.out.println("show:" + hackProgress);
 		}
 	};
 

@@ -23,6 +23,7 @@
     </FrameLayout>
 
     <RelativeLayout
+        android:id="@id/RelativeLaout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentLeft="true"
@@ -53,6 +54,39 @@
             android:dividerHeight="20dp" >
 
         </ListView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/RelativeLaout"
+        android:layout_margin="15dp"
+        android:background="@color/white"
+        android:onClick="createNewCourse" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="Creat a new course"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/orangeText" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textView1"
+            android:layout_alignBottom="@+id/textView1"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:text="999"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/orangeText" />
 
     </RelativeLayout>
     

@@ -14,11 +14,15 @@ public class Equipment {
 
 	private String type;
 	private int number;
+	private String objectId;
+	private int levelLimit;
 	
-	public Equipment(String type, int number) {
+	public Equipment(String type, int number, String objectId, int levelLimit) {
 		// TODO Auto-generated constructor stub
 		this.type = type;
 		this.number = number;
+		this.objectId = objectId;
+		this.levelLimit = levelLimit;
 	}
 	/**
 	 * Get the number of this type of equipment.
@@ -64,5 +68,13 @@ public class Equipment {
 		}
 		
 		return maxCost;
+	}
+	
+	public String getObjectId(){
+		return this.objectId;
+	}
+	
+	public int getLevelLimit() {
+		return this.levelLimit;
 	}
 }
