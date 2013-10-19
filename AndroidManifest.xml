@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.VIBRATE" />
     <!--
      The following two permissions are not required to use
      Google Maps Android API v2, but are recommended.
@@ -42,6 +44,7 @@
 	<uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name="uq.deco7381.runspyrun.Application"
         android:allowBackup="true"
         android:debuggable="true"
         android:icon="@drawable/rsricon"
@@ -104,6 +107,14 @@
             android:label="@string/title_activity_attack"
             android:screenOrientation="portrait" >
         </activity>
+        
+        <service android:name="com.parse.PushService" />
+		<receiver android:name="com.parse.ParseBroadcastReceiver">
+		  <intent-filter>
+		    <action android:name="android.intent.action.BOOT_COMPLETED" />
+		    <action android:name="android.intent.action.USER_PRESENT" />
+		  </intent-filter>
+		</receiver>
     </application>
 
 </manifest>

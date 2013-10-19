@@ -49,7 +49,7 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
-		Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
+		//Parse.initialize(this, "2XLuNz2w0M4iTL5VwXY2w6ICc7aYPZfnr7xyB4EF", "6ZHEiV500losBP4oHmX4f1qVuct1VyRgOlByTVQB");
 		ParseAnalytics.trackAppOpened(getIntent());
 		
 		/*
@@ -66,7 +66,23 @@ public class LoginActivity extends Activity {
 		mLoadingView = findViewById(R.id.loading_spinner);
 		mLoadingView.setVisibility(View.GONE);
 		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		
+		
 
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		
+		if(ParseUser.getCurrentUser() != null){
+			showLoading();
+			Intent intent = new Intent(this, DashboardActivity.class);
+			startActivity(intent);
+			//showContent();
+		}
+		
 	}
 
 	/**

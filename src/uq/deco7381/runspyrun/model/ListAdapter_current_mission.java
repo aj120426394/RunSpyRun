@@ -38,7 +38,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 	private Location currentLocation;
 	private Bitmap bitmap;
 	private ParseDAO dao;
-	private boolean triggable;
+	//private boolean triggable;
 	
 	public ListAdapter_current_mission(Context c, Location location, ArrayList<Course> course) {
 		// TODO Auto-generated constructor stub
@@ -48,7 +48,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
 		currentLocation = location;
 		dao = new ParseDAO();
-		triggable = false;
+		//triggable = false;
 	}
 
 	@Override
@@ -96,6 +96,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			holder.distance = (TextView) convertView.findViewById(R.id.textView2);
 			holder.level = (TextView) convertView.findViewById(R.id.textView5);
 			holder.position = position;
+			holder.triggable = false;
 			convertView.setTag(holder);
 		}
 		
@@ -147,7 +148,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		
 		convertView.setOnTouchListener(swipeDismissTouchListener);
 		
-		if(triggable){
+		if(holder.triggable){
     		holder.type.setTextColor(mContext.getResources().getColor(R.color.orangeText));
 			convertView.setOnClickListener(new OnClickListener() {
 				@Override
@@ -177,6 +178,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
         TextView locality;
         TextView level;
         int position;
+        boolean triggable;
     }
     
     private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
@@ -207,13 +209,14 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			ParseGeoPoint currentGeoPoint = new ParseGeoPoint(currentLocation.getLatitude(),currentLocation.getLongitude());
 			double distanceDouble = currentGeoPoint.distanceInKilometersTo(courseLoc);
 	    	distanceString = "";
-	    	if(distanceDouble*100 < 500){
-	    		triggable = true;
+	    	if(distanceDouble*1000 < 500){
+	    		holder.triggable = true;
 	    	}
 	    	if(distanceDouble*1000 < 400){
 	    		distanceString = "you are in the course";
 	    	}else{
 	    		distanceString = String.valueOf((int)(distanceDouble * 1000 - 400)) + " m";
+	    		holder.triggable = false;
 	    	}
 			
 			/*
