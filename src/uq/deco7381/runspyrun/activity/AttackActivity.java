@@ -86,14 +86,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private Float guardSightBearing = (float) 30.0; // starting guard sight bearing
 	private Boolean seenByGuard = false; // for guard behavior
 
+	private String alertFlag = "";
 
 
-	private String alertFlag;
 
 	private ImageView reachData;	// Button of hacking task
 	private ProgressBar hackProgressBar;	// Progress of hacking task
 	private int hackProgress;	// Hacking progress
-
 	private Handler handler = new Handler();
 
 	
@@ -643,6 +642,7 @@ boolean isLoading = false;
 				}
 				
 				
+
 				/**
 				 * Check to see if at data stream
 				 */
@@ -651,7 +651,6 @@ boolean isLoading = false;
 
 					alertFlag = "ALERT!";
 					reachData();
-
 				}
 				
 				// update status, energy, energy bar and alerts in AR view 
@@ -664,7 +663,6 @@ boolean isLoading = false;
 				}
 			}
 	}
-
 	
 
 	/**

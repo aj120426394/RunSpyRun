@@ -43,8 +43,6 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.8;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_motionDetector;
-	    	
-
 			break;
 			
 		default:
