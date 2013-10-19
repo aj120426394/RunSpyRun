@@ -2,15 +2,13 @@ package uq.deco7381.runspyrun.activity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_current_mission;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import uq.deco7381.runspyrun.model.SwipeDismissListViewTouchListener;
-import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +18,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -77,7 +74,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		setContentView(R.layout.activity_dashboard);
 		dao = new ParseDAO();
 		isCurrLocExist = false;
-		PushService.subscribe(this, ParseUser.getCurrentUser().getString("organization"), LoginActivity.class);
+
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available

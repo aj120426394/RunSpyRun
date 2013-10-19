@@ -396,6 +396,12 @@ public class ParseDAO {
 	}
 	/**
 	 * Delete the Mission 
+	 * 
+	 * SQL:
+	 * DELETE
+	 * FROM "Mission"
+	 * WHERE "course" = Course AND "username" = user
+	 * 
 	 * @param course
 	 * @param user
 	 */
@@ -416,7 +422,12 @@ public class ParseDAO {
 			}
 		});
 	}
-	
+	/**
+	 * Delete all obstacle which created by user in a course.
+	 * 
+	 * @param course
+	 * @param user
+	 */
 	public void deleteObstacleByUser(Course course, ParseUser user){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
 		query.whereEqualTo("course", ParseObject.createWithoutData("Course", course.getObjectID()));
