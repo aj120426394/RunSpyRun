@@ -65,6 +65,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private ParseGeoPoint previouslocation; // for motion detector to work out distance moved
 	private Boolean bitten = false; // for dog when triggered
 	private String alertgraphicshow = "off"; // for AR view to turn on or off the alert graphic
+	private Float guardSightBearing = (float) 30.0; // starting guard sight bearing
+	private Boolean seenByGuard = false; // for guard behavior
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -432,6 +434,13 @@ boolean isLoading = false;
 					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
 					System.out.println("Trigger distance is "+obs_triggerdistance);
 					
+					// get bearing obstacle location to current location
+					Location obstaclelocation = new Location("");
+					obstaclelocation.setLatitude(obstacle.getLatitude());
+					obstaclelocation.setLongitude(obstacle.getLongitude());
+					float userbearing = obstaclelocation.bearingTo(location);
+					System.out.println("Bearing from obstacle to user is "+userbearing);
+					
 					// check if obstacle already triggered
 					triggered = obshash.containsKey(obstacle);
 					System.out.println("triggered value is "+triggered);
@@ -443,7 +452,12 @@ boolean isLoading = false;
 						// obstacle is triggered
 						
 						if (obs_type=="Guard") {
-							alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
+							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
+							if (seenByGuard) {
+								alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
+							} else {
+								alertmessage = "Warning: In Range of Guard not within field of vision";
+							}
 						}
 						if (obs_type=="Dog") {
 							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
@@ -460,7 +474,7 @@ boolean isLoading = false;
 						 * Also put half of stolen energy to player who create it.
 						 * No energy is taken when a motion detector is triggered at this stage
 						 */
-						if (obs_type!="MotionDetector") {
+						if (obs_type!="MotionDetector" || (obs_type=="Guard" && seenByGuard != false)) {
 							obs_energycost += (obstacle.getEnergyCost());
 							dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 						}
@@ -478,6 +492,7 @@ boolean isLoading = false;
 					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
 						bitten = false; // reset the dog
+						seenByGuard = false;
 						alertmessage ="Mission active - Clear of all defences";
 						alertgraphicshow = "off"; // turn off alert graphic
 					}
@@ -485,8 +500,17 @@ boolean isLoading = false;
 					// events when already detected but still within trigger distance 
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
 						if (obs_type=="Guard") {
-							alertmessage = "Guard approaching";
-							alertgraphicshow = "off";
+							guardSightBearing = calcGuardSightbearing(guardSightBearing);
+							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
+							if (seenByGuard) {
+								alertmessage = "Detection: Seen by Guard - energy reduction "+obstacle.getEnergyCost();
+								obs_energycost += (obstacle.getEnergyCost());
+								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+								alertgraphicshow = "on";
+							} else {
+								alertmessage = "Warning: In Range of Guard not within field of vision";
+								alertgraphicshow = "off";
+							}
 						}
 						
 						// Dog behavior when triggered - chases and bites
@@ -542,7 +566,7 @@ boolean isLoading = false;
 					alertmessage = "You have reached the data stream";
 				}
 				
-				// update status, energy, energy bar and alerts in AR view
+				// update status, energy, energy bar and alerts in AR view 
 				if (this.architectView!=null) {
 					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
@@ -551,6 +575,48 @@ boolean isLoading = false;
 					this.architectView.callJavascript(alertGraphicFlag);
 				}
 			}
+	}
+	
+	/**
+	 * Converts userbearing to 360 degrees
+	 * The checks to see if userbearing is within +/- 30 degrees of the guard's sight bearing
+	 * 
+	 * @param guardSightBearing2
+	 * @param userbearing
+	 * @return
+	 */
+	private Boolean checkIfSeenByGuard(Float guardSightBearing2,
+			float userbearing) {
+		// TODO Auto-generated method stub
+		
+		// convert userbearing to 360
+		System.out.println("User bearing before conversion: "+userbearing);
+		if (userbearing <0) {
+			userbearing = 180 + (180 + userbearing);
+		}
+		System.out.println("User bearing after conversion: "+userbearing);
+		
+		// check if user is within sight of guard
+		if (userbearing >= (guardSightBearing2-30.0f) && userbearing <= (guardSightBearing2+30.0f)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Calulates a new bearing (based on 360 degrees) for where the guard is looking
+	 * adds 60 degrees and then checks if the value is above 360 then adjusts
+	 * 
+	 * @param guardSightBearing2
+	 * @return
+	 */
+	public Float calcGuardSightbearing(Float guardSightBearing2) {
+		guardSightBearing2 += 60;
+		if (guardSightBearing2>360) {
+			guardSightBearing2 -= 360;
+		}
+		return guardSightBearing2;
 	}
 
 }
