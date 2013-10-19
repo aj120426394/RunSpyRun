@@ -15,7 +15,7 @@
 			// set the north-indicator image for the radar (not necessary if you don't want to display a north-indicator)
 			AR.radar.northIndicator.image = new AR.ImageResource("img/radar_north2.png");
 			AR.radar.positionX = 0.02; // 0.04
-			AR.radar.positionY = 0.03; // 0.06
+			AR.radar.positionY = 0.02; // 0.06
 			AR.radar.width = 0.3;
 			AR.radar.centerX = 0.5;
 			AR.radar.centerY = 0.5;

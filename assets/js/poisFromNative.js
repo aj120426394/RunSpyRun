@@ -20,7 +20,7 @@ var World = {
 
 
 		// message to user whilst loading data for defences
-		document.getElementById("statusElementLeft").innerHTML = 'AttackMode Init';
+		document.getElementById("statusElement1").innerHTML = 'AttackMode Init';
 		
 		// image for the radar
 		var poiImage = new AR.ImageResource("img/marker.png", {
@@ -42,7 +42,7 @@ var World = {
 		}
 		
 		// message to user on loading of data for defences
-		document.getElementById("statusElementLeft").innerHTML = 'Defences Located';
+		document.getElementById("statusElement1").innerHTML = 'Defences Located';
 
 	},
 
@@ -57,18 +57,45 @@ var World = {
 			//'altitude': alt,
 			'accuracy': acc
 		};
+		document.getElementById("locationdata").innerHTML = lat+" : "+lon; 
 	},
 	
 	updateStatusMsg: function updateStatusMsgFn(statusMsgText) {
-		document.getElementById("statusElementLeft").innerHTML = statusMsgText;
+		document.getElementById("statusElement1").innerHTML = statusMsgText;
 	},
 	
 	updateEnergyValue: function updateEnergyValueFn(energyval) {
 		document.getElementById("energyvalue").innerHTML = energyval;
+		
+		var energy100 = 12000;
+		
+		if (energyval>energy100) {
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar100.png">';
+		} else if (energyval < ((energy100)+1) & energyval > (energy100*0.9)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar90.png">';
+		} else if (energyval < ((energy100*0.9)+1) & energyval > (energy100*0.8)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar80.png">';
+		} else if (energyval < ((energy100*0.8)+1) & energyval > (energy100*0.7)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar70.png">';
+		} else if (energyval < ((energy100*0.7)+1) & energyval > (energy100*0.6)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar60.png">';
+		} else if (energyval < ((energy100*0.6)+1) & energyval > (energy100*0.5)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar50.png">';
+		} else if (energyval < ((energy100*0.5)+1) & energyval > (energy100*0.4)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar40.png">';
+		} else if (energyval < ((energy100*0.4)+1) & energyval > (energy100*0.3)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar30.png">';
+		} else if (energyval < ((energy100*0.3)+1) & energyval > (energy100*0.2)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar20.png">';
+		} else if (energyval < ((energy100*0.2)+1) & energyval > (energy100*0.1)){
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar10.png">';
+		} else {
+			document.getElementById("energybar").innerHTML = '<img id="energybarimg" src="img/energybar00.png">';
+		};
 	},
 	
 	updateAlertElementRight: function updateAlertElementRightFn(alertRightText) {
-		document.getElementById("alertElementRight").innerHTML = alertRightText;
+		document.getElementById("alertElement1").innerHTML = alertRightText;
 	},
 	
 	updateAlertGraphic: function updateAlertGraphicFn(alertgraphicflag) {

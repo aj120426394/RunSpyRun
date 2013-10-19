@@ -23,19 +23,30 @@
     
     <body>        
         
+        <!-- location -->
+        <div id="location">
+        	Loc: <span id="locationdata"></span>
+        </div>
+        
         <!-- status element showing app progress -->
         <div id="statusElement" class="status">
-            <div id="statusElementLeft">
+            <div id="statusElement1">
 	            Initialising Attack Mode
 	        </div>
-	        <div id="statusElementRight">
-	        	Energy: <span id="energyvalue">000</span>
-	        </div>
+	        <div id="alertElement1">
+    			Everything normal
+    		</div>
     	</div>
+
+    	<!-- energy element showing user energy -->
+    	<div id="energyElement">
+	        <p>Energy: <span id="energyvalue">000</span></p>
+	        <p id="energybar"><img id="energybarimg" src="img/energybar50.png"></p>
+	    </div>
     	
     	<!-- central alert graphic -->
     	<div id="alertgraphic">
-			Alert!
+			<img id="alertgraphicimg" src="img/Alert.png">
     	</div>
     	
     	<!-- alert element showing game interactions -->
@@ -43,10 +54,8 @@
     		<div id="alertElementLeft">
     			
     		</div>
-    		<div id="alertElementRight">
-    			Everything normal
-    		</div>
         </div>
+        
         <!-- main JS code of this scene -->
         <script src="js/poisFromNative.js"></script>
 

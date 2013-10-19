@@ -405,7 +405,7 @@ boolean isLoading = false;
 			}
 			
 			/*
-			 * checking to see if obstacles have been triggered 
+			 * check to see if obstacle has been triggered 
 			 */
 			
 			if (viewFlag == 2) {
@@ -464,7 +464,7 @@ boolean isLoading = false;
 							obs_energycost += (obstacle.getEnergyCost());
 							dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 						}
-						// vibrate phone
+						// vibrate phone 
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 						vibrator.vibrate(500);
 						
@@ -482,9 +482,8 @@ boolean isLoading = false;
 						alertgraphicshow = "off"; // turn off alert graphic
 					}
 					
-					// events when already detected still within trigger distance 
+					// events when already detected but still within trigger distance 
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
-						//System.out.println("still within obs distance but not doing anything");
 						if (obs_type=="Guard") {
 							alertmessage = "Guard approaching";
 							alertgraphicshow = "off";
@@ -543,7 +542,7 @@ boolean isLoading = false;
 					alertmessage = "You have reached the data stream";
 				}
 				
-				// update energy and alerts in AR view
+				// update status, energy, energy bar and alerts in AR view
 				if (this.architectView!=null) {
 					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
