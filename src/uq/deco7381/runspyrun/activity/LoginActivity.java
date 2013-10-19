@@ -25,6 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.parse.RequestPasswordResetCallback;
 /**
  * This is a launch Activity of this application
@@ -39,10 +40,12 @@ public class LoginActivity extends Activity {
 	
 	public static final String PREFS_NAME = "LoginInfo";  // Key of SharedPreferences
 	private static final String PREF_USERNAME = "username"; // Key of getting username in SharedPreference
+	private static final String PREF_ORG = "organization"; // Key of getting organization in SharedPreference
 	
 	private View mContentView;	// The view contain the whole content.
 	private View mLoadingView;	// The view contain the process animation.
 	private int mShortAnimationDuration;	// Animation time
+	private String prevOrg; 	// Last known organization;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class LoginActivity extends Activity {
 		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String username = pref.getString(PREF_USERNAME, null);
 		setUsername(username);
+		prevOrg = pref.getString(PREF_ORG, null);
 
 		/*
 		 *  Set up the loading screen and content screen
@@ -71,19 +75,6 @@ public class LoginActivity extends Activity {
 
 	}
 
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onStart();
-		
-		if(ParseUser.getCurrentUser() != null){
-			showLoading();
-			Intent intent = new Intent(this, DashboardActivity.class);
-			startActivity(intent);
-			//showContent();
-		}
-		
-	}
 
 	/**
 	 * Set the username on the login screen if user have login before.
@@ -113,7 +104,7 @@ public class LoginActivity extends Activity {
 		 * Retrieve user input
 		 */
 		EditText usernameEditText = (EditText) findViewById(R.id.username);
-		String usernameString = usernameEditText.getText().toString();
+		final String usernameString = usernameEditText.getText().toString();
 		
 		EditText passwordEditText = (EditText) findViewById(R.id.password);
 		String passwordString = passwordEditText.getText().toString();
@@ -128,6 +119,17 @@ public class LoginActivity extends Activity {
 			public void done(ParseUser user, ParseException e) {
 				// TODO Auto-generated method stub
 				if(user != null){
+					/*
+					 * Check if the user is same as previous user.
+					 */
+					if(!user.getString("organization").equals(prevOrg)){
+						PushService.unsubscribe(LoginActivity.this, prevOrg);
+						PushService.subscribe(LoginActivity.this, user.getString("organization"), LoginActivity.class);
+						getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+						.edit()
+						.putString(PREF_ORG, user.getString("organization"))
+						.commit();
+					}
 					startActivity(intent);
 					showContent();
 				}else if(e.getMessage().startsWith("i/o failure")){
