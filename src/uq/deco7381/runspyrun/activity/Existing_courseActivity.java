@@ -1,6 +1,7 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
@@ -13,15 +14,24 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 public class Existing_courseActivity extends Activity implements OnMyLocationChangeListener{
@@ -31,6 +41,8 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private ListView existingCourseListView;
 	private ListAdapter_newmission adapter;
 	private ParseDAO dao;
+	private Location currentLocation;
+	private TextView numOfData;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,6 +56,8 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
 		currentLocation.setLongitude(longitude);
+		
+		
 		
 		
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
@@ -67,7 +81,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			Toast.makeText(this, "Please open the GPS", Toast.LENGTH_LONG).show();
 			startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 		}
-		
+		numOfData = (TextView)findViewById(R.id.textView2);
 		
 		ArrayList<Course> courseList = getCourseList(latitude, longitude);
 		existingCourseListView = (ListView)findViewById(R.id.listView);
@@ -75,29 +89,30 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		
 		adapter = new ListAdapter_newmission(this,currentLocation,courseList);
 		existingCourseListView.setAdapter(adapter);
-		/*
-		SwipeDismissListViewTouchListener touchListener = 
-				new SwipeDismissListViewTouchListener(existingCourseListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
-					
-					@Override
-					public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-						// TODO Auto-generated method stub
-						for (int position : reverseSortedPositions) {
-							adapter.remove(adapter.getItem(position));
-                        }
-						adapter.notifyDataSetChanged();
-					}
-					
-					@Override
-					public boolean canDismiss(int position) {
-						// TODO Auto-generated method stub
-						return false;
-					}
-				});
 		
-		existingCourseListView.setOnTouchListener(touchListener);
-		existingCourseListView.setOnScrollListener(touchListener.makeScrollListener());
-		*/
+		/*
+		 *  Set the datasource number
+		 */
+		ParseQuery<ParseObject> equipmentQuery = ParseQuery.getQuery("equipment");
+		equipmentQuery.whereEqualTo("username", ParseUser.getCurrentUser());
+		equipmentQuery.whereEqualTo("eq_name", "Datasource");
+		if(equipmentQuery.hasCachedResult()){
+			equipmentQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+		}else{
+			equipmentQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		}
+		equipmentQuery.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				// TODO Auto-generated method stub
+				if(e == null){
+					int numOfdata = objects.get(0).getInt("number");
+					numOfData.setText(String.valueOf(numOfdata));
+				}else{
+					System.out.println(e.getMessage());
+				}
+			}
+		});
 		
 	}
 
@@ -143,11 +158,22 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	    /*
          *  Make camera on map keep tracking user.
          */
+		this.currentLocation = lastKnowLocation;
+		
         LatLng latLng = new LatLng(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude());
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		map.setOnCameraChangeListener(null);
 		
 	}
-
+	
+	public void createNewCourse(View v) {
+		if(this.currentLocation != null){
+			Intent intent = new Intent(this, DefenceActivity.class);
+			intent.putExtra("latitude", this.currentLocation.getLatitude());
+			intent.putExtra("longtitude", this.currentLocation.getLongitude());
+			intent.putExtra("isFrom", "newCourse");
+			startActivity(intent);
+		}
+	}
 }

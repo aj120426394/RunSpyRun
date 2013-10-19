@@ -1,5 +1,8 @@
 package uq.deco7381.runspyrun.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uq.deco7381.runspyrun.R;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -122,14 +125,16 @@ public class SignupActivity extends Activity {
 				user.setUsername(username);
 				user.setPassword(ePassword);
 				user.setEmail(email);
-				int ramdomOrg = (int)Math.random() * 100;
+				double ramdomOrg = (double)(Math.random() * 10);
 				String org = "";
-				if(ramdomOrg%2 == 0){
+				if(ramdomOrg % 2 == 0){
 					org = "iCorp";
 				}else{
 					org = "mCorp";
 				}
+				System.out.println(ramdomOrg);
 				user.put("organization", org);
+				user.put("level", 1);
 				user.put("energyLevel", 100);
 				user.put("courseDone", 0);
 				user.signUpInBackground(new SignUpCallback() {
@@ -146,11 +151,33 @@ public class SignupActivity extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									// TODO Auto-generated method stub
-									ParseObject equipment = new ParseObject("equipment");
-									equipment.put("username", ParseUser.getCurrentUser());
-									equipment.put("eq_name", "Datasource");
-									equipment.put("number", 5);
-									equipment.saveInBackground();
+									List<ParseObject> pList = new ArrayList<ParseObject>();
+									ParseObject datasource = new ParseObject("equipment");
+									datasource.put("username", ParseUser.getCurrentUser());
+									datasource.put("eq_name", "Datasource");
+									datasource.put("number", 5);
+									pList.add(datasource);
+									
+									ParseObject dog = new ParseObject("equipment");
+									dog.put("username", ParseUser.getCurrentUser());
+									dog.put("eq_name", "Dog");
+									dog.put("number", 1);
+									pList.add(dog);
+									
+									ParseObject guard = new ParseObject("equipment");
+									guard.put("username", ParseUser.getCurrentUser());
+									guard.put("eq_name", "Guard");
+									guard.put("number", 1);
+									pList.add(guard);
+									
+									ParseObject md = new ParseObject("equipment");
+									md.put("username", ParseUser.getCurrentUser());
+									md.put("eq_name", "MotionDetector");
+									md.put("number", 1);
+									pList.add(md);
+									
+									
+									ParseObject.saveAllInBackground(pList);
 									startActivity(intent);
 								}
 							});

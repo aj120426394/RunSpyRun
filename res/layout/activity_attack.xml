@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="200dp"
         android:background="@color/white"
         android:visibility="gone" >
 
@@ -36,7 +36,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:max="10000" />
+            android:max="10000"
+            android:maxHeight="20dp"
+            android:minHeight="16dp" />
 
         <ImageView
             android:id="@+id/imageView1"
@@ -47,6 +49,39 @@
             android:clickable="true"
             android:longClickable="true"
             android:src="@drawable/swipe" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/RelativeLaout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/white"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="Mission Complete"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:fitsSystemWindows="true"
+            android:text="Get reward"
+            android:textColor="@color/aqua" />
 
     </RelativeLayout>
 

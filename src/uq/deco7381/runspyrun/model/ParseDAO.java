@@ -4,25 +4,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.R.integer;
-import android.widget.Toast;
-
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-
+/**
+ * This class is use for Database management.
+ * The database is Parse, so all the command of database are using 
+ * Parse API
+ * 
+ * @author Jafo
+ * @version 1.5
+ * @since 19/10/2013
+ */
 public class ParseDAO {
 
 	public ParseDAO() {
 		// TODO Auto-generated constructor stub
 		
 	}
+	/**
+	 * Convert course object to ParseOjbect
+	 * 
+	 * @param Course: The Course is going to be converted
+	 * @return ParseObject: The Course with ParseObject type
+	 */
 	public ParseObject createCourseParseObject(Course course){
 		ParseObject parseCourse = new ParseObject("Course");
 		parseCourse.put("owner", course.getOnwer());
@@ -32,6 +44,13 @@ public class ParseDAO {
 		
 		return parseCourse;
 	}
+	/**
+	 * Convert Obstacle object to ParseObejct
+	 * 
+	 * @param Obstacle: The Obstacle is going to be converted
+	 * @param ParseObject: The Course which this obstacle in.
+	 * @return ParseObject: The Obstacle with ParseObject type
+	 */
 	public ParseObject createObstacleParseObject(Obstacle obstacle, ParseObject course){
 		ParseObject object = new ParseObject("Obstacle");
 		object.put("creator", obstacle.getCreator());
@@ -40,18 +59,72 @@ public class ParseDAO {
 		object.put("altitude", obstacle.getAltitude());
 		object.put("type", obstacle.getType());
 		object.put("course", course);
+		object.put("level", obstacle.getLevel());
 		return object;
 	}
+	/**
+	 * Create a Mission with ParseObject type.
+	 * 
+	 * @param ParseUser: Current user who create this mission
+	 * @param ParseObject: The course which the mission is.
+	 * @return ParseObject: The Mission with ParseObject type.
+	 */
 	public ParseObject createMissionParseObject(ParseUser currentUser, ParseObject course){
 		ParseObject mission = new ParseObject("Mission");
 		mission.put("course", course);
 		mission.put("username", currentUser);
 		return mission;
 	}
+	/**
+	 * Save a list of Parse Object to Parse server.
+	 * 
+	 * @param List<ParseObject>: A list of ParseObject
+	 * @param SaveCallback: the callback after save command execute.
+	 */
 	public void insertToServer(List<ParseObject> list,SaveCallback saveCallback){
 		ParseObject.saveAllInBackground(list, saveCallback);
 	}
-	public void updateEquipment(ParseUser user, ArrayList<Obstacle> obstacles){
+	/**
+	 * 
+	 * @param user
+	 */
+	public void updateUserLevel(ParseUser user) {
+		int currentLV = user.getInt("level");
+		int courseDone = user.getInt("courseDone");
+		courseDone += 1;
+		if(courseDone == currentLV){
+			currentLV += 1;
+			courseDone = 0;
+			user.put("level", currentLV);
+			user.put("courseDone", courseDone);
+		}else{
+			user.put("courseDone", courseDone);
+		}
+		
+		user.saveEventually();
+	}
+	/**
+	 * Update the current user's equipment
+	 * 
+	 * SQL:
+	 * UPDATE "equipment"
+	 * SET "number" = current equipment number
+	 * WHERE "username" = current user AND "type" = equipment type
+	 * 
+	 * @param ParseUser: Current user.
+	 * @param ArrayList<Obstacle>: the list of obstacle need to be updated.
+	 */
+	public List<ParseObject> updateEquipment(ArrayList<Equipment> equipments){
+		List<ParseObject> list = new ArrayList<ParseObject>();
+		
+		for(Equipment e: equipments){
+			ParseObject equipment = ParseObject.createWithoutData("equipment", e.getObjectId());
+			equipment.put("number", e.getNumber());
+			list.add(equipment);
+		}
+		return list;
+		
+		/*
 		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
 		equipment.whereEqualTo("username", user);
 		equipment.findInBackground(new FindCallback<ParseObject>() {
@@ -70,14 +143,38 @@ public class ParseDAO {
 								equipmentObject.put("number", equipmentObject.getInt("number")-1);
 							}
 						}*/
+		/*
 					}
 				}
 			}
 		});
+		*/
+	}
+	public ParseObject updateDatasource(ParseUser user){
+		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
+		equipment.whereEqualTo("username", user);
+		equipment.whereEqualTo("eq_name", "Datasource");
+		try {
+			ParseObject datasource = equipment.getFirst();
+			int currentNum = datasource.getInt("number");
+			datasource.put("number", currentNum-1);
+			return datasource;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	/**
 	 * Update user's energy by time
-	 * @param user
+	 * 
+	 * SQL:
+	 * UPDATE "User"
+	 * SET "energyLevel" = current energy
+	 * WHERE "user" = current user
+	 * 
+	 * @param ParseUser: Current user
 	 */
 	public void updateEnergyByTime(ParseUser user){
 		Date lastLogin = user.getUpdatedAt();
@@ -97,7 +194,13 @@ public class ParseDAO {
 	}
 	/**
 	 * User can regenerate energy from people who trigger the obstacle he set.
-	 * @param user
+	 * 
+	 * SQL:
+	 * UPDATE "User"
+	 * SET "energyLevel" = current energy
+	 * WHERE "user" = current user
+	 * 
+	 * @param ParseUser: Current user
 	 */
 	public void updateEnergyByObstacle(ParseUser user){
 		int energy = user.getInt("energyLevel");
@@ -121,12 +224,27 @@ public class ParseDAO {
 		user.put("energyLevel", energy);
 		user.saveEventually();
 	}
-	
+	/**
+	 * Update the current user's energy.
+	 * 
+	 * SQL:
+	 * UPDATE "User"
+	 * SET "energyLevel" = current energy
+	 * WHERE "user" = current user
+	 * 
+	 * @param ParseUser: Current user.
+	 * @param int: Current energy of current user.
+	 */
 	public void updateEnergyByEnergy(ParseUser user, int energy){
 		user.put("energyLevel", energy);
 		user.saveEventually();
 	}
-	
+	/**
+	 * Update the stolen energy to obstacle.
+	 * 
+	 * @param Obstacle
+	 * @param int
+	 */
 	public void updateObstacleEnergy(final Obstacle obstacle,final int stolenEnergy){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
 		query.getInBackground(obstacle.getObjectId(), new GetCallback<ParseObject>() {
@@ -365,8 +483,16 @@ public class ParseDAO {
 			for(ParseObject object: pList){
 				String type = object.getString("eq_name");
 				int number = object.getInt("number");
+				String objectId = object.getObjectId();
 				if(!type.equals("Datasource")){
-					Equipment equipment = new Equipment(type, number);
+					Equipment equipment = null;
+					if(type.equals("MotionDetector")){
+						equipment = new Equipment(type, number, objectId,3);
+					}else if(type.equals("Dog")){
+						equipment = new Equipment(type, number, objectId,2);
+					}else{
+						equipment = new Equipment(type, number, objectId,1);
+					}
 					equipments.add(equipment);
 				}
 			}
@@ -380,19 +506,33 @@ public class ParseDAO {
 	/**
 	 * Delete Course
 	 * 
-	 * 1. SQL: DELETE FROM Course WHERE
+	 * SQL: 
+	 * DELETE 
+	 * FROM "Course" 
+	 * WHERE ""
 	 * @param course - Course
 	 */
 	
 	public void deleteCourse(Course course){
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Course");
-		query.whereNear("location", course.getParseGeoPoint());
-		query.getFirstInBackground(new GetCallback<ParseObject>() {
-			@Override
-			public void done(ParseObject object, ParseException e) {
-				object.deleteEventually();
-			}
-		});
+		ParseObject courseObject = ParseObject.createWithoutData("Course", course.getObjectID());
+		courseObject.deleteEventually();
+		
+		ParseQuery<ParseObject> missionQuery = ParseQuery.getQuery("Mission");
+		missionQuery.whereEqualTo("course", ParseObject.createWithoutData("Course", course.getObjectID()));
+		
+		ParseQuery<ParseObject> obstaclesQuery = ParseQuery.getQuery("Obstacle");
+		obstaclesQuery.whereEqualTo("course", courseObject);
+		try {
+			List<ParseObject> missionList = missionQuery.find();
+			List<ParseObject> obstaclesList = obstaclesQuery.find();
+			
+			missionList.addAll(obstaclesList);
+			ParseObject.deleteAll(missionList);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Delete the Mission 
@@ -400,7 +540,7 @@ public class ParseDAO {
 	 * SQL:
 	 * DELETE
 	 * FROM "Mission"
-	 * WHERE "course" = Course AND "username" = user
+	 * WHERE "course" = Course AND "username" = Current user
 	 * 
 	 * @param course
 	 * @param user
@@ -424,6 +564,11 @@ public class ParseDAO {
 	}
 	/**
 	 * Delete all obstacle which created by user in a course.
+	 * 
+	 * SQL:
+	 * DELETE
+	 * FROM "Obstacle"
+	 * WHERE "course" = Course AND "username" = Current user
 	 * 
 	 * @param course
 	 * @param user
@@ -453,5 +598,40 @@ public class ParseDAO {
 			}
 		});
 	}
+	/**
+	 * Increase equipment when user hack the course.
+	 * 
+	 * @param ParseUser: Current user
+	 * @param ArrayList<Obstacle>: List of obstacle in th course.
+	 */
+	public void updateGetEquipment(ParseUser user, ArrayList<Obstacle> obstacles){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
+		query.whereEqualTo("username", user);
+		try {
+			List<ParseObject> equipments = query.find();
+			for(ParseObject e: equipments){
+				for(Obstacle o: obstacles){
+					if(o.getType().equals(e.getString("eq_name"))){
+						e.increment("number");
+					}
+				}
+			}
+			ParseObject.saveAll(equipments);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
+	public void pushNotification(ParseUser user) {
+		ParsePush push = new ParsePush();
+		if(user.getString("organization").equals("iCorp")){
+			push.setChannel("mCorp");
+		}else{
+			push.setChannel("iCorp");
+		}
+		push.setMessage("Your course has been hacked");
+		push.sendInBackground();
+	}
 }
