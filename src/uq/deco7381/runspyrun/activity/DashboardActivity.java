@@ -37,6 +37,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.PushService;
 /**
  * This activity is the main page "Dash board" when user launch the app.
  * 1. Display user's current information:
@@ -76,7 +77,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		setContentView(R.layout.activity_dashboard);
 		dao = new ParseDAO();
 		isCurrLocExist = false;
-		
+		PushService.subscribe(this, ParseUser.getCurrentUser().getString("organization"), LoginActivity.class);
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available
@@ -116,7 +117,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		/*
 		 * Constrain the scroll view when list view is scrollable 
 		 */
-		
+		/*
 		missionListView.setOnTouchListener(new ListView.OnTouchListener(){
 
 			@Override
@@ -141,33 +142,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			}
 			
 		});
-		
-		/*
-		 * Swipe to delete the element in list view.
-		 */
-		/*
-		SwipeDismissListViewTouchListener touchListener = 
-				new SwipeDismissListViewTouchListener(missionListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
-					
-					@Override
-					public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-						System.out.println("DEBUG:swipe");
-						// TODO Auto-generated method stub
-						for(int position: reverseSortedPositions){
-							adapter.removeItem(adapter.getItem(position));
-						}
-						adapter.notifyDataSetChanged();
-					}
-					
-					@Override
-					public boolean canDismiss(int position) {
-						// TODO Auto-generated method stub
-						return false;
-					}
-				});
-		missionListView.setOnTouchListener(touchListener);
-		missionListView.setOnScrollListener(touchListener.makeScrollListener());
-		*/
+*/
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);

@@ -383,6 +383,7 @@ public class ParseDAO {
 	 * 1. SQL: DELETE FROM Course WHERE
 	 * @param course - Course
 	 */
+	
 	public void deleteCourse(Course course){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Course");
 		query.whereNear("location", course.getParseGeoPoint());
@@ -393,7 +394,11 @@ public class ParseDAO {
 			}
 		});
 	}
-	
+	/**
+	 * Delete the Mission 
+	 * @param course
+	 * @param user
+	 */
 	public void deleteMission(Course course, ParseUser user){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Mission");
 		query.whereEqualTo("course", ParseObject.createWithoutData("Course", course.getObjectID()));
