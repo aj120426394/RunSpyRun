@@ -3,7 +3,6 @@ package uq.deco7381.runspyrun.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
@@ -19,6 +18,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +34,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.PushService;
 /**
  * This activity is the main page "Dash board" when user launch the app.
  * 1. Display user's current information:
@@ -111,35 +110,33 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		missionListView.setScrollingCacheEnabled(false);
 		adapter = new ListAdapter_current_mission(this, currentLocation, missionList);
 		missionListView.setAdapter(adapter);
+		
 		/*
-		 * Constrain the scroll view when list view is scrollable 
+		 * Set the number of current mission
 		 */
+		TextView missionNum = (TextView)findViewById(R.id.missionNum);
+		String missionNumString = "( " + missionList.size() + " / 6 )";
+		missionNum.setText(missionNumString);
 		/*
-		missionListView.setOnTouchListener(new ListView.OnTouchListener(){
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
-				int action = event.getAction();
-	            switch (action) {
-	            case MotionEvent.ACTION_DOWN:
-	                // Disallow ScrollView to intercept touch events.
-	                v.getParent().requestDisallowInterceptTouchEvent(true);
-	                break;
-
-	            case MotionEvent.ACTION_UP:
-	                // Allow ScrollView to intercept touch events.
-	                v.getParent().requestDisallowInterceptTouchEvent(false);
-	                break;
-	            }
-
-	            // Handle ListView touch events.
-	            v.onTouchEvent(event);
-	            return true;
-			}
+		 * Set "add new mission" clickable if the number of mission less than 6
+		 */
+		TextView addNew =(TextView)findViewById(R.id.db_mission_new);
+		if(missionList.size() > 0 && missionList.size() < 6){
+			addNew.setTextColor(getResources().getColor(R.color.orangeText));
+			addNew.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(DashboardActivity.this, Existing_courseActivity.class);
+					intent.putExtra("latitude", currentLocation.getLatitude());
+					intent.putExtra("longtitude", currentLocation.getLongitude());
+					startActivity(intent);
+				}
+			});
+		}else{
 			
-		});
-*/
+		}
+
 		TextView noMission = (TextView)findViewById(R.id.textView2);
 		if(missionList.size() == 0){
 			noMission.setVisibility(View.VISIBLE);
@@ -263,16 +260,6 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		Intent intent = new Intent(this, EquipmentActivity.class);
 		startActivity(intent);
 	}
-
-	/**
-	 * 
-	 */
-	public void goExistingCourse(View v){
-		Intent intent = new Intent(this, Existing_courseActivity.class);
-		intent.putExtra("latitude", currentLocation.getLatitude());
-		intent.putExtra("longtitude", currentLocation.getLongitude());
-		startActivity(intent);
-	}
 	/**
 	 * onClick method triggered by "Attack"
 	 * Direct user to a list of course can be attacked
@@ -301,7 +288,8 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
 		// TODO Auto-generated method stub
-		currentLocation = lastKnownLocation;
+		this.currentLocation = lastKnownLocation;
+		
 		/*
 		 *  Getting latitude of the current location
 		 */

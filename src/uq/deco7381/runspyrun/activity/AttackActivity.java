@@ -213,7 +213,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		RelativeLayout viewLayout = (RelativeLayout)findViewById(R.id.RelativeLaout);
 		viewLayout.setVisibility(View.VISIBLE);
 		Button get = (Button)viewLayout.findViewById(R.id.button1);
-		TextView title = (TextView)findViewById(R.id.textView1);
+		TextView title = (TextView)findViewById(R.id.missionNum);
 		if(complete){
 			get.setOnClickListener(new OnClickListener() {
 				@Override

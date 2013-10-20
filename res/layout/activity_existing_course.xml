@@ -66,7 +66,7 @@
         android:background="@color/white" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/missionNum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -80,8 +80,8 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textView1"
-            android:layout_alignBottom="@+id/textView1"
+            android:layout_alignBaseline="@+id/missionNum"
+            android:layout_alignBottom="@+id/missionNum"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:text="999"

@@ -170,10 +170,9 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:onClick="goExistingCourse"
                     android:text="+add new"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/orangeText" />
+                    android:textColor="@color/gray" />
 
                 <ListView
                     android:id="@+id/db_mission_list"
@@ -195,6 +194,16 @@
                     android:layout_centerVertical="true"
                     android:text="You don&apos;t have any mission."
                     android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/missionNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/db_mission_list"
+                    android:layout_alignRight="@+id/db_mission_new"
+                    android:text="( 6 / 6 )"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/orangeText" />
 
             </RelativeLayout>
             <!-- Both of this for view are the shadow of the display screen, it will display under each part of display box -->

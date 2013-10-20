@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uq.deco7381.runspyrun.R;
+import uq.deco7381.runspyrun.activity.DashboardActivity;
 import uq.deco7381.runspyrun.activity.DefenceActivity;
+import uq.deco7381.runspyrun.activity.Existing_courseActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -25,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.ParseGeoPoint;
@@ -124,9 +127,26 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		String levelString = String.valueOf(course.getLevel());
 		holder.level.setText(levelString);
 		
+		final RelativeLayout viewGroup = (RelativeLayout)parent.getParent();
+		TextView addNew = (TextView)viewGroup.findViewById(R.id.db_mission_new);
+		/*
+		 * Check if "Add new" is clickable
+		 */
+		if(0 < getCount() && getCount() < 6){
+			addNew.setTextColor(mContext.getResources().getColor(R.color.orangeText));
+			addNew.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(mContext, Existing_courseActivity.class);
+					intent.putExtra("latitude", currentLocation.getLatitude());
+					intent.putExtra("longtitude", currentLocation.getLongitude());
+					mContext.startActivity(intent);
+				}
+			});
+		}
 		
 		final SwipeDismissTouchListener swipeDismissTouchListener;
-
 	    swipeDismissTouchListener = new SwipeDismissTouchListener(convertView, null, new SwipeDismissTouchListener.DismissCallbacks() {
 			
 			@Override
@@ -136,6 +156,12 @@ public class ListAdapter_current_mission extends BaseAdapter {
 				dao.deleteMission(getItem(position), ParseUser.getCurrentUser());
 				dao.deleteObstacleByUser(getItem(position), ParseUser.getCurrentUser());
 				removeItem(getItem(position));
+				/*
+				 * Set the number of current mission
+				 */
+				TextView missionNum = (TextView)viewGroup.findViewById(R.id.missionNum);
+				String missionNumString = "( " + getCount() + " / 6 )";
+				missionNum.setText(missionNumString);
 				notifyDataSetChanged();
 			}
 			

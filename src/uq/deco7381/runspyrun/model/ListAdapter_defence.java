@@ -87,7 +87,7 @@ public class ListAdapter_defence extends BaseAdapter {
 		}else {
 			convertView = mInflater.inflate(R.layout.list_tag_defence, null);
 			holder = new ViewHolder();
-			holder.type = (TextView) convertView.findViewById(R.id.textView1);
+			holder.type = (TextView) convertView.findViewById(R.id.missionNum);
 			holder.number = (TextView)convertView.findViewById(R.id.textView2);
 			convertView.setTag(holder);
 		}

@@ -111,7 +111,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		});
 		
 		RelativeLayout create = (RelativeLayout)findViewById(R.id.RelativeLayout1);
-		TextView createTitle = (TextView)findViewById(R.id.textView1);
+		TextView createTitle = (TextView)findViewById(R.id.missionNum);
 		if(numOfdata > 0){
 			numOfData.setTextColor(getResources().getColor(R.color.orangeText));
 			createTitle.setTextColor(getResources().getColor(R.color.orangeText));
