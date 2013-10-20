@@ -42,7 +42,7 @@ public class Course {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = 400; //400 meter
-		this.level = 1;
+		this.level = level;
 		this.creator = creator;
 		this.organization = org;
 		this.objectID = objectId;

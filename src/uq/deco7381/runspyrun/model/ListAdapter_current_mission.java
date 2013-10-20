@@ -226,8 +226,11 @@ public class ListAdapter_current_mission extends BaseAdapter {
 			Geocoder geocoder = new Geocoder(mContext);
 			try {
 				List<Address> addresses = geocoder.getFromLocation(courseLoc.getLatitude(), courseLoc.getLongitude(), 1);
-				locality = addresses.get(0).getLocality();
-				locality += ", " + addresses.get(0).getAdminArea();
+				if(addresses.size() > 0){
+					locality = addresses.get(0).getLocality();
+					locality += ", " + addresses.get(0).getAdminArea();
+				}
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

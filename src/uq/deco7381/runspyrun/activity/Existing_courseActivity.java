@@ -7,7 +7,6 @@ import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
 import uq.deco7381.runspyrun.model.ListAdapter_newmission;
 import uq.deco7381.runspyrun.model.ParseDAO;
-import uq.deco7381.runspyrun.model.SwipeDismissListViewTouchListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,13 +14,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
@@ -43,6 +41,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private ParseDAO dao;
 	private Location currentLocation;
 	private TextView numOfData;
+	private int numOfdata;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,10 +55,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
 		currentLocation.setLongitude(longitude);
-		
-		
-		
-		
+
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available
@@ -106,13 +102,27 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			public void done(List<ParseObject> objects, ParseException e) {
 				// TODO Auto-generated method stub
 				if(e == null){
-					int numOfdata = objects.get(0).getInt("number");
+					numOfdata = objects.get(0).getInt("number");
 					numOfData.setText(String.valueOf(numOfdata));
 				}else{
 					System.out.println(e.getMessage());
 				}
 			}
 		});
+		
+		RelativeLayout create = (RelativeLayout)findViewById(R.id.RelativeLayout1);
+		TextView createTitle = (TextView)findViewById(R.id.textView1);
+		if(numOfdata > 0){
+			numOfData.setTextColor(getResources().getColor(R.color.orangeText));
+			createTitle.setTextColor(getResources().getColor(R.color.orangeText));
+			create.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+				}
+			});
+		}
+		
 		
 	}
 
@@ -167,7 +177,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		
 	}
 	
-	public void createNewCourse(View v) {
+	public void createNewCourse() {
 		if(this.currentLocation != null){
 			Intent intent = new Intent(this, DefenceActivity.class);
 			intent.putExtra("latitude", this.currentLocation.getLatitude());

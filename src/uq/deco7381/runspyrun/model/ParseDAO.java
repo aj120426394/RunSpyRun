@@ -615,6 +615,9 @@ public class ParseDAO {
 						e.increment("number");
 					}
 				}
+				if(e.getString("eq_name").equals("Datasource")){
+					e.increment("number");
+				}
 			}
 			ParseObject.saveAll(equipments);
 		} catch (ParseException e) {

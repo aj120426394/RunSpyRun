@@ -228,7 +228,9 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 			Geocoder geocoder = new Geocoder(this);
 			try {
 				List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
-				locality = addresses.get(0).getLocality();
+				if(addresses.size() > 0){
+					locality = addresses.get(0).getLocality();
+				}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
