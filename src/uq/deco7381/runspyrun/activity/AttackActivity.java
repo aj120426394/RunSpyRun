@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -208,33 +209,57 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	/**
 	 * Show the missionComplete dialog when user hack the datasource.
 	 */
-	private void missionComplete(){
+	private void missionComplete(boolean complete){
 		RelativeLayout viewLayout = (RelativeLayout)findViewById(R.id.RelativeLaout);
 		viewLayout.setVisibility(View.VISIBLE);
 		Button get = (Button)viewLayout.findViewById(R.id.button1);
-		get.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*
-				 * Delete the course and update the user lv.
-				 */
-				ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
-		        progressDialog.setTitle("Loading...");
-		        progressDialog.setCancelable(false);
-		        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		        progressDialog.show();
-		        
-				Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				dao.deleteCourse(AttackActivity.this.course);
-				dao.updateUserLevel(ParseUser.getCurrentUser());
-				dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
-				dao.pushNotification(ParseUser.getCurrentUser());
-				startActivity(intent);
-			}
-		});
+		TextView title = (TextView)findViewById(R.id.textView1);
+		if(complete){
+			get.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					/*
+					 * Delete the course and update the user lv.
+					 */
+					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
+			        progressDialog.setTitle("Loading...");
+			        progressDialog.setCancelable(false);
+			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			        progressDialog.show();
+			        
+					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					dao.deleteCourse(AttackActivity.this.course);
+					dao.updateUserLevel(ParseUser.getCurrentUser());
+					dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
+					dao.pushNotification(ParseUser.getCurrentUser());
+					startActivity(intent);
+				}
+			});
+		}else{
+			title.setText("Mission Failed");
+			get.setText("Back to dashboard");
+			get.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					/*
+					 * Delete the course and update the user lv.
+					 */
+					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
+			        progressDialog.setTitle("Loading...");
+			        progressDialog.setCancelable(false);
+			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			        progressDialog.show();
+			        
+					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+			});
+		}
+		
 	}
 
 	/**
@@ -638,6 +663,10 @@ boolean isLoading = false;
 				 */
 				if(obs_energycost > 0){
 					userEnergy -= obs_energycost;
+					if(userEnergy < 0){
+						userEnergy = 0;
+						missionComplete(false);
+					}
 					dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), userEnergy);
 				}
 				
@@ -729,7 +758,7 @@ boolean isLoading = false;
 	            	}else{
 	            		System.out.println("DEGUGGER");
 	            		handler.removeCallbacks(runnable);
-	            		missionComplete();
+	            		missionComplete(true);
 	            	}
 	            	break;
             }
