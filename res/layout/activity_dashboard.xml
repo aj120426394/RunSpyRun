@@ -170,6 +170,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
+                    android:focusableInTouchMode="true"
                     android:text="+add new"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/gray" />

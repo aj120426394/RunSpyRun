@@ -66,6 +66,10 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		return mAppList.get(position);
 	}
 
+	public void overwriteDataset(ArrayList<Course> course){
+		this.mAppList = course;
+		notifyDataSetChanged();
+	}
 	public void removeItem(Object object){
 		this.mAppList.remove(object);
 	}
@@ -132,7 +136,7 @@ public class ListAdapter_current_mission extends BaseAdapter {
 		/*
 		 * Check if "Add new" is clickable
 		 */
-		if(0 < getCount() && getCount() < 6){
+		if(0 < getCount() && getCount() < 6 && this.currentLocation != null){
 			addNew.setTextColor(mContext.getResources().getColor(R.color.orangeText));
 			addNew.setOnClickListener(new OnClickListener() {
 				@Override

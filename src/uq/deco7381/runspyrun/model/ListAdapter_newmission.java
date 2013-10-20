@@ -55,6 +55,14 @@ public class ListAdapter_newmission extends BaseAdapter {
     public void remove(Object object){
 		this.mAppList.remove(object);
 	}
+    /**
+     * Override all the data set in this adapter.
+     * @param course
+     */
+    public void overrideDataset(ArrayList<Course> course){
+		this.mAppList = course;
+		notifyDataSetChanged();
+	}
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub

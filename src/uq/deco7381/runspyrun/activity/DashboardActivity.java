@@ -10,6 +10,7 @@ import uq.deco7381.runspyrun.model.ListAdapter_current_mission;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -65,6 +66,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	private ListAdapter_current_mission adapter;
 	private ParseDAO dao;
 	private boolean isCurrLocExist;
+	private ProgressDialog progressDialog ;
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -74,6 +76,12 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		dao = new ParseDAO();
 		isCurrLocExist = false;
 
+		progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        
+        
 		status = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
 		/*
 		 *  Check is GPS available
@@ -127,6 +135,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					progressDialog.show();
 					Intent intent = new Intent(DashboardActivity.this, Existing_courseActivity.class);
 					intent.putExtra("latitude", currentLocation.getLatitude());
 					intent.putExtra("longtitude", currentLocation.getLongitude());

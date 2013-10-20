@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -79,7 +80,9 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		}
 		numOfData = (TextView)findViewById(R.id.textView2);
 		
-		ArrayList<Course> courseList = getCourseList(latitude, longitude);
+		ArrayList<Course> courseList = new ArrayList<Course>();
+		new GetCourseList().execute(new Double[]{latitude,longitude});
+		
 		existingCourseListView = (ListView)findViewById(R.id.listView);
 		existingCourseListView.setScrollingCacheEnabled(false);
 		
@@ -196,5 +199,40 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			intent.putExtra("isFrom", "newCourse");
 			startActivity(intent);
 		}
+	}
+	
+	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
+
+		@Override
+		protected ArrayList doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			double latitude = params[0];
+			double longitude = params[1];
+			ArrayList<Course> courseList  = new ArrayList<Course>();
+			ArrayList<Course> missionList = dao.getCourseByMissionFromNetwork(ParseUser.getCurrentUser());
+			ArrayList<Course> orgList = dao.getCourseByOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 2);
+			
+			for(Course course:  orgList){
+				boolean flag = false;
+				for(Course missionCourse: missionList){
+					if(course.getObjectID().equals(missionCourse.getObjectID())){
+						flag = true;
+					}
+				}
+				if(flag == false){
+					courseList.add(course);
+				}
+			}
+			
+			return courseList;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Course> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			adapter.overrideDataset(result);
+		}
+		
 	}
 }
