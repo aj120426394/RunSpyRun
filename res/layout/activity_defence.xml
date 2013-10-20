@@ -16,9 +16,9 @@
 	            android:id="@+id/listView1"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:background="@color/black"
-	            android:divider="@color/white"
-                android:dividerHeight="1dp" >
+	            android:background="@color/white"
+	            android:divider="@color/androidBlue"
+	            android:dividerHeight="1dp" >
 
 	        </ListView>
 	    
@@ -28,32 +28,109 @@
 	            android:layout_height="match_parent"
 	            android:layout_centerHorizontal="false"
 	            android:layout_centerVertical="false" >
+
+	            
 	        	
 	            <fragment
-	            android:id="@+id/defence_map"
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            class="com.google.android.gms.maps.MapFragment" />
+		            android:id="@+id/defence_map"
+		            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
+		            class="com.google.android.gms.maps.MapFragment" />
+	            
+	            <RelativeLayout
+		            android:layout_width="match_parent"
+		            android:layout_height="40dp"
+		            android:layout_alignParentLeft="true"
+		            android:layout_alignParentTop="true"
+		            android:background="@color/white" >
 
-		        <Button
-		            android:id="@+id/button2"
-		            style="@color/yellow"
+		            <TextView
+		                android:id="@+id/textView3"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_alignParentRight="true"
+		                android:layout_centerVertical="true"
+		                android:layout_marginRight="10dp"
+		                android:text="99/99"
+		                android:textSize="20sp"
+		                android:textColor="@color/orangeText" />
+	
+		            <TextView
+		                android:id="@+id/textView2"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_centerVertical="true"
+		                android:layout_marginRight="5dp"
+		                android:layout_toLeftOf="@+id/textView3"
+		                android:text="Obstacles:"
+		                android:textSize="20sp"
+		                android:textColor="@color/orangeText" />
+	
+		            <TextView
+		                android:id="@+id/textView4"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_centerVertical="true"
+		                android:layout_marginLeft="5dp"
+		                android:layout_toRightOf="@+id/textView1"
+		                android:text="9900"
+		                android:textSize="20sp"
+		                android:textColor="@color/orangeText" />
+	
+		            <TextView
+		                android:id="@+id/textView1"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_alignBaseline="@+id/textView4"
+		                android:layout_alignBottom="@+id/textView4"
+		                android:layout_alignParentLeft="true"
+		                android:layout_marginLeft="10dp"
+		                android:textSize="20sp"
+		                android:text="Energy:"
+		                android:textColor="@color/orangeText" />
+	
+		        </RelativeLayout>
+	            
+		        <LinearLayout
+		            android:id="@+id/linearLayout1"
 		            android:layout_width="match_parent"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentBottom="true"
-		            android:layout_centerHorizontal="true"
-		            android:onClick="missionDecide"
-		            android:text="Save" />
+		            android:background="@color/white"
+		            android:orientation="horizontal" >
+	
+		            <Button
+		                android:id="@+id/login"
+		                android:layout_width="0dp"
+		                android:layout_height="wrap_content"
+		                android:layout_weight="1"
+		                android:background="?android:attr/selectableItemBackground"
+		                android:fitsSystemWindows="true"
+		                android:onClick="missionDecide"
+		                android:text="Store"
+		                android:textColor="@color/orangeText"
+		                android:visibility="visible" />
 		
-		        <TextView
-		            android:id="@+id/energy"
-		            android:layout_width="115dp"
-		            android:layout_height="wrap_content"
-		            android:layout_centerHorizontal="true"
-		            android:layout_marginTop="22dp"
-		            android:text="9900/9900"
-		            android:textAppearance="?android:attr/textAppearanceLarge"
-		            android:textColor="@color/orangeText" />
+		            <View
+		                android:layout_width="1dip"
+		                android:layout_height="match_parent"
+		                android:background="?android:attr/dividerVertical" />
+		
+		            <Button
+		                android:id="@+id/signup"
+		                android:layout_width="0dp"
+		                android:layout_height="wrap_content"
+		                android:layout_weight="1"
+		                android:background="?android:attr/selectableItemBackground"
+		                android:fitsSystemWindows="true"
+		                android:onClick="cancel"
+		                android:text="Cancel"
+		                android:textColor="@color/orangeText"
+		                android:visibility="visible" />
+
+        	</LinearLayout>
+		
+		        
 	        </RelativeLayout>
 	        
 	
@@ -86,6 +163,8 @@
 	            android:layout_alignParentBottom="true"
 	            android:layout_alignParentRight="true"
 	            android:src="@drawable/logo2" />
+
+	        
 	
 		</RelativeLayout>
 	

@@ -30,9 +30,12 @@ public class ListAdapter_defence extends BaseAdapter {
 	private int userEnergy;
 	private SlidingPaneLayout mPaneLayout;
 	private TextView energy;
+	private TextView obstacleTextView;
+	private int maxObstacle;
+	private int currentObstacle;
 
 	
-	public ListAdapter_defence(Context c, ArrayList<Equipment> list, GoogleMap map, SlidingPaneLayout mPaneLayout, TextView energy) {
+	public ListAdapter_defence(Context c, ArrayList<Equipment> list, GoogleMap map, SlidingPaneLayout mPaneLayout, TextView energy, TextView obstacleTextView, int maxObstacle, int currentObstacle) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
 		mContext = c;
@@ -42,6 +45,9 @@ public class ListAdapter_defence extends BaseAdapter {
 		this.newObstaclesOnCourse = new ArrayList<Obstacle>();
 		this.mPaneLayout = mPaneLayout;
 		this.energy = energy;
+		this.obstacleTextView = obstacleTextView;
+		this.maxObstacle = maxObstacle;
+		this.currentObstacle = currentObstacle;
 	}
 
 	@Override
@@ -98,8 +104,8 @@ public class ListAdapter_defence extends BaseAdapter {
 		
 		if(mLocation != null && currentNum > 0){
 			if(ParseUser.getCurrentUser().getInt("level") >= equipment.getLevelLimit()){
-				holder.type.setTextColor(mContext.getResources().getColor(R.color.orangeText));
-				holder.number.setTextColor(mContext.getResources().getColor(R.color.orangeText));
+				holder.type.setTextColor(mContext.getResources().getColor(R.color.androidBlue));
+				holder.number.setTextColor(mContext.getResources().getColor(R.color.androidBlue));
 				convertView.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -112,7 +118,11 @@ public class ListAdapter_defence extends BaseAdapter {
 							if(userSpend > equipment.getMaxCost()){
 								userSpend  = equipment.getMaxCost(); 
 							}
-							if(userSpend < userEnergy){
+							if(userSpend > userEnergy){
+								Toast.makeText(mContext.getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
+							}else if(currentObstacle >= maxObstacle){
+								Toast.makeText(mContext.getApplicationContext(), "This course is full.", Toast.LENGTH_LONG).show();
+							}else{
 								ParseUser currentUser = ParseUser.getCurrentUser();
 								
 								Obstacle obstacle = null;
@@ -126,6 +136,10 @@ public class ListAdapter_defence extends BaseAdapter {
 								mGmap.addMarker(obstacle.getMarkerOptions());
 								mPaneLayout.closePane();
 								
+								currentObstacle += 1;
+								String obstaclesString = String.valueOf(currentObstacle) + " / " + String.valueOf(maxObstacle);
+								obstacleTextView.setText(obstaclesString);
+								
 								/*
 								 *  Add to the list of new obstacle
 								 */
@@ -133,13 +147,11 @@ public class ListAdapter_defence extends BaseAdapter {
 								userEnergy -= userSpend;
 								equipment.setNumber(currentNum-1);
 								
-								String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
+								String energyString = String.valueOf(userEnergy);
 								energy.setText(energyString);
 								
 								
 								notifyDataSetChanged();
-							}else{
-								Toast.makeText(mContext.getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
 							}
 						}else{
 							Toast.makeText(mContext.getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();

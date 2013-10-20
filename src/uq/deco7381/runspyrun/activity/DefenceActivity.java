@@ -66,7 +66,10 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private boolean firstLocation;
 	private ListAdapter_defence mAdapter_defence;
 	private SlidingPaneLayout mPaneLayout;
-	private TextView energy;
+	private TextView energyTextView;
+	private TextView obstacleTextView;
+	private int maxObstacle;
+	private int currentObstacle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +88,12 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		int userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		equipments = dao.getEquipments(ParseUser.getCurrentUser());
 		
-		energy = (TextView)findViewById(R.id.energy);
-		String energyString = String.valueOf(userEnergy) + "/" + String.valueOf(ParseUser.getCurrentUser().getInt("level")*100);
-		energy.setText(energyString);
+		
+		energyTextView = (TextView)findViewById(R.id.textView4);
+		obstacleTextView = (TextView)findViewById(R.id.textView3);
+		
+		String energyString = String.valueOf(userEnergy);
+		energyTextView.setText(energyString);
 
 		
 		/*
@@ -110,15 +116,21 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 * Set the course (make it visible on the map)
 		 */
-		if(isFrom.equals("exsitMission") || isFrom.equals("exsitCourse")){
+		if(isFrom.equals("existMission") || isFrom.equals("existCourse")){
 			this.course = dao.getCourseByLoc(latitude, longitude);
 			ArrayList<Obstacle> obstacles  = dao.getObstaclesByCourse(this.course);
 			displayObstacle(obstacles);
+			currentObstacle = obstacles.size();
 		}else{
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
+			currentObstacle = 0;
 		}
 		displayCourse(this.course);
-		//displayEnergy();
+		maxObstacle = (int)Math.ceil((double)course.getLevel() / 10) * 4;
+		System.out.println((double)course.getLevel());
+		String obstaclesString = String.valueOf(currentObstacle) + " / " + String.valueOf(maxObstacle);
+		obstacleTextView.setText(obstaclesString);
+		
 		
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
@@ -155,13 +167,13 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		*/
 		
 		final ListView listview = (ListView) findViewById(R.id.listView1);
-		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energy);
+		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energyTextView, obstacleTextView, maxObstacle, currentObstacle);
 		listview.setAdapter(mAdapter_defence);
 		
 	}
 
 	/**
-	 * onClick method triggered by "Create"
+	 * onClick method triggered by "Store"
 	 * 1. Determine which method to execute base on user's state
 	 * 
 	 * @see newCourse()
@@ -197,6 +209,15 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			existCourse(saveCallback);
 		}
 		
+	}
+	/**
+	 * onClick method triggered by "Cancel"
+	 * 
+	 * direct user to previos activity.
+	 * @param v
+	 */
+	public void cancel(View v){
+		finish();
 	}
 	/**
 	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.

@@ -52,7 +52,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		
-		Location currentLocation = new Location(LocationManager.GPS_PROVIDER);
+		currentLocation = new Location(LocationManager.GPS_PROVIDER);
 		currentLocation.setLatitude(latitude);
 		currentLocation.setLongitude(longitude);
 
@@ -104,14 +104,22 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 				if(e == null){
 					numOfdata = objects.get(0).getInt("number");
 					numOfData.setText(String.valueOf(numOfdata));
+					newCourseCreatable();
 				}else{
 					System.out.println(e.getMessage());
 				}
 			}
 		});
 		
+		
+		
+		
+	}
+
+	private void newCourseCreatable(){
 		RelativeLayout create = (RelativeLayout)findViewById(R.id.RelativeLayout1);
 		TextView createTitle = (TextView)findViewById(R.id.missionNum);
+		System.out.println(numOfdata);
 		if(numOfdata > 0){
 			numOfData.setTextColor(getResources().getColor(R.color.orangeText));
 			createTitle.setTextColor(getResources().getColor(R.color.orangeText));
@@ -119,14 +127,17 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					if(currentLocation != null){
+						Intent intent = new Intent(Existing_courseActivity.this, DefenceActivity.class);
+						intent.putExtra("latitude", currentLocation.getLatitude());
+						intent.putExtra("longtitude", currentLocation.getLongitude());
+						intent.putExtra("isFrom", "newCourse");
+						startActivity(intent);
+					}
 				}
 			});
 		}
-		
-		
 	}
-
-	
 	private ArrayList<Course> getCourseList(double latitude, double longitude){
 		ArrayList<Course> courseList  = new ArrayList<Course>();
 		ArrayList<Course> missionList = dao.getCourseByMissionFromNetwork(ParseUser.getCurrentUser());

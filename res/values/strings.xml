@@ -34,6 +34,7 @@
     <color name="black">#000000</color>
     <color name="transparentBackground">#CCe5e5e5</color>
     <color name="orangeText">#ff8a00</color>
+    <color name="androidBlue">#22C6FC</color>
 
     <string name="title_activity_dashboard">DashboardActivity</string>
     <string name="title_activity_defence">DefenceActivity</string>
