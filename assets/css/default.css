@@ -11,10 +11,10 @@ html, body {
 #location {
 	position: fixed;
 	top: 15%;
-	left: 32%;
+	left: 34%;
 	width: 30%;
 	height: 5%;
-	font-size: 0.6em;
+	font-size: 0.8em;
 	color: #ff8a00;
 	padding: 1px;
 }
@@ -31,7 +31,7 @@ html, body {
     text-align: left;
     padding: 10px;
     position:absolute;
-    margin: 0% 0% 0% 30%;
+    margin: 0% 0% 0% 32%;
     width: 60%;
     height: 15%;
     overflow: hidden;
@@ -39,17 +39,17 @@ html, body {
 
 #statusElement1 {
 	float: left;
-	width: 50%;
+	width: 60%;
 	/*margin: 0% 0% 0% 30%;*/
 	text-align: left;
 	overflow: hidden;
-	opacity: 0.8;
+	opacity: 1.2;
 	padding: 2px;
-	font-size: 0.8em;
+	font-size: 1.2em;
 }
 
 #alertElement1 {
-	width: 70%;
+	width: 60%;
 	overflow: hidden;
 	font-size: 1.2em;
 	margin: 2% 0% 0% 0%;
@@ -61,14 +61,14 @@ html, body {
 #energyElement {
 	position: fixed;
 	top: 1%;
-	left: 78%;
-	width: 20%;
-	height: 120%;
+	left: 72%;
+	width: 25%;
+	height: 100%;
 	overflow: hidden;
 	text-align: left;
 	opacity: 0.8;
 	padding: 2px;
-	font-size: 1em;
+	font-size: 1.2em;
 	color: #ff8a00;
 }
 
@@ -83,10 +83,12 @@ html, body {
 
 /* Styling for central alert graphic */
 #alertgraphic {
-	float: left;
+	position: fixed;
+	top: 30%;
+	left: 50%
 	width: 40%;
 	height: 40%;
-	margin: 50% 0% 0% 30%;
+	/*margin: 50% 0% 0% 30%;*/
 	overflow: hidden;
 	opacity: 0.4;
 	filter: alpha(opacity=40); /* For IE8 and earlier */	 
@@ -105,8 +107,8 @@ html, body {
     padding: 10px;
     position:absolute;
     width: 100%;
-    top: 87%;
-    height: 12%;
+    top: 90%;
+    height: 10%;
     font-size: 1em;
     overflow: hidden;
 }

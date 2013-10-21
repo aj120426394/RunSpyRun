@@ -3,7 +3,6 @@ var kMarker_AnimationDuration_Resize = 1000;
 
 function Marker(poiData, isSelected) {
 
-
     this.poiData = poiData;
     this.isSelected = isSelected;
 
@@ -29,6 +28,7 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.8;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_guard;
+			this.indicator = false;
 			break;
 		
 		case "Dog":
@@ -36,6 +36,7 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.8;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_dog;
+			this.indicator = false;
 			break;
 
 	    case "MotionDetector":
@@ -43,6 +44,7 @@ function Marker(poiData, isSelected) {
 	    	this.radarOpacity = 0.8;
 	    	this.radarColor = "#ffffff";
 	    	this.markerDraawble = World.markerDrawable_motionDetector;
+	    	this.indicator = false;
 			break;
 			
 		default:
@@ -54,17 +56,20 @@ function Marker(poiData, isSelected) {
 			break;
     }
 
+
     this.markerDrawable_idle = new AR.ImageDrawable(this.markerDraawble, 1.5, {
         zOrder: 0,
         opacity: 0.8,
         onClick: null
     });
 
+
     this.markerDrawable_selected = new AR.ImageDrawable(this.markerDraawble, 2.5, {
         zOrder: 0,
         opacity: 0.0,
         onClick: null
     });
+    
     
     this.titleLabel = new AR.Label(poiData.title.trunc(15), 0.5, {
         zOrder: 2,
@@ -75,6 +80,7 @@ function Marker(poiData, isSelected) {
         }
     });
 
+
     this.descriptionLabel = new AR.Label(poiData.description.trunc(0), 0, {
         zOrder: 1,
         offsetY: -0.55,
@@ -82,6 +88,7 @@ function Marker(poiData, isSelected) {
             textColor: '#ff8a00'
         }
     });
+
 
     this.radarCircle = new AR.Circle(this.radarScale, {
         horizontalAnchor: AR.CONST.HORIZONTAL_ANCHOR.CENTER,
@@ -91,13 +98,16 @@ function Marker(poiData, isSelected) {
         }
     });
 
+
     this.radardrawables = [];
     this.radardrawables.push(this.radarCircle);
 	
+	
 	// New: Direction Indicator
-    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
+    this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.6, {
         enabled: this.indicator
     });
+
 
     // Changed: 
     var markerObject = new AR.GeoObject(markerLocation, {
@@ -108,7 +118,9 @@ function Marker(poiData, isSelected) {
         }
     });
 
+
     return this;
+    
 }
 /*
 Marker.prototype.getOnClickTrigger = function(marker) {

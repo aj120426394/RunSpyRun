@@ -456,7 +456,7 @@ boolean isLoading = false;
 			map.setOnCameraChangeListener(null);
 			
 			/*
-			 * Detecting user is in the zone or not to swtich between AR view  and Map view.
+			 * Detecting user is in the zone or not to switch between AR view  and Map view.
 			 */
 			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
 			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
@@ -634,7 +634,7 @@ boolean isLoading = false;
 					counter1 += 1;
 				}
 				/*
-				 * If user have trigger any obstacle, call to update user's energy in Sever
+				 * If user have trigger any obstacle, call to update user's energy in the Server
 				 */
 				if(obs_energycost > 0){
 					userEnergy -= obs_energycost;
@@ -684,7 +684,7 @@ boolean isLoading = false;
 		}
 		System.out.println("User bearing after conversion: "+userbearing);
 		
-		// check if user is within sight of guard
+		// check if user is within sight of the guard
 		if (userbearing >= (guardSightBearing2-30.0f) && userbearing <= (guardSightBearing2+30.0f)) {
 			return true;
 		} else {
@@ -695,6 +695,8 @@ boolean isLoading = false;
 	/**
 	 * Calulates a new bearing (based on 360 degrees) for where the guard is looking
 	 * adds 60 degrees and then checks if the value is above 360 then adjusts
+	 * 
+	 * @author worthyp
 	 * 
 	 * @param guardSightBearing2
 	 * @return
