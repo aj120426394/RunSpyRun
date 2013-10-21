@@ -6,7 +6,8 @@ var World = {
 	markerDrawable_selected: new AR.ImageResource("assets/marker_selected.png"),
 	markerDrawable_motionDetector: new AR.ImageResource("assets/motiondetector.png"), 
 	markerDrawable_guard: new AR.ImageResource("assets/markerguard.png"), 
-	markerDrawable_dog: new AR.ImageResource("assets/dog2.png"), 
+	markerDrawable_dog: new AR.ImageResource("assets/dog2.png"),
+	markerDrawable_directionIndicator: new AR.ImageResource("assets/indi_2.png"),
 	
 	markerList: [],
 
@@ -29,7 +30,7 @@ var World = {
 		
 		// get data for each defence (poiData) and plot into view
 		for (var i = 0; i < poiData.length; i++) {
-
+			
 			var singlePoi = {
 				"latitude": parseFloat(poiData[i].latitude),
 				"longitude": parseFloat(poiData[i].longitude),
@@ -39,6 +40,7 @@ var World = {
 			};
 
 			World.markerList.push(new Marker(singlePoi));
+
 		}
 		
 		// message to user on loading of data for defences
