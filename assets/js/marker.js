@@ -47,6 +47,14 @@ function Marker(poiData, isSelected) {
 	    	this.indicator = false;
 			break;
 			
+		case "DetectionPlate":
+	    	this.radarScale = 0.03;
+	    	this.radarOpacity = 0.8;
+	    	this.radarColor = "#ffffff";
+	    	this.markerDraawble = World.markerDrawable_detectionplate;
+	    	this.indicator = false;
+			break;
+			
 		default:
 			this.radarScale = 0.03;
 			this.radarOpacity = 0.8;

@@ -8,6 +8,7 @@ var World = {
 	markerDrawable_guard: new AR.ImageResource("assets/markerguard.png"), 
 	markerDrawable_dog: new AR.ImageResource("assets/dog2.png"),
 	markerDrawable_directionIndicator: new AR.ImageResource("assets/indi_2.png"),
+	markerDrawable_detectionplate: new AR.ImageResource("assets/detectionplate.png"),
 	
 	markerList: [],
 

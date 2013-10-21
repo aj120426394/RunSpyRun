@@ -176,6 +176,12 @@ public class SignupActivity extends Activity {
 									md.put("number", 1);
 									pList.add(md);
 									
+									ParseObject dp = new ParseObject("equipment");
+									dp.put("username", ParseUser.getCurrentUser());
+									dp.put("eq_name", "DetectionPlate");
+									dp.put("number", 1);
+									pList.add(dp);
+									
 									
 									ParseObject.saveAllInBackground(pList);
 									startActivity(intent);

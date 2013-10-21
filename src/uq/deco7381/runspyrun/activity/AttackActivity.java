@@ -403,10 +403,9 @@ boolean isLoading = false;
 			}
 			
 			/*
-			 * Gets data from parse database for course - preset course as this project is developed
-			 * separately to the other elements of the application
+			 * Gets data from parse database for course
 			 * 
-			 * To be changed when integrated into the main application
+			 * 
 			 */
 			HashMap<String, String> courseHashMap = new HashMap<String, String>();
 			courseHashMap.put("id", course.getObjectID());
@@ -557,8 +556,8 @@ boolean isLoading = false;
 					// only do this if not already triggered
 					// reduce users energy
 					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
-						// obstacle is triggered
 						
+						// Guard
 						if (obs_type=="Guard") {
 							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
 							if (seenByGuard) {
@@ -567,10 +566,18 @@ boolean isLoading = false;
 								alertmessage = "Warning: In Range of Guard not within field of vision";
 							}
 						}
+						
+						// Dog
 						if (obs_type=="Dog") {
 							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
 							dog_dist = 30;
 						}
+						// Detection Plate
+						if (obs_type=="DetectionPlate") {
+							alertmessage = "Detection: Detection Plate - energy reduction: : "+(obstacle.getEnergyCost());
+						}
+						
+						// Motion Detector
 						if (obs_type=="MotionDetector") {
 							alertmessage ="Detection: Motion - no energy lost: move slowly";
 							previouslocation = currentLoc;
@@ -607,6 +614,9 @@ boolean isLoading = false;
 					
 					// events when already detected but still within trigger distance 
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
+						
+						// Guard behavior check to see if within sight of guard if so energy reduction 
+						// otherwise no energy reduction
 						if (obs_type=="Guard") {
 							guardSightBearing = calcGuardSightbearing(guardSightBearing);
 							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
@@ -652,6 +662,11 @@ boolean isLoading = false;
 								alertmessage = "In range of motion detector: move slowly";
 								alertgraphicshow = "off";
 							}
+						}
+						// Detection Plate behavior already triggered
+						if (obs_type=="DetectionPlate") {
+							alertmessage="In range of detection plate - move away";
+							alertgraphicshow="off";
 						}
 						System.out.println("Second Trigger - "+alertmessage);
 					}
