@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
@@ -245,6 +246,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
+		
+		GoogleMapOptions mapOptions = new GoogleMapOptions();
+		mapOptions.zOrderOnTop(true);
+		 ((MapFragment) getFragmentManager().findFragmentById(R.id.defence_map)).newInstance(mapOptions);
+		
 	}
 	
 	
