@@ -467,5 +467,13 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		
 	}
 	
-	private class GetObstacles extends AsyncTask<Double, Void, Result>
+	private class GetObstacles extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
+
+		@Override
+		protected ArrayList<Obstacle> doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
 }
