@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -80,6 +81,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private RelativeLayout viewGroup;
 	private String alertmessage = "In mission - undetected";
 	private int userEnergy;
+	private View mLoadingView;	// The view contain the process animation.
 
 	private ParseGeoPoint previouslocation; // for motion detector to work out distance moved
 	private Boolean bitten = false; // for dog when triggered
@@ -105,14 +107,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		dao = new ParseDAO();
 		firstLoc = false;
 		outsideZone = false;
+		mLoadingView = findViewById(R.id.loading);
 		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
-		course = dao.getCourseByLoc(latitude, longitude);
-		obstacles = dao.getObstaclesByCourse(course);
 		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		
 		locationManager = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
@@ -147,10 +148,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
 		
-		
-		
-		
-			
+
 		/*
 		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
 		 * objects in the device view
@@ -169,6 +167,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		};
 		
 		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
+		
+		new LoadData().execute(new Double[]{latitude,longitude});
 	}
 
 	/**
@@ -183,7 +183,14 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
-		
+	}
+	/**
+	 * Set up a course:
+	 * 1. Display the zone
+	 * 
+	 * @param Course
+	 */
+	private void displayCourse(Course course){
 		map.addCircle(course.getCourseZone());
 	}
 	/**
@@ -222,19 +229,19 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
+					/*
 					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
 			        progressDialog.setTitle("Loading...");
 			        progressDialog.setCancelable(false);
 			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			        progressDialog.show();
+			        */
+					TextView loading = (TextView)findViewById(R.id.textView5);
+					loading.setText("Back to dashboard");
+					mLoadingView.setVisibility(View.VISIBLE);
+			        new GetReward().execute(new Void[]{});
 			        
-					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					dao.deleteCourse(AttackActivity.this.course);
-					dao.updateUserLevel(ParseUser.getCurrentUser());
-					dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
-					dao.pushNotification(ParseUser.getCurrentUser());
-					startActivity(intent);
+					
 				}
 			});
 		}else{
@@ -247,12 +254,17 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
+					/*
 					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
 			        progressDialog.setTitle("Loading...");
 			        progressDialog.setCancelable(false);
 			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			        progressDialog.show();
-			        
+			        */
+					TextView loading = (TextView)findViewById(R.id.textView5);
+					loading.setText("Back to dashboard");
+					mLoadingView.setVisibility(View.VISIBLE);
+					
 					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					startActivity(intent);
@@ -479,233 +491,237 @@ boolean isLoading = false;
 			}
 			map.setOnCameraChangeListener(null);
 			
-			/*
-			 * Detecting user is in the zone or not to switch between AR view  and Map view.
-			 */
-			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
-			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
-			//System.out.println(distance);
-			if(distance*1000 > 400){
-				outsideZone = true;
-				if(viewFlag == 2){
-					showMap();
-				}
-			}else{
-				if(viewFlag == 1){
-					if(outsideZone == true){
-						showAR();
-					}else{
-						Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
+			
+			if(this.course != null){
+				/*
+				 * Detecting user is in the zone or not to switch between AR view  and Map view.
+				 */
+				ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
+				double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
+				//System.out.println(distance);
+				if(distance*1000 > 400){
+					outsideZone = true;
+					if(viewFlag == 2){
+						showMap();
+					}
+				}else{
+					if(viewFlag == 1){
+						if(outsideZone == true){
+							showAR();
+						}else{
+							Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
+						}
 					}
 				}
-			}
-			/*
-			 * Set location for AR view.
-			 */
-			if (location!=null) {
-				this.lastKnownLocaton = location;
-				if ( this.architectView != null ) {
-					if ( location.hasAltitude() ) {
-						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-					} else {
-						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+				/*
+				 * Set location for AR view.
+				 */
+				if (location!=null) {
+					this.lastKnownLocaton = location;
+					if ( this.architectView != null ) {
+						if ( location.hasAltitude() ) {
+							this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						} else {
+							this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+							
+						}
+					}
+				}
+				
+				/*
+				 * check to see if obstacle has been triggered 
+				 */
+				if (viewFlag == 2) {
+					
+					System.out.println("Checking distance to obstacles");
+
+					triggered = false;
+					
+					counter1 = 1;
+					
+					int obs_energycost = 0;
+					
+					// check whether obstacle has been triggered
+					for(Obstacle obstacle: obstacles){
+						//check distance between current location and all obstacles
+					
+						// get obstacle type
+						String obs_type = obstacle.getType();
+						double obs_triggerdistance = obstacle.getTriggerDistance();
+						//System.out.println(obs_triggerdistance);
+					
+						// get distance from currentLoc to obstacle
+						double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
+						System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
+						System.out.println("Trigger distance is "+obs_triggerdistance);
 						
+						// get bearing obstacle location to current location
+						Location obstaclelocation = new Location("");
+						obstaclelocation.setLatitude(obstacle.getLatitude());
+						obstaclelocation.setLongitude(obstacle.getLongitude());
+						float userbearing = obstaclelocation.bearingTo(location);
+						System.out.println("Bearing from obstacle to user is "+userbearing);
+						
+						// check if obstacle already triggered
+						triggered = obshash.containsKey(obstacle);
+						System.out.println("triggered value is "+triggered);
+
+						// check if user within distance to trigger obstacle
+						// only do this if not already triggered
+						// reduce users energy
+						if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
+							
+							// Guard
+							if (obs_type=="Guard") {
+								seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
+								if (seenByGuard) {
+									alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
+								} else {
+									alertmessage = "Warning: In Range of Guard not within field of vision";
+								}
+							}
+							
+							// Dog
+							if (obs_type=="Dog") {
+								alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
+								dog_dist = 30;
+							}
+							// Detection Plate
+							if (obs_type=="DetectionPlate") {
+								alertmessage = "Detection: Detection Plate - energy reduction: : "+(obstacle.getEnergyCost());
+							}
+							
+							// Motion Detector
+							if (obs_type=="MotionDetector") {
+								alertmessage ="Detection: Motion - no energy lost: move slowly";
+								previouslocation = currentLoc;
+							}
+							
+							obshash.put(obstacle, true);
+							/*
+							 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
+							 * Also put half of stolen energy to player who create it.
+							 * No energy is taken when a motion detector is triggered at this stage
+							 */
+							if (obs_type!="MotionDetector" || (obs_type=="Guard" && seenByGuard != false)) {
+								obs_energycost += (obstacle.getEnergyCost());
+								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+							}
+							// vibrate phone 
+							Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+							vibrator.vibrate(500);
+							
+							// set alertFlag for passing to the AR view
+							alertgraphicshow = "on";
+							System.out.println("First Triggered - "+alertmessage);
+						}
+						
+						// obstacle no longer triggered
+						// reset obshash so that obstacle can be triggered again
+						if (obsdistance > obs_triggerdistance && triggered){
+							obshash.remove(obstacle);
+							bitten = false; // reset the dog
+							seenByGuard = false;
+							alertmessage ="Mission active - Clear of all defences";
+							alertgraphicshow = "off"; // turn off alert graphic
+						}
+						
+						// events when already detected but still within trigger distance 
+						if ((obsdistance < obs_triggerdistance) && (triggered)) {
+							
+							// Guard behavior check to see if within sight of guard if so energy reduction 
+							// otherwise no energy reduction
+							if (obs_type=="Guard") {
+								guardSightBearing = calcGuardSightbearing(guardSightBearing);
+								seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
+								if (seenByGuard) {
+									alertmessage = "Detection: Seen by Guard - energy reduction "+obstacle.getEnergyCost();
+									obs_energycost += (obstacle.getEnergyCost());
+									dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+									alertgraphicshow = "on";
+								} else {
+									alertmessage = "Warning: In Range of Guard not within field of vision";
+									alertgraphicshow = "off";
+								}
+							}
+							
+							// Dog behavior when triggered - chases and bites
+							if (obs_type=="Dog") {
+								if (dog_dist == 5 && !(bitten)) {
+									bitten = true;
+									Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+									vibrator.vibrate(500);
+									alertmessage = "You have been attacked by the dog - energy reduction "+obstacle.getEnergyCost();
+									obs_energycost += (obstacle.getEnergyCost());
+									dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+									alertgraphicshow = "on";
+								} else if (dog_dist > 0 && !(bitten)) {
+									dog_dist -= 5;
+									alertmessage = "Dog chasing you - "+dog_dist+"m away";
+									alertgraphicshow = "off";
+								} else if ((dog_dist < 6) && (bitten)) {
+									alertmessage = "You have been attacked by the dog - move away";
+									alertgraphicshow = "off";
+								}
+							}
+							// Motion Detector only triggered if the user moves more than 10m between location checks
+							if (obs_type=="MotionDetector") {
+								double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
+								if (moveddistance > 10) {
+									alertgraphicshow = "on";
+									alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
+									obs_energycost += (obstacle.getEnergyCost());
+									dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+								} else {
+									alertmessage = "In range of motion detector: move slowly";
+									alertgraphicshow = "off";
+								}
+							}
+							// Detection Plate behavior already triggered
+							if (obs_type=="DetectionPlate") {
+								alertmessage="In range of detection plate - move away";
+								alertgraphicshow="off";
+							}
+							System.out.println("Second Trigger - "+alertmessage);
+						}
+
+						counter1 += 1;
+					}
+					/*
+					 * If user have trigger any obstacle, call to update user's energy in the Server
+					 */
+					if(obs_energycost > 0){
+						userEnergy -= obs_energycost;
+						if(userEnergy < 0){
+							userEnergy = 0;
+							missionComplete(false);
+						}
+						dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), userEnergy);
+					}
+					
+					
+
+					/**
+					 * Check to see if at data stream
+					 */
+					if (distance*1000<10) {
+						alertmessage = "You have reached the data stream";
+
+						alertFlag = "ALERT!";
+						reachData();
+					}
+					
+					// update status, energy, energy bar and alerts in AR view 
+					if (this.architectView!=null) {
+						this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
+						final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
+						this.architectView.callJavascript(alertRightText);
+						final String alertGraphicFlag = ( "World.updateAlertGraphic( '"+alertgraphicshow.toString()+"' );" );
+						this.architectView.callJavascript(alertGraphicFlag);
 					}
 				}
 			}
 			
-			/*
-			 * check to see if obstacle has been triggered 
-			 */
-			if (viewFlag == 2) {
-				
-				System.out.println("Checking distance to obstacles");
-
-				triggered = false;
-				
-				counter1 = 1;
-				
-				int obs_energycost = 0;
-				
-				// check whether obstacle has been triggered
-				for(Obstacle obstacle: obstacles){
-					//check distance between current location and all obstacles
-				
-					// get obstacle type
-					String obs_type = obstacle.getType();
-					double obs_triggerdistance = obstacle.getTriggerDistance();
-					//System.out.println(obs_triggerdistance);
-				
-					// get distance from currentLoc to obstacle
-					double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
-					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
-					System.out.println("Trigger distance is "+obs_triggerdistance);
-					
-					// get bearing obstacle location to current location
-					Location obstaclelocation = new Location("");
-					obstaclelocation.setLatitude(obstacle.getLatitude());
-					obstaclelocation.setLongitude(obstacle.getLongitude());
-					float userbearing = obstaclelocation.bearingTo(location);
-					System.out.println("Bearing from obstacle to user is "+userbearing);
-					
-					// check if obstacle already triggered
-					triggered = obshash.containsKey(obstacle);
-					System.out.println("triggered value is "+triggered);
-
-					// check if user within distance to trigger obstacle
-					// only do this if not already triggered
-					// reduce users energy
-					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
-						
-						// Guard
-						if (obs_type=="Guard") {
-							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
-							if (seenByGuard) {
-								alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
-							} else {
-								alertmessage = "Warning: In Range of Guard not within field of vision";
-							}
-						}
-						
-						// Dog
-						if (obs_type=="Dog") {
-							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
-							dog_dist = 30;
-						}
-						// Detection Plate
-						if (obs_type=="DetectionPlate") {
-							alertmessage = "Detection: Detection Plate - energy reduction: : "+(obstacle.getEnergyCost());
-						}
-						
-						// Motion Detector
-						if (obs_type=="MotionDetector") {
-							alertmessage ="Detection: Motion - no energy lost: move slowly";
-							previouslocation = currentLoc;
-						}
-						
-						obshash.put(obstacle, true);
-						/*
-						 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
-						 * Also put half of stolen energy to player who create it.
-						 * No energy is taken when a motion detector is triggered at this stage
-						 */
-						if (obs_type!="MotionDetector" || (obs_type=="Guard" && seenByGuard != false)) {
-							obs_energycost += (obstacle.getEnergyCost());
-							dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
-						}
-						// vibrate phone 
-						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-						vibrator.vibrate(500);
-						
-						// set alertFlag for passing to the AR view
-						alertgraphicshow = "on";
-						System.out.println("First Triggered - "+alertmessage);
-					}
-					
-					// obstacle no longer triggered
-					// reset obshash so that obstacle can be triggered again
-					if (obsdistance > obs_triggerdistance && triggered){
-						obshash.remove(obstacle);
-						bitten = false; // reset the dog
-						seenByGuard = false;
-						alertmessage ="Mission active - Clear of all defences";
-						alertgraphicshow = "off"; // turn off alert graphic
-					}
-					
-					// events when already detected but still within trigger distance 
-					if ((obsdistance < obs_triggerdistance) && (triggered)) {
-						
-						// Guard behavior check to see if within sight of guard if so energy reduction 
-						// otherwise no energy reduction
-						if (obs_type=="Guard") {
-							guardSightBearing = calcGuardSightbearing(guardSightBearing);
-							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
-							if (seenByGuard) {
-								alertmessage = "Detection: Seen by Guard - energy reduction "+obstacle.getEnergyCost();
-								obs_energycost += (obstacle.getEnergyCost());
-								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
-								alertgraphicshow = "on";
-							} else {
-								alertmessage = "Warning: In Range of Guard not within field of vision";
-								alertgraphicshow = "off";
-							}
-						}
-						
-						// Dog behavior when triggered - chases and bites
-						if (obs_type=="Dog") {
-							if (dog_dist == 5 && !(bitten)) {
-								bitten = true;
-								Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-								vibrator.vibrate(500);
-								alertmessage = "You have been attacked by the dog - energy reduction "+obstacle.getEnergyCost();
-								obs_energycost += (obstacle.getEnergyCost());
-								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
-								alertgraphicshow = "on";
-							} else if (dog_dist > 0 && !(bitten)) {
-								dog_dist -= 5;
-								alertmessage = "Dog chasing you - "+dog_dist+"m away";
-								alertgraphicshow = "off";
-							} else if ((dog_dist < 6) && (bitten)) {
-								alertmessage = "You have been attacked by the dog - move away";
-								alertgraphicshow = "off";
-							}
-						}
-						// Motion Detector only triggered if the user moves more than 10m between location checks
-						if (obs_type=="MotionDetector") {
-							double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
-							if (moveddistance > 10) {
-								alertgraphicshow = "on";
-								alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
-								obs_energycost += (obstacle.getEnergyCost());
-								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
-							} else {
-								alertmessage = "In range of motion detector: move slowly";
-								alertgraphicshow = "off";
-							}
-						}
-						// Detection Plate behavior already triggered
-						if (obs_type=="DetectionPlate") {
-							alertmessage="In range of detection plate - move away";
-							alertgraphicshow="off";
-						}
-						System.out.println("Second Trigger - "+alertmessage);
-					}
-
-					counter1 += 1;
-				}
-				/*
-				 * If user have trigger any obstacle, call to update user's energy in the Server
-				 */
-				if(obs_energycost > 0){
-					userEnergy -= obs_energycost;
-					if(userEnergy < 0){
-						userEnergy = 0;
-						missionComplete(false);
-					}
-					dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), userEnergy);
-				}
-				
-				
-
-				/**
-				 * Check to see if at data stream
-				 */
-				if (distance*1000<10) {
-					alertmessage = "You have reached the data stream";
-
-					alertFlag = "ALERT!";
-					reachData();
-				}
-				
-				// update status, energy, energy bar and alerts in AR view 
-				if (this.architectView!=null) {
-					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
-					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
-					this.architectView.callJavascript(alertRightText);
-					final String alertGraphicFlag = ( "World.updateAlertGraphic( '"+alertgraphicshow.toString()+"' );" );
-					this.architectView.callJavascript(alertGraphicFlag);
-				}
-			}
 	}
 	
 
@@ -803,5 +819,49 @@ boolean isLoading = false;
 			//System.out.println("show:" + hackProgress);
 		}
 	};
+	
+	private class LoadData extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
 
+		@Override
+		protected ArrayList<Obstacle> doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			double latitude = params[0];
+			double longitude = params[1];
+			course = dao.getCourseByLoc(latitude, longitude);
+			obstacles = dao.getObstaclesByCourse(course);
+			return obstacles;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Obstacle> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			displayCourse(course);
+			mLoadingView.setVisibility(View.GONE);
+		}
+		
+	}
+
+	private class GetReward extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			dao.deleteCourse(AttackActivity.this.course);
+			dao.updateUserLevel(ParseUser.getCurrentUser());
+			dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
+			dao.pushNotification(ParseUser.getCurrentUser());
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
+		
+	}
 }
