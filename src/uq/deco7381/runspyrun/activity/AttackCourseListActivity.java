@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,16 +88,6 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		 * Switching between different contnet if there is an attackable coursr or not.
 		 */
 		attackCourseListView = (ListView)findViewById(R.id.courseList);
-		if(courseList.size() == 0){
-			TextView noCourse = (TextView)findViewById(R.id.textView2);
-			noCourse.setVisibility(View.VISIBLE);
-			attackCourseListView.setVisibility(View.GONE);
-		}else{
-			TextView noCourse = (TextView)findViewById(R.id.textView2);
-			noCourse.setVisibility(View.GONE);
-			attackCourseListView.setVisibility(View.VISIBLE);
-		}
-		
 		adapter = new ListAdapter_attackcourse(this,currentLocation,courseList);
 		attackCourseListView.setAdapter(adapter);
 	}
@@ -191,14 +182,12 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 			super.onPostExecute(result);
 			adapter.overrideDataset(result);
 			
+			ProgressBar loading = (ProgressBar)findViewById(R.id.progressBar1);
+			loading.setVisibility(View.GONE);
 			if(result.size() == 0){
 				TextView noCourse = (TextView)findViewById(R.id.textView2);
-				noCourse.setText("None of enemy courses close to you...");
 				noCourse.setVisibility(View.VISIBLE);
-				attackCourseListView.setVisibility(View.GONE);
 			}else{
-				TextView noCourse = (TextView)findViewById(R.id.textView2);
-				noCourse.setVisibility(View.GONE);
 				attackCourseListView.setVisibility(View.VISIBLE);
 			}
 		}

@@ -46,12 +46,13 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:text="Loading..."
+            android:text="None of enemy courses close to you..."
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="visible" />
 
         <ListView
             android:id="@+id/courseList"
@@ -62,9 +63,17 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:divider="@color/white"
-            android:dividerHeight="15dp" >
+            android:dividerHeight="15dp"
+            android:visibility="gone" >
 
         </ListView>
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
 
     </RelativeLayout>
 
