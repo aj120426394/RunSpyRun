@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -159,5 +160,52 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		map.setOnCameraChangeListener(null);
+	}
+	
+	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
+
+		@Override
+		protected ArrayList<Course> doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			double latitude = params[0];
+			double longitude = params[1];
+			
+			ArrayList<Course> courseList  = new ArrayList<Course>();
+			ArrayList<Course> attackList = dao.getCourseByDiffOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 0.5);
+			ArrayList<Course> missionList = dao.getCourseByMissionFromCache(ParseUser.getCurrentUser());
+			for(Course attackCourse:  attackList){
+				boolean flag = false;
+				for(Course missionCourse: missionList){
+					if(attackCourse.getObjectID().equals(missionCourse.getObjectID())){
+						flag = true;
+					}
+				}
+				if(flag == false){
+					courseList.add(attackCourse);
+				}
+			}
+			
+			
+			return courseList;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Course> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			adapter.overrideDataset(result);
+			
+			if(result.size() == 0){
+				TextView noCourse = (TextView)findViewById(R.id.textView2);
+				noCourse.setText("None of enemy courses close to you...");
+				noCourse.setVisibility(View.VISIBLE);
+				attackCourseListView.setVisibility(View.GONE);
+			}else{
+				TextView noCourse = (TextView)findViewById(R.id.textView2);
+				noCourse.setVisibility(View.GONE);
+				attackCourseListView.setVisibility(View.VISIBLE);
+			}
+		}
+		
 	}
 }
