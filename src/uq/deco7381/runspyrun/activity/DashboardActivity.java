@@ -129,7 +129,7 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 		 * Set "add new mission" clickable if the number of mission less than 6
 		 */
 		TextView addNew =(TextView)findViewById(R.id.db_mission_new);
-		if(missionList.size() > 0 && missionList.size() < 6){
+		if(missionList.size() >= 0 && missionList.size() < 6){
 			addNew.setTextColor(getResources().getColor(R.color.orangeText));
 			addNew.setOnClickListener(new OnClickListener() {
 				@Override
