@@ -91,7 +91,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 
 
 
-	private ImageView reachData;	// Button of hacking task
+	private ImageView reachData;	// Button of hacking task 
 	private ProgressBar hackProgressBar;	// Progress of hacking task
 	private int hackProgress;	// Hacking progress
 	private Handler handler = new Handler();
