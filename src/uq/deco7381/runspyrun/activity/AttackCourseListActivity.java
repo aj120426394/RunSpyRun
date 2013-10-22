@@ -1,7 +1,6 @@
 package uq.deco7381.runspyrun.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import uq.deco7381.runspyrun.R;
 import uq.deco7381.runspyrun.model.Course;
@@ -25,10 +24,6 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 /**
  * This Class if work for user that they can select which zone they are going to attack.
@@ -86,7 +81,8 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		/*
 		 * Get the attackable course list 
 		 */
-		ArrayList<Course> courseList = getCourseList(latitude, longitude);
+		ArrayList<Course> courseList = new ArrayList<Course>();
+		new GetCourseList().execute(new Double[]{latitude,longitude});
 		/*
 		 * Switching between different contnet if there is an attackable coursr or not.
 		 */
