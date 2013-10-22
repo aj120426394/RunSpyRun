@@ -204,7 +204,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
 
 		@Override
-		protected ArrayList doInBackground(Double... params) {
+		protected ArrayList<Course> doInBackground(Double... params) {
 			// TODO Auto-generated method stub
 			double latitude = params[0];
 			double longitude = params[1];
