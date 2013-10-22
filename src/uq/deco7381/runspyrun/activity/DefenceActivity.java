@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
@@ -56,7 +57,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private GoogleMap map;
 	private LocationManager status;
 	private String isFrom; 				// Determine which Activity is user coming from
-	private ArrayList<Equipment> equipments;
 	private Course course;				// Course of this mode
 	private ParseDAO dao;
 	private View mContentView;	// The view contain the whole content.
@@ -84,7 +84,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
 		int userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
-		equipments = dao.getEquipments(ParseUser.getCurrentUser());
+		
 		
 		
 		energyTextView = (TextView)findViewById(R.id.textView4);
@@ -163,11 +163,12 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		ArrayListFragment list = new ArrayListFragment();
 		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
 		*/
-		
+		ArrayList<Equipment> equipments = new ArrayList<Equipment>();
 		final ListView listview = (ListView) findViewById(R.id.listView1);
 		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energyTextView, obstacleTextView, maxObstacle, currentObstacle);
 		listview.setAdapter(mAdapter_defence);
 		
+		new GetEquipment().execute(ParseUser.getCurrentUser());
 	}
 
 	/**
@@ -366,7 +367,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		objectList.add(dao.updateDatasource(ParseUser.getCurrentUser()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
@@ -393,7 +394,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
@@ -426,7 +427,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
@@ -448,4 +449,23 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			
 	}
 
+	private class GetEquipment extends AsyncTask<ParseUser, Void, ArrayList<Equipment>>{
+
+		@Override
+		protected ArrayList<Equipment> doInBackground(ParseUser... params) {
+			// TODO Auto-generated method stub
+			ArrayList<Equipment> list = dao.getEquipments(ParseUser.getCurrentUser());
+			return list;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Equipment> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			mAdapter_defence.overrideDataset(result);
+		}
+		
+	}
+	
+	private class GetObstacles extends AsyncTask<Double, Void, Result>
 }

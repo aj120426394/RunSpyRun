@@ -61,6 +61,17 @@ public class ListAdapter_defence extends BaseAdapter {
 		this.distanceToStream = distanceToStream;
 		notifyDataSetChanged();
 	}
+	/**
+     * Override all the data set in this adapter.
+     * @param course
+     */
+    public void overrideDataset(ArrayList<Equipment> equipment){
+		this.mAppList = equipment;
+		notifyDataSetChanged();
+	}
+    public ArrayList<Equipment> getList(){
+    	return this.mAppList;
+    }
 	public ArrayList<Obstacle> getNewObstaclesOnCourse(){
 		return this.newObstaclesOnCourse;
 	}
