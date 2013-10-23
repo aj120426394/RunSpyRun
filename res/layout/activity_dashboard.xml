@@ -5,6 +5,7 @@
     android:layout_margin="0dp"
     tools:context=".SuccessActivity" >
 
+    
     <fragment
         android:id="@+id/db_map"
         android:layout_width="match_parent"
@@ -169,6 +170,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginBottom="15dp"
                     android:clickable="true"
                     android:focusableInTouchMode="true"
                     android:text="+add new"
@@ -225,16 +227,18 @@
                 android:layout_below="@+id/db_messages"
                 android:background="?android:attr/dividerHorizontal" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dip"
-                android:layout_below="@+id/db_attack"
-                android:background="?android:attr/dividerHorizontal" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dip"
                 android:layout_below="@+id/db_settings"
+                android:background="?android:attr/dividerHorizontal" />
+            
+            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/db_attack"
                 android:background="?android:attr/dividerHorizontal" />
             <!-- Shadow above -->
 
@@ -268,7 +272,7 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/orangeText" />
+                    android:textColor="@color/transparentBackground" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -301,14 +305,13 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/orangeText" />
+                    android:textColor="@color/transparentBackground" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/db_attack"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/db_settings"
                 android:layout_marginTop="15dp"
@@ -336,7 +339,16 @@
                     android:layout_marginRight="15dp"
                     android:text=">"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/orangeText" />
+                    android:textColor="@color/transparentBackground" />
+            </RelativeLayout>
+            
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/db_attack"
+                android:layout_marginTop="5dp" >
             </RelativeLayout>
         </RelativeLayout>
 

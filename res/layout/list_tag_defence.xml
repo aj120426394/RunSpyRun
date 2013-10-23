@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp" >
+    android:layout_height="100dp" >
 
     <TextView
         android:id="@+id/missionNum"
@@ -10,10 +10,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:text="Obstacle"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/gray"
-        android:textSize="30sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -22,9 +24,11 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:text="10"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/gray"
-        android:textSize="30sp" />
+        android:textSize="20sp" />
 
 </RelativeLayout>
