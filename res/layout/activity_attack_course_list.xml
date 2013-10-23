@@ -90,6 +90,7 @@
         android:layout_height="2dip"
         android:layout_below="@id/content"
         android:layout_marginLeft="15dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginRight="15dp"
         android:background="?android:attr/dividerHorizontal" />
 
