@@ -24,11 +24,13 @@
 
     <RelativeLayout
         android:id="@id/RelativeLaout"
-        android:layout_width="match_parent"
+        android:layout_width="450dp"
         android:layout_height="300dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_margin="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
         android:background="@color/white"
         android:padding="10dp" >
 
@@ -74,13 +76,23 @@
             android:layout_centerInParent="true" />
 
     </RelativeLayout>
+    
+    <View
+            android:layout_width="450dp"
+            android:layout_height="2dip"
+       		android:layout_marginLeft="15dp"
+        	android:layout_marginRight="15dp"
+            android:layout_below="@id/RelativeLaout"
+            android:background="?android:attr/dividerHorizontal" />
 
     <RelativeLayout
         android:id="@id/RelativeLayout1"
-        android:layout_width="match_parent"
+        android:layout_width="450dp"
         android:layout_height="50dp"
         android:layout_below="@id/RelativeLaout"
-        android:layout_margin="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:background="@color/white" >
 
         <TextView
@@ -89,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="20dp"
             android:text="Create a new course"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/gray" />
@@ -107,5 +119,13 @@
             android:textColor="@color/gray" />
 
     </RelativeLayout>
+    
+    <View
+            android:layout_width="450dp"
+            android:layout_height="2dip"
+       		android:layout_marginLeft="15dp"
+        	android:layout_marginRight="15dp"
+            android:layout_below="@id/RelativeLayout1"
+            android:background="?android:attr/dividerHorizontal" />
     
 </RelativeLayout>
