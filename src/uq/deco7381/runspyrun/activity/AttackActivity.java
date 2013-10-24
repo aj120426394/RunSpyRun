@@ -515,7 +515,7 @@ boolean isLoading = false;
 			}
 			
 			/*
-			 * check to see if obstacle has been triggered 
+			 * check to see if obstacle has been triggered
 			 */
 			if (viewFlag == 2) {
 				

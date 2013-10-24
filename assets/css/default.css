@@ -17,6 +17,8 @@ html, body {
 	font-size: 0.8em;
 	color: #ff8a00;
 	padding: 1px;
+	-webkit-text-size-adjust: 70%;
+
 }
 
 #locationdata {
@@ -45,7 +47,8 @@ html, body {
 	overflow: hidden;
 	opacity: 1.2;
 	padding: 2px;
-	font-size: 1.2em;
+	font-size: 1.2em; !important
+	-webkit-text-size-adjust: 300%;
 }
 
 #alertElement1 {
@@ -70,6 +73,7 @@ html, body {
 	padding: 2px;
 	font-size: 1.2em;
 	color: #ff8a00;
+	-webkit-text-size-adjust: 120%;
 }
 
 #energyvalue {
