@@ -61,6 +61,31 @@ public class ListAdapter_defence extends BaseAdapter {
 		this.distanceToStream = distanceToStream;
 		notifyDataSetChanged();
 	}
+	/**
+     * Override all the data set in this adapter.
+     * @param ArrayList<Equipment>
+     */
+    public void overrideDataset(ArrayList<Equipment> equipment){
+		this.mAppList = equipment;
+		notifyDataSetChanged();
+	}
+    /**
+     * Override the max number of obstacle of this course.
+     * @param integer
+     */
+    public void overrideMaxObstacle(int maxObstacle){
+    	this.maxObstacle = maxObstacle;
+    }
+    /**
+     * Override the current number of obstacle of this course.
+     * @param integer
+     */
+    public void overrideCurrentObstacle(int currentObstacle){
+    	this.currentObstacle = currentObstacle;
+    }
+    public ArrayList<Equipment> getList(){
+    	return this.mAppList;
+    }
 	public ArrayList<Obstacle> getNewObstaclesOnCourse(){
 		return this.newObstaclesOnCourse;
 	}
@@ -121,6 +146,8 @@ public class ListAdapter_defence extends BaseAdapter {
 							if(userSpend > userEnergy){
 								Toast.makeText(mContext.getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
 							}else if(currentObstacle >= maxObstacle){
+								System.out.println("current:" + currentObstacle);
+								System.out.println("max:"+maxObstacle);
 								Toast.makeText(mContext.getApplicationContext(), "This course is full.", Toast.LENGTH_LONG).show();
 							}else{
 								ParseUser currentUser = ParseUser.getCurrentUser();

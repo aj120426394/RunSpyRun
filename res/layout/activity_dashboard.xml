@@ -54,7 +54,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:background="@android:color/background_dark"
-                    android:src="@drawable/dprofile" />
+                    android:src="@drawable/icorp" />
 
                 <TextView
                     android:id="@+id/basicInfo_name"
@@ -185,7 +185,6 @@
                     android:divider="@color/white"
                     android:dividerHeight="10dp"
                     android:paddingRight="10dp" >
-
                 </ListView>
 
                 <TextView
@@ -205,7 +204,6 @@
                     android:text="( 6 / 6 )"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/orangeText" />
-
             </RelativeLayout>
             <!-- Both of this for view are the shadow of the display screen, it will display under each part of display box -->
 
@@ -230,7 +228,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dip"
-                android:layout_below="@+id/db_equipments"
+                android:layout_below="@+id/db_attack"
                 android:background="?android:attr/dividerHorizontal" />
 
             <View
@@ -274,46 +272,11 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/db_equipments"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/db_messages"
-                android:layout_marginTop="15dp"
-                android:background="@color/white"
-                android:clickable="true"
-                android:onClick="goEquipment" >
-
-                <TextView
-                    android:id="@+id/textView7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:text="Equipments"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/orangeText" />
-
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/textView7"
-                    android:layout_alignBottom="@+id/textView7"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="15dp"
-                    android:text=">"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/orangeText" />
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/db_settings"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@+id/db_equipments"
+                android:layout_below="@+id/db_messages"
                 android:layout_marginTop="15dp"
                 android:background="@color/white" >
 
@@ -376,6 +339,7 @@
                     android:textColor="@color/orangeText" />
             </RelativeLayout>
         </RelativeLayout>
+
     </ScrollView>
 
 </RelativeLayout>

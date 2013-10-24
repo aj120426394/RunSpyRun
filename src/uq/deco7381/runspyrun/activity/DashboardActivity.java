@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -178,6 +179,15 @@ public class DashboardActivity extends Activity implements OnMyLocationChangeLis
 	 */
 	private void setUserInfo() {
 		ParseUser currentUser = ParseUser.getCurrentUser();
+		/*
+		 * Set user info
+		 */
+		ImageView profile = (ImageView)findViewById(R.id.basicInfo_photo);
+		if(currentUser.getString("organization").equals("iCorp")){
+			profile.setImageResource(R.drawable.icorp);
+		}else{
+			profile.setImageResource(R.drawable.mcorp);
+		}
 		
 		/*
 		 *  Set the username

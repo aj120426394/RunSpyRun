@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -80,6 +81,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	private RelativeLayout viewGroup;
 	private String alertmessage = "In mission - undetected";
 	private int userEnergy;
+	private View mLoadingView;	// The view contain the process animation.
 
 	private ParseGeoPoint previouslocation; // for motion detector to work out distance moved
 	private Boolean bitten = false; // for dog when triggered
@@ -105,14 +107,13 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		dao = new ParseDAO();
 		firstLoc = false;
 		outsideZone = false;
+		mLoadingView = findViewById(R.id.loading);
 		
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
 		 */
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
-		course = dao.getCourseByLoc(latitude, longitude);
-		obstacles = dao.getObstaclesByCourse(course);
 		userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		
 		locationManager = (LocationManager) (this.getSystemService(Context.LOCATION_SERVICE));
@@ -147,10 +148,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
 		
-		
-		
-		
-			
+
 		/*
 		 * initializes a listener to check for accuracy of the compass - important for the positioning of the AR
 		 * objects in the device view
@@ -169,6 +167,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		};
 		
 		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
+		
+		new LoadData().execute(new Double[]{latitude,longitude});
 	}
 
 	/**
@@ -183,7 +183,14 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
-		
+	}
+	/**
+	 * Set up a course:
+	 * 1. Display the zone
+	 * 
+	 * @param Course
+	 */
+	private void displayCourse(Course course){
 		map.addCircle(course.getCourseZone());
 	}
 	/**
@@ -222,19 +229,19 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
+					/*
 					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
 			        progressDialog.setTitle("Loading...");
 			        progressDialog.setCancelable(false);
 			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			        progressDialog.show();
+			        */
+					TextView loading = (TextView)findViewById(R.id.textView5);
+					loading.setText("Back to dashboard");
+					mLoadingView.setVisibility(View.VISIBLE);
+			        new GetReward().execute(new Void[]{});
 			        
-					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					dao.deleteCourse(AttackActivity.this.course);
-					dao.updateUserLevel(ParseUser.getCurrentUser());
-					dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
-					dao.pushNotification(ParseUser.getCurrentUser());
-					startActivity(intent);
+					
 				}
 			});
 		}else{
@@ -247,12 +254,17 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
+					/*
 					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
 			        progressDialog.setTitle("Loading...");
 			        progressDialog.setCancelable(false);
 			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			        progressDialog.show();
-			        
+			        */
+					TextView loading = (TextView)findViewById(R.id.textView5);
+					loading.setText("Back to dashboard");
+					mLoadingView.setVisibility(View.VISIBLE);
+					
 					Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					startActivity(intent);
@@ -479,41 +491,46 @@ boolean isLoading = false;
 			}
 			map.setOnCameraChangeListener(null);
 			
-			/*
-			 * Detecting user is in the zone or not to switch between AR view  and Map view.
-			 */
-			ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
-			double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
-			//System.out.println(distance);
-			if(distance*1000 > 400){
-				outsideZone = true;
-				if(viewFlag == 2){
-					showMap();
-				}
-			}else{
-				if(viewFlag == 1){
-					if(outsideZone == true){
-						showAR();
-					}else{
-						Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
-					}
-				}
-			}
-			/*
-			 * Set location for AR view.
-			 */
-			if (location!=null) {
-				this.lastKnownLocaton = location;
-				if ( this.architectView != null ) {
-					if ( location.hasAltitude() ) {
-						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-					} else {
-						this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-						
-					}
-				}
-			}
 			
+			if(this.course != null){
+				/*
+				 * Detecting user is in the zone or not to switch between AR view  and Map view.
+				 */
+				ParseGeoPoint currentLoc = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
+				double distance = course.getParseGeoPoint().distanceInKilometersTo(currentLoc);
+				//System.out.println(distance);
+				if(distance*1000 > 400){
+					outsideZone = true;
+					if(viewFlag == 2){
+						showMap();
+					}
+				}else{
+					if(viewFlag == 1){
+						if(outsideZone == true){
+							showAR();
+						}else{
+							Toast.makeText(this, "Please start from outside of the zone.", Toast.LENGTH_LONG).show();
+						}
+					}
+				}
+				/*
+				 * Set location for AR view.
+				 */
+				if (location!=null) {
+					this.lastKnownLocaton = location;
+					if ( this.architectView != null ) {
+						if ( location.hasAltitude() ) {
+							this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						} else {
+							this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+							
+						}
+					}
+				}
+				
+
+			
+
 			/*
 			 * check to see if obstacle has been triggered
 			 */
@@ -706,6 +723,7 @@ boolean isLoading = false;
 					this.architectView.callJavascript(alertGraphicFlag);
 				}
 			}
+		}
 	}
 	
 
@@ -803,5 +821,49 @@ boolean isLoading = false;
 			//System.out.println("show:" + hackProgress);
 		}
 	};
+	
+	private class LoadData extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
 
+		@Override
+		protected ArrayList<Obstacle> doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			double latitude = params[0];
+			double longitude = params[1];
+			course = dao.getCourseByLoc(latitude, longitude);
+			obstacles = dao.getObstaclesByCourse(course);
+			return obstacles;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Obstacle> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			displayCourse(course);
+			mLoadingView.setVisibility(View.GONE);
+		}
+		
+	}
+
+	private class GetReward extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			dao.deleteCourse(AttackActivity.this.course);
+			dao.updateUserLevel(ParseUser.getCurrentUser());
+			dao.updateGetEquipment(ParseUser.getCurrentUser(), AttackActivity.this.obstacles);
+			dao.pushNotification(ParseUser.getCurrentUser());
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			Intent intent = new Intent(AttackActivity.this, DashboardActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
+		
+	}
 }

@@ -59,6 +59,14 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		return mAppList.size();
 	}
 
+	/**
+     * Override all the data set in this adapter.
+     * @param course
+     */
+    public void overrideDataset(ArrayList<Course> course){
+		this.mAppList = course;
+		notifyDataSetChanged();
+	}
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub

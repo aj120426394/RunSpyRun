@@ -84,5 +84,41 @@
             android:textColor="@color/aqua" />
 
     </RelativeLayout>
+    
+    <RelativeLayout
+	        android:id="@+id/loading"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_centerHorizontal="false"
+	        android:layout_centerVertical="false"
+	        android:background="@color/white" >
+	
+	        <ProgressBar
+	            android:id="@+id/progressBar1"
+	            style="?android:attr/progressBarStyleLarge"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_centerHorizontal="true"
+	            android:layout_centerVertical="true" />
+	
+	        <ImageView
+	            android:id="@+id/imageView1"
+	            android:layout_width="230dp"
+	            android:layout_height="200dp"
+	            android:layout_alignParentBottom="true"
+	            android:layout_alignParentRight="true"
+	            android:src="@drawable/logo2" />
+
+	        <TextView
+	            android:id="@+id/textView5"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true"
+	            android:layout_centerHorizontal="true"
+	            android:layout_marginTop="96dp"
+	            android:text="Course data loading..."
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+		</RelativeLayout>
 
 </RelativeLayout>

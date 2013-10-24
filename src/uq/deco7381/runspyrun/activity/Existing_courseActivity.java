@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -204,7 +205,7 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
 
 		@Override
-		protected ArrayList doInBackground(Double... params) {
+		protected ArrayList<Course> doInBackground(Double... params) {
 			// TODO Auto-generated method stub
 			double latitude = params[0];
 			double longitude = params[1];
@@ -232,7 +233,16 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			adapter.overrideDataset(result);
+			ProgressBar loading = (ProgressBar)findViewById(R.id.progressBar1);
+			loading.setVisibility(View.GONE);
+			if(result.size() == 0){
+				TextView noCourse = (TextView)findViewById(R.id.textView1);
+				noCourse.setVisibility(View.VISIBLE);
+			}else{
+				existingCourseListView.setVisibility(View.VISIBLE);
+			}
 		}
+		
 		
 	}
 }

@@ -10,17 +10,15 @@ import uq.deco7381.runspyrun.model.ListAdapter_defence;
 import uq.deco7381.runspyrun.model.Obstacle;
 import uq.deco7381.runspyrun.model.ParseDAO;
 import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,7 +57,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private GoogleMap map;
 	private LocationManager status;
 	private String isFrom; 				// Determine which Activity is user coming from
-	private ArrayList<Equipment> equipments;
 	private Course course;				// Course of this mode
 	private ParseDAO dao;
 	private View mContentView;	// The view contain the whole content.
@@ -71,6 +68,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private TextView obstacleTextView;
 	private int maxObstacle;
 	private int currentObstacle;
+	private boolean dataLoaded;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +77,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		Intent intent = getIntent();
 		dao = new ParseDAO();
 		firstLocation = false;
+		dataLoaded = false;
 
 		/*
 		 * Get the Course's center point (where to put data stream) from intent
@@ -87,7 +86,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
 		int userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
-		equipments = dao.getEquipments(ParseUser.getCurrentUser());
+		mContentView = findViewById(R.id.content);
+		mLoadingView = findViewById(R.id.loading);
 		
 		
 		energyTextView = (TextView)findViewById(R.id.textView4);
@@ -118,25 +118,19 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		 * Set the course (make it visible on the map)
 		 */
 		if(isFrom.equals("existMission") || isFrom.equals("existCourse")){
-			this.course = dao.getCourseByLoc(latitude, longitude);
-			ArrayList<Obstacle> obstacles  = dao.getObstaclesByCourse(this.course);
-			displayObstacle(obstacles);
-			currentObstacle = obstacles.size();
+			new GetObstacles().execute(new Double[]{latitude,longitude});
 		}else{
 			this.course= new Course(latitude,longitude, ParseUser.getCurrentUser(), ParseUser.getCurrentUser().getInt("level"), null, ParseUser.getCurrentUser().getString("organization"));
 			currentObstacle = 0;
+			displayCourse(this.course);
+			maxObstacle = (int)Math.ceil((double)course.getLevel() / 10) * 4;
+			String obstaclesString = String.valueOf(currentObstacle) + " / " + String.valueOf(maxObstacle);
+			obstacleTextView.setText(obstaclesString);
+			
+			dataLoaded = true;
 		}
-		displayCourse(this.course);
-		maxObstacle = (int)Math.ceil((double)course.getLevel() / 10) * 4;
-		System.out.println((double)course.getLevel());
-		String obstaclesString = String.valueOf(currentObstacle) + " / " + String.valueOf(maxObstacle);
-		obstacleTextView.setText(obstaclesString);
 		
-		
-		mContentView = findViewById(R.id.content);
-		mLoadingView = findViewById(R.id.loading);
-		mLoadingView.setVisibility(View.GONE);
-		
+
 		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
 		mPaneLayout.openPane();
 		mPaneLayout.invalidate();
@@ -166,11 +160,12 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		ArrayListFragment list = new ArrayListFragment();
 		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
 		*/
-		
+		ArrayList<Equipment> equipments = new ArrayList<Equipment>();
 		final ListView listview = (ListView) findViewById(R.id.listView1);
 		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energyTextView, obstacleTextView, maxObstacle, currentObstacle);
 		listview.setAdapter(mAdapter_defence);
 		
+		new GetEquipment().execute(ParseUser.getCurrentUser());
 	}
 
 	/**
@@ -185,6 +180,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	 * 
 	 */
 	public void missionDecide(View v){
+		TextView loading = (TextView)findViewById(R.id.textView5);
+		loading.setText("Saving data...");
 		showLoading();
 		
 		final Intent intent = new Intent(this, DashboardActivity.class);
@@ -221,19 +218,6 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		finish();
 	}
 	/**
-	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.
-	 * 
-	 * 1. Add the obstacle into Map.
-	 * 
-	 */
-	private void displayObstacle(ArrayList<Obstacle> obstacles){
-		for(Obstacle obstacle: obstacles){
-			map.addMarker(obstacle.getMarkerOptions());
-		}
-	}
-
-	
-	/**
 	 * Set up a Google map.
 	 * Remove the button: zoom
 	 * Remove the button: find my location
@@ -255,6 +239,18 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	
 	
 	/**
+	 * This function would be called when user come from "New mission" and "Existing mission" which the course is already developed.
+	 * 
+	 * 1. Add the obstacle into Map.
+	 * 
+	 */
+	private void displayObstacle(ArrayList<Obstacle> obstacles){
+		for(Obstacle obstacle: obstacles){
+			map.addMarker(obstacle.getMarkerOptions());
+		}
+	}
+
+	/**
 	 * Set up a course:
 	 * 1. Display the zone
 	 * 2. Set the course object
@@ -264,42 +260,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private void displayCourse(Course course){
 		map.addCircle(course.getCourseZone());
 	}
-	/**
-	 * Set up a new obstacle: Guard:
-	 * Base on your current location
-	 * 
-	 * @param v
-	 */
-	/*
-	public void setGuard(View v){
-		if(this.distanceToStream <= 400){
-			int COST = 40; //Cost 40 energy to set a guard in lv 1
-			int userLevel = ParseUser.getCurrentUser().getInt("level");
-			int userSpend = COST * userLevel;
-			if(userSpend > 1000){
-				userSpend  = 1000; // Maximum cost of a guard is 1000 energy.
-			}
-			if(userSpend < this.userEnergy){
-				ParseUser currentUser = ParseUser.getCurrentUser();
-				Guard g1 = new Guard(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
-				map.addMarker(g1.getMarkerOptions());
-				
-				/*
-				 *  Add to the list of new obstacle
-				 */
-	/*
-				newObstaclesOnCourse.add(g1);
-				this.userEnergy -= userSpend;
-				displayEnergy();
-			}else{
-				Toast.makeText(getApplicationContext(), "You don't have enough energy.", Toast.LENGTH_LONG).show();
-			}
-		}else{
-			Toast.makeText(getApplicationContext(), "You can't create obstacle outside of zone.", Toast.LENGTH_LONG).show();
-		}
-
-	}
-	*/
+	
 	
 	@Override
 	public void onMyLocationChange(Location lastKnownLocation) {
@@ -325,9 +286,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
         	map.animateCamera(CameraUpdateFactory.zoomTo(15));
         	firstLocation = true;
         }
+        if(this.course != null){
+        	double distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))*1000;
+            mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
+        }
         
-        double distanceToStream = this.course.getParseGeoPoint().distanceInKilometersTo(new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))*1000;
-        mAdapter_defence.setCurrentLocation(lastKnownLocation, distanceToStream);
 		
 		map.setOnCameraChangeListener(null);
 		
@@ -369,7 +332,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		objectList.add(dao.updateDatasource(ParseUser.getCurrentUser()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
@@ -396,7 +359,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
@@ -429,7 +392,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		/*
 		 *  Update equipment
 		 */
-		objectList.addAll(dao.updateEquipment(this.equipments));
+		objectList.addAll(dao.updateEquipment(mAdapter_defence.getList()));
 		dao.updateEnergyByEnergy(ParseUser.getCurrentUser(), mAdapter_defence.getUserEnergy());
 		/*
 		 * save all all Course,Obstacle,Mission to server.
@@ -451,4 +414,69 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			
 	}
 
+	private class GetEquipment extends AsyncTask<ParseUser, Void, ArrayList<Equipment>>{
+
+		@Override
+		protected ArrayList<Equipment> doInBackground(ParseUser... params) {
+			// TODO Auto-generated method stub
+			ArrayList<Equipment> list = dao.getEquipments(ParseUser.getCurrentUser());
+			return list;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Equipment> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			mAdapter_defence.overrideDataset(result);
+			if(DefenceActivity.this.dataLoaded){
+				mLoadingView.setVisibility(View.GONE);
+			}else{
+				DefenceActivity.this.dataLoaded = true;
+			}
+			
+		}
+		
+	}
+	
+	private class GetObstacles extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
+
+		@Override
+		protected ArrayList<Obstacle> doInBackground(Double... params) {
+			// TODO Auto-generated method stub
+			double latitude = params[0];
+			double longitude = params[1];
+			
+			DefenceActivity.this.course = dao.getCourseByLoc(latitude, longitude);
+			ArrayList<Obstacle> obstacles  = dao.getObstaclesByCourse(DefenceActivity.this.course);
+			
+			
+			return obstacles;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Obstacle> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			
+			displayObstacle(result);
+			displayCourse(DefenceActivity.this.course);
+			DefenceActivity.this.currentObstacle = result.size();
+			DefenceActivity.this.maxObstacle = (int)Math.ceil((double)DefenceActivity.this.course.getLevel() / 10) * 4;
+			
+			DefenceActivity.this.mAdapter_defence.overrideCurrentObstacle(DefenceActivity.this.currentObstacle);
+			DefenceActivity.this.mAdapter_defence.overrideMaxObstacle(DefenceActivity.this.maxObstacle);
+			
+			String obstaclesString = String.valueOf(currentObstacle) + " / " + String.valueOf(maxObstacle);
+			DefenceActivity.this.obstacleTextView.setText(obstaclesString);
+			
+			if(DefenceActivity.this.dataLoaded){
+				mLoadingView.setVisibility(View.GONE);
+			}else{
+				DefenceActivity.this.dataLoaded = true;
+			}
+		}
+		
+		
+		
+	}
 }
