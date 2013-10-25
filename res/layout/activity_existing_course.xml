@@ -26,7 +26,6 @@
         android:id="@id/RelativeLaout"
         android:layout_width="450dp"
         android:layout_height="300dp"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
