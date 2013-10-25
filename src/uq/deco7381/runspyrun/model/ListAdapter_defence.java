@@ -159,6 +159,8 @@ public class ListAdapter_defence extends BaseAdapter {
 									obstacle = new Dog(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
 								} else if(equipment.getType().equals("MotionDetector")){
 									obstacle = new MotionDetector(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
+								} else if(equipment.getType().equals("DetectionPlate")){
+									obstacle = new DetectionPlate(mLocation.getLatitude(),mLocation.getLongitude(),mLocation.getAltitude(), currentUser, currentUser.getInt("level"),null);
 								}
 								mGmap.addMarker(obstacle.getMarkerOptions());
 								mPaneLayout.closePane();
