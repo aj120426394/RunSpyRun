@@ -24,7 +24,7 @@ public class DetectionPlate extends Obstacle {
 		MarkerOptions markerOptions = new MarkerOptions()
 		.position(new LatLng(getLatitude(), getLongitude()))
 		.title("DetectionPlate")
-		.icon(BitmapDescriptorFactory.fromResource(R.drawable.detectionplate));
+		.icon(BitmapDescriptorFactory.fromResource(R.drawable.obstacle_detectionplate));
 
 		return markerOptions;
 	}
