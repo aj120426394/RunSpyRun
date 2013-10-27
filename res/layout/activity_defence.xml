@@ -108,7 +108,7 @@
 		                android:background="?android:attr/selectableItemBackground"
 		                android:fitsSystemWindows="true"
 		                android:onClick="missionDecide"
-		                android:text="Store"
+		                android:text="Save"
 		                android:textColor="@color/orangeText"
 		                android:visibility="visible" />
 		

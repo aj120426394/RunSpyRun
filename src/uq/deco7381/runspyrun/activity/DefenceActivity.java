@@ -226,7 +226,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	private void setUpMap(){
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
-		map.animateCamera(CameraUpdateFactory.zoomTo(15));
+		map.animateCamera(CameraUpdateFactory.zoomTo(17));
 		UiSettings uiSettings = map.getUiSettings();
 		uiSettings.setMyLocationButtonEnabled(false);
 		uiSettings.setZoomControlsEnabled(false);
@@ -283,7 +283,7 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         if(firstLocation == false){
-        	map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        	map.animateCamera(CameraUpdateFactory.zoomTo(17));
         	firstLocation = true;
         }
         if(this.course != null){
