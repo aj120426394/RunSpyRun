@@ -215,6 +215,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	}
 	/**
 	 * Show the missionComplete dialog when user hack the datasource.
+	 * 
+	 * @param Boolean: user complete the course or not.
 	 */
 	private void missionComplete(boolean complete){
 		RelativeLayout viewLayout = (RelativeLayout)findViewById(R.id.RelativeLaout);
@@ -229,13 +231,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
-					/*
-					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
-			        progressDialog.setTitle("Loading...");
-			        progressDialog.setCancelable(false);
-			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			        progressDialog.show();
-			        */
 					TextView loading = (TextView)findViewById(R.id.textView5);
 					loading.setText("Back to dashboard");
 					mLoadingView.setVisibility(View.VISIBLE);
@@ -254,13 +249,6 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 					/*
 					 * Delete the course and update the user lv.
 					 */
-					/*
-					ProgressDialog progressDialog = new ProgressDialog(AttackActivity.this);
-			        progressDialog.setTitle("Loading...");
-			        progressDialog.setCancelable(false);
-			        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			        progressDialog.show();
-			        */
 					TextView loading = (TextView)findViewById(R.id.textView5);
 					loading.setText("Back to dashboard");
 					mLoadingView.setVisibility(View.VISIBLE);
@@ -821,7 +809,15 @@ boolean isLoading = false;
 			//System.out.println("show:" + hackProgress);
 		}
 	};
-	
+	/**
+	 * Loading the data with asyn task.
+	 * It will use another thread to load the data from Parse.
+	 * Avoiding to use the same thread which show the user interface to user.
+	 * Improving user experience.
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class LoadData extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
 
 		@Override
@@ -844,6 +840,13 @@ boolean isLoading = false;
 		
 	}
 
+	/**
+	 * It will use another thread to update data to Parse.
+	 * Avoiding use the same thread which show the progress bar to user.
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class GetReward extends AsyncTask<Void, Void, Void>{
 
 		@Override

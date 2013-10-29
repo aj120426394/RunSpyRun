@@ -23,12 +23,12 @@ public class Obstacle {
 	private double altitude;	// Obstacle's altitude
 	private String type;		// Obstacle's type
 	private int level;			// Obstacle's level: base on creator's current level when user set it down
-	private String objectID;
-	private ParseUser parseUser;
-	private int triggerDistance;
-	private int energyCost;
-	public int MAX_ENERGY_SPEND;
-	public int ENERGY_SPEND;
+	private String objectID;	// Object id from parse.
+	private ParseUser parseUser;// Creator who create this obstacle.
+	private int triggerDistance;// The distance to trigger this obstacle.
+	private int energyCost;		// The basic cost when people trigger this obstacle.
+	public int MAX_ENERGY_SPEND;// Max cost to put down this obstacle
+	public int ENERGY_SPEND;	// The basic cost to put down this obstacle.
 	
 
 	/**
@@ -96,32 +96,52 @@ public class Obstacle {
 	public String getType(){
 		return this.type;
 	}
-	
+	/**
+	 * Set object id of this obstacle
+	 * @param String: objectID 
+	 */
 	public void setObjectId(String objectId){
 		this.objectID = objectId;
 	}
+	/**
+	 * Get object id of this obstacle
+	 * @return String: object id
+	 */
 	public String getObjectId(){
 		return this.objectID;
 	}
 	/**
 	 * Get the MarkerOption to place the icon on the Google map
-	 * 
 	 * @return MarkerOption: the MarkerOption can set on the google map
 	 */
 	public MarkerOptions getMarkerOptions(){
 		return null;								
 	}
+	/**
+	 * Get level of this obstacle
+	 * @return int: level of this obstacle
+	 */
 	public int getLevel(){
 		return this.level;
 	}
+	/**
+	 * Set level of this obstacle
+	 * @param int: level of this obstacle
+	 */
 	public void setLevel(int level){
 		this.level = level;
 	}
-	public void setCost(int cost){
-	}
+	/**
+	 * Get the distance to trigger this obstacle
+	 * @return int: distance
+	 */
 	public int getTriggerDistance() {
 		return this.triggerDistance;
 	}
+	/**
+	 * Get the energy cost from people who trigger this obstacle
+	 * @return int: energy cost
+	 */
 	public int getEnergyCost(){
 		return this.energyCost * this.level;
 	}
