@@ -54,49 +54,5 @@ public class Guard extends Obstacle {
 			
 		}
 	}
-	
-	/**
-	 * Converts userbearing to 360 degrees
-	 * The checks to see if userbearing is within +/- 30 degrees of the guard's sight bearing
-	 * 
-	 * @param guardSightBearing2
-	 * @param userbearing
-	 * @return
-	 */
-	private Boolean checkIfSeenByGuard(Float guardSightBearing2,
-			float userbearing) {
-		// TODO Auto-generated method stub
-		
-		// convert userbearing to 360
-		System.out.println("User bearing before conversion: "+userbearing);
-		if (userbearing <0) {
-			userbearing = 180 + (180 + userbearing);
-		}
-		System.out.println("User bearing after conversion: "+userbearing);
-		
-		// check if user is within sight of the guard
-		if (userbearing >= (guardSightBearing2-30.0f) && userbearing <= (guardSightBearing2+30.0f)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
-	/**
-	 * Calulates a new bearing (based on 360 degrees) for where the guard is looking
-	 * adds 60 degrees and then checks if the value is above 360 then adjusts
-	 * 
-	 * @author worthyp
-	 * 
-	 * @param guardSightBearing2
-	 * @return
-	 */
-	public Float calcGuardSightbearing(Float guardSightBearing2) {
-		guardSightBearing2 += 60;
-		if (guardSightBearing2>360) {
-			guardSightBearing2 -= 360;
-		}
-		return guardSightBearing2;
-	}
-	
 }

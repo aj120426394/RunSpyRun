@@ -23,6 +23,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 /**
+ * This class is temporary not using.
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * This activity is to show how many and what kind of equipment that player have.
  * Also when user select Datasource it would direct to Defence mode to create a new course.

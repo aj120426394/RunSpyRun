@@ -34,12 +34,12 @@ public class Obstacle {
 	/**
 	 * Constructor
 	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param altitude
-	 * @param type
-	 * @param username
-	 * @param level
+	 * @param latitude: latitude of this obstacle
+	 * @param longitude: longitude of this obstacle
+	 * @param altitude: altitude of this obstacle
+	 * @param type: type of this obstacle.
+	 * @param username: player who create this obstacle.
+	 * @param level: level of this obstacle.
 	 */
 	public Obstacle(double latitude,double longitude,double altitude, String type, ParseUser creator, int level, String objectId,int triggerDistance, int energyCost) {
 		// TODO Auto-generated constructor stub
@@ -55,28 +55,28 @@ public class Obstacle {
 	}
 	/**
 	 * Get the latitude of this obstacle
-	 * @return double: latitude of obstacle
+	 * @return latitude of obstacle
 	 */
 	public double getLatitude(){
 		return this.latitude;
 	}
 	/**
 	 * Get the longitude of this obstacle
-	 * @return double: longitude of obstacle
+	 * @return longitude of obstacle
 	 */
 	public double getLongitude(){
 		return this.longitude;
 	}
 	/**
 	 * Get the altitude of this obstacle
-	 * @return double: altitude of obstacle
+	 * @return altitude of obstacle
 	 */
 	public double getAltitude(){
 		return this.altitude;
 	}
 	/**
 	 * Get the Geolocation of this obstacle in Parse format 
-	 * @return ParseGeoPoint: location of obstacle
+	 * @return location of this obstacle
 	 */
 	public ParseGeoPoint getParseGeoPoint(){
 		ParseGeoPoint pLoc = new ParseGeoPoint(this.latitude,this.longitude);
@@ -84,63 +84,63 @@ public class Obstacle {
 	}
 	/**
 	 * Get the Creator of this obstacle
-	 * @return ParseUser: creator of obstacle
+	 * @return creator of this obstacle
 	 */
 	public ParseUser getCreator(){
 		return this.parseUser;
 	}
 	/**
 	 * Get the type of this obstacle
-	 * @return	String: type of this obstacle
+	 * @return	type of this obstacle
 	 */
 	public String getType(){
 		return this.type;
 	}
 	/**
 	 * Set object id of this obstacle
-	 * @param String: objectID 
+	 * @param objectId: the object id of this obstacle 
 	 */
 	public void setObjectId(String objectId){
 		this.objectID = objectId;
 	}
 	/**
 	 * Get object id of this obstacle
-	 * @return String: object id
+	 * @return object id
 	 */
 	public String getObjectId(){
 		return this.objectID;
 	}
 	/**
 	 * Get the MarkerOption to place the icon on the Google map
-	 * @return MarkerOption: the MarkerOption can set on the google map
+	 * @return the MarkerOption use to set a marker on the map.
 	 */
 	public MarkerOptions getMarkerOptions(){
 		return null;								
 	}
 	/**
 	 * Get level of this obstacle
-	 * @return int: level of this obstacle
+	 * @return level of this obstacle
 	 */
 	public int getLevel(){
 		return this.level;
 	}
 	/**
 	 * Set level of this obstacle
-	 * @param int: level of this obstacle
+	 * @param levle: level of this obstacle
 	 */
 	public void setLevel(int level){
 		this.level = level;
 	}
 	/**
 	 * Get the distance to trigger this obstacle
-	 * @return int: distance
+	 * @return distance
 	 */
 	public int getTriggerDistance() {
 		return this.triggerDistance;
 	}
 	/**
 	 * Get the energy cost from people who trigger this obstacle
-	 * @return int: energy cost
+	 * @return energy cost
 	 */
 	public int getEnergyCost(){
 		return this.energyCost * this.level;

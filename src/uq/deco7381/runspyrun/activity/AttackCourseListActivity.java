@@ -27,10 +27,12 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseUser;
 /**
- * This Class if work for user that they can select which zone they are going to attack.
+ * This Class will show the attackable course to user.
  * The attackable course only show up when user within 500 meters.
  * 
  * @author Jafo
+ * @version 1.3
+ * @since 15/10/2013
  *
  */
 public class AttackCourseListActivity extends Activity implements OnMyLocationChangeListener {
@@ -105,38 +107,6 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		uiSettings.setZoomControlsEnabled(false);
 	}
 
-	/**
-	 * Get the attackable course list that user haven't been to before.
-	 * 
-	 * 1. Get attackable course list
-	 * 2. Get course list exist in mission
-	 * 3. Filter attackable course list that is not in  the mission  list.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @return Array list of courses
-	 */
-	private ArrayList<Course> getCourseList(double latitude, double longitude){
-		
-		ArrayList<Course> courseList  = new ArrayList<Course>();
-		ArrayList<Course> attackList = dao.getCourseByDiffOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 0.5);
-		ArrayList<Course> missionList = dao.getCourseByMissionFromCache(ParseUser.getCurrentUser());
-		for(Course attackCourse:  attackList){
-			boolean flag = false;
-			for(Course missionCourse: missionList){
-				if(attackCourse.getObjectID().equals(missionCourse.getObjectID())){
-					flag = true;
-				}
-			}
-			if(flag == false){
-				courseList.add(attackCourse);
-			}
-		}
-		
-		
-		return courseList;
-	}
-
 	@Override
 	public void onMyLocationChange(Location lastKnowLocation) {
 		// TODO Auto-generated method stub
@@ -148,7 +118,14 @@ public class AttackCourseListActivity extends Activity implements OnMyLocationCh
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 		map.setOnCameraChangeListener(null);
 	}
-	
+	/**
+	 * This class will user another thread to get the course list from parse.
+	 * This avoid using the same thread which display user interface to user.
+	 * To improve user experience
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
 
 		@Override

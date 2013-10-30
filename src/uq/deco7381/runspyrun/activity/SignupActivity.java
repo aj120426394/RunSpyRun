@@ -151,6 +151,9 @@ public class SignupActivity extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									// TODO Auto-generated method stub
+									/*
+									 * Give user default equipment when they sign up
+									 */
 									List<ParseObject> pList = new ArrayList<ParseObject>();
 									ParseObject datasource = new ParseObject("equipment");
 									datasource.put("username", ParseUser.getCurrentUser());

@@ -25,7 +25,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseGeoPoint;
-
+/**
+ * This class is a list view adapter use in Existing_courseActivity.
+ * It will use async task to calculate the location, bearing and distance.  
+ * 
+ * @author Jafo
+ * @version 1.3
+ * @since 15/10/2013
+ * @see uq.deco7381.runspyrun.activity.Existing_courseActivity.java
+ */
 public class ListAdapter_newmission extends BaseAdapter {
 
 	private LayoutInflater mInflater;
@@ -33,7 +41,12 @@ public class ListAdapter_newmission extends BaseAdapter {
 	private Context mContext;
 	private Location currentLocation;
 	private Bitmap bitmap;
-	
+	/**
+	 * Constructor
+	 * @param c: the main Activity which contain the list view.
+	 * @param loction: user's current location.
+	 * @param courseList: the list of course load from Parse.
+	 */
 	public ListAdapter_newmission(Context c, Location location, ArrayList<Course> courseList) {
 		// TODO Auto-generated constructor stub
 		mAppList = courseList;
@@ -43,21 +56,32 @@ public class ListAdapter_newmission extends BaseAdapter {
 		currentLocation = location;
 	}
 
-	
+	/**
+	 * Set the current location for Async task to calculate the bearing and distance.
+	 * @param currenLocation: user's current loction
+	 */
 	public void setCurrentLocation(Location currenLocation){
 		this.currentLocation = currenLocation;
 		this.notifyDataSetChanged();
 	}
+	/**
+	 * Add a new course into list view 
+	 * @param course: new course element to data set.
+	 */
     public void addCourse(Course course){
     	mAppList.add(course);
     	this.notifyDataSetChanged();
     }
+    /**
+     * Remove the object in data set.
+     * @param object:  the object would be removed.
+     */
     public void remove(Object object){
 		this.mAppList.remove(object);
 	}
     /**
      * Override all the data set in this adapter.
-     * @param course
+     * @param course: the list of course get from Parse
      */
     public void overrideDataset(ArrayList<Course> course){
 		this.mAppList = course;
@@ -142,6 +166,12 @@ public class ListAdapter_newmission extends BaseAdapter {
         TextView level;
         int position;
     }
+    /**
+	 * This class use another thread to calculate the location, bearing and distance between user current location and course location.
+	 * Improving user experience.
+	 * @author Jafo
+	 *
+	 */
     private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
     	private ViewHolder holder;
     	private int position;

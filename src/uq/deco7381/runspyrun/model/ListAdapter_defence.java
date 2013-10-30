@@ -17,7 +17,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.parse.ParseUser;
-
+/**
+ * This class is a list view adapter use in DefenceActivity sliding panel.
+ * 
+ * @author Jafo
+ * @version 1.3
+ * @since 15/10/2013
+ * @see uq.deco7381.runspyrun.activity.DashboardActivity.java
+ */
 public class ListAdapter_defence extends BaseAdapter {
 
 	private LayoutInflater mInflater;
@@ -34,7 +41,17 @@ public class ListAdapter_defence extends BaseAdapter {
 	private int maxObstacle;
 	private int currentObstacle;
 
-	
+	/**
+	 * 
+	 * @param c: the main Activity which contain the list view.
+	 * @param list: the list of equipment load from Parse.
+	 * @param map: Google map in main Activity
+	 * @param mPaneLayout: Sliding panel in main Activity.
+	 * @param energy: The textview show user's current energy.
+	 * @param obstacleTextView: The textview show the current number of obstacles in this course.
+	 * @param maxObstacle: The maximum number of obstacles that could be exist in this course.
+	 * @param currentObstacle: The current number of obstacles that exist in this course.
+	 */
 	public ListAdapter_defence(Context c, ArrayList<Equipment> list, GoogleMap map, SlidingPaneLayout mPaneLayout, TextView energy, TextView obstacleTextView, int maxObstacle, int currentObstacle) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
@@ -55,7 +72,11 @@ public class ListAdapter_defence extends BaseAdapter {
 		// TODO Auto-generated method stub
 		return mAppList.size();
 	}
-
+	/**
+	 * Set the user's current location and calculate the distance between user and the course's center.
+	 * @param currenLocation: user's current location.
+	 * @param distanceToStream: distance between user and the course's center.
+	 */
 	public void setCurrentLocation(Location currenLocation, double distanceToStream){
 		this.mLocation = currenLocation;
 		this.distanceToStream = distanceToStream;
@@ -63,7 +84,7 @@ public class ListAdapter_defence extends BaseAdapter {
 	}
 	/**
      * Override all the data set in this adapter.
-     * @param ArrayList<Equipment>
+     * @param equipment: the list of equipment get from parse.
      */
     public void overrideDataset(ArrayList<Equipment> equipment){
 		this.mAppList = equipment;
@@ -71,24 +92,36 @@ public class ListAdapter_defence extends BaseAdapter {
 	}
     /**
      * Override the max number of obstacle of this course.
-     * @param integer
+     * @param maxObstacle: maximum number of obstacle exist on the course.
      */
     public void overrideMaxObstacle(int maxObstacle){
     	this.maxObstacle = maxObstacle;
     }
     /**
      * Override the current number of obstacle of this course.
-     * @param integer
+     * @param currentObstacle: current number of obstacle exits on the course.
      */
     public void overrideCurrentObstacle(int currentObstacle){
     	this.currentObstacle = currentObstacle;
     }
+    /**
+     * Get the elements of listview
+     * @return a list of elements in list view.
+     */
     public ArrayList<Equipment> getList(){
     	return this.mAppList;
     }
+    /**
+     * Get the list of new obstacles on this course. 
+     * @return the list of new obstacle on this course.
+     */
 	public ArrayList<Obstacle> getNewObstaclesOnCourse(){
 		return this.newObstaclesOnCourse;
 	}
+	/**
+	 * Get the user's current energy.
+	 * @return	user's current energy.
+	 */
 	public int getUserEnergy(){
 		return userEnergy;
 	}

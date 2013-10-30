@@ -32,8 +32,8 @@ public class ParseDAO {
 	/**
 	 * Convert course object to ParseOjbect
 	 * 
-	 * @param Course: The Course is going to be converted
-	 * @return ParseObject: The Course with ParseObject type
+	 * @param course: The Course is going to be converted
+	 * @return The Course with ParseObject type
 	 */
 	public ParseObject createCourseParseObject(Course course){
 		ParseObject parseCourse = new ParseObject("Course");
@@ -47,9 +47,9 @@ public class ParseDAO {
 	/**
 	 * Convert Obstacle object to ParseObejct
 	 * 
-	 * @param Obstacle: The Obstacle is going to be converted
-	 * @param ParseObject: The Course which this obstacle in.
-	 * @return ParseObject: The Obstacle with ParseObject type
+	 * @param obstacle: The Obstacle is going to be converted
+	 * @param course: The Course which this obstacle in.
+	 * @return The Obstacle with ParseObject type
 	 */
 	public ParseObject createObstacleParseObject(Obstacle obstacle, ParseObject course){
 		ParseObject object = new ParseObject("Obstacle");
@@ -65,9 +65,9 @@ public class ParseDAO {
 	/**
 	 * Create a Mission with ParseObject type.
 	 * 
-	 * @param ParseUser: Current user who create this mission
-	 * @param ParseObject: The course which the mission is.
-	 * @return ParseObject: The Mission with ParseObject type.
+	 * @param currentUser: Current user who create this mission
+	 * @param course: The course which the mission is.
+	 * @return The Mission with ParseObject type.
 	 */
 	public ParseObject createMissionParseObject(ParseUser currentUser, ParseObject course){
 		ParseObject mission = new ParseObject("Mission");
@@ -78,15 +78,15 @@ public class ParseDAO {
 	/**
 	 * Save a list of Parse Object to Parse server.
 	 * 
-	 * @param List<ParseObject>: A list of ParseObject
-	 * @param SaveCallback: the callback after save command execute.
+	 * @param list: A list of ParseObject
+	 * @param saveCallback: the callback after save command execute.
 	 */
 	public void insertToServer(List<ParseObject> list,SaveCallback saveCallback){
 		ParseObject.saveAllInBackground(list, saveCallback);
 	}
 	/**
-	 * 
-	 * @param user
+	 * Update user's level when it reach a certain condition.
+	 * @param user: current user.
 	 */
 	public void updateUserLevel(ParseUser user) {
 		int currentLV = user.getInt("level");
@@ -104,15 +104,14 @@ public class ParseDAO {
 		user.saveEventually();
 	}
 	/**
-	 * Update the current user's equipment
+	 * Update the current user's equipment number
 	 * 
 	 * SQL:
 	 * UPDATE "equipment"
 	 * SET "number" = current equipment number
 	 * WHERE "username" = current user AND "type" = equipment type
 	 * 
-	 * @param ParseUser: Current user.
-	 * @param ArrayList<Obstacle>: the list of obstacle need to be updated.
+	 * @param equipments: the list of equipment need to be updated.
 	 */
 	public List<ParseObject> updateEquipment(ArrayList<Equipment> equipments){
 		List<ParseObject> list = new ArrayList<ParseObject>();
@@ -150,6 +149,11 @@ public class ParseDAO {
 		});
 		*/
 	}
+	/**
+	 * Update user's  data source number 
+	 * @param user: current user
+	 * @return data source in ParseObject type.
+	 */
 	public ParseObject updateDatasource(ParseUser user){
 		ParseQuery<ParseObject> equipment = ParseQuery.getQuery("equipment");
 		equipment.whereEqualTo("username", user);
@@ -174,7 +178,7 @@ public class ParseDAO {
 	 * SET "energyLevel" = current energy
 	 * WHERE "user" = current user
 	 * 
-	 * @param ParseUser: Current user
+	 * @param user: Current user
 	 */
 	public void updateEnergyByTime(ParseUser user){
 		Date lastLogin = user.getUpdatedAt();
@@ -200,7 +204,7 @@ public class ParseDAO {
 	 * SET "energyLevel" = current energy
 	 * WHERE "user" = current user
 	 * 
-	 * @param ParseUser: Current user
+	 * @param user: Current user
 	 */
 	public void updateEnergyByObstacle(ParseUser user){
 		int energy = user.getInt("energyLevel");
@@ -232,8 +236,8 @@ public class ParseDAO {
 	 * SET "energyLevel" = current energy
 	 * WHERE "user" = current user
 	 * 
-	 * @param ParseUser: Current user.
-	 * @param int: Current energy of current user.
+	 * @param user: Current user.
+	 * @param energy: Current energy of current user.
 	 */
 	public void updateEnergyByEnergy(ParseUser user, int energy){
 		user.put("energyLevel", energy);
@@ -242,8 +246,8 @@ public class ParseDAO {
 	/**
 	 * Update the stolen energy to obstacle.
 	 * 
-	 * @param Obstacle
-	 * @param int
+	 * @param obstacle: the obstacle which will be updated.
+	 * @param stolenEnergy: the energy which will be used to update obstacle.
 	 */
 	public void updateObstacleEnergy(final Obstacle obstacle,final int stolenEnergy){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
@@ -267,9 +271,9 @@ public class ParseDAO {
 	 * 1.SQL: SELECT * FROM Course WHERE location = (latitude, longitude)
 	 * 2.New a Course with the gotten data above.
 	 * 
-	 * @param latitude - double
-	 * @param longitude - double
-	 * @return course - Course
+	 * @param latitude: latitude of the course.
+	 * @param longitude: longitude of the course
+	 * @return the course data from parse
 	 */
 	public Course getCourseByLoc(double latitude, double longitude){
 		Course course = null;
@@ -296,8 +300,8 @@ public class ParseDAO {
 	 * 
 	 * 
 	 * 
-	 * @param user
-	 * @return ArrayList of Course
+	 * @param user: current user.
+	 * @return List of Course
 	 */
 	public ArrayList<Course> getCourseByMissionFromCache(ParseUser user){
 		ArrayList<Course> courses = new ArrayList<Course>();
@@ -329,8 +333,8 @@ public class ParseDAO {
 	 * Get course by mission from Parse
 	 * SQL: SELECT course FROM Mission WHERE course = mission.couse
 	 * 
-	 * @param user
-	 * @return ArrayList of Course
+	 * @param user: current user.
+	 * @return List of Course
 	 */
 	public ArrayList<Course> getCourseByMissionFromNetwork(ParseUser user){
 		ArrayList<Course> courses = new ArrayList<Course>();
@@ -359,11 +363,15 @@ public class ParseDAO {
 	}
 	/**
 	 * Get Course By different organization in 500 meter
+	 * SQL:
+	 * SELECT *
+	 * FROM Course
+	 * WHERE "location" = loc AND "organization" = org
 	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param org
-	 * @return ArrayList of Course
+	 * @param latitude: user's current latitude
+	 * @param longitude: user's current longitude
+	 * @param org: user's organization
+	 * @return List of course.
 	 */
 	public ArrayList<Course> getCourseByDiffOrgInDistance(double latitude, double longitude, String org, double distance){
 		ArrayList<Course> courses = new ArrayList<Course>();
@@ -392,6 +400,19 @@ public class ParseDAO {
 		
 		return courses;
 	}
+	/**
+	 * Get the list of course by organizaiton and distance.
+	 * SQL:
+	 * SELECT *
+	 * FROM Course
+	 * WHERE "location" = loc (in certain distance) AND "organization" = org
+	 * 
+	 * @param latitude: latitude of user's current location
+	 * @param longitude: longitude of user's current location
+	 * @param org: user's organization
+	 * @param distance: the certain distance
+	 * @return list of course
+	 */
 	public ArrayList<Course> getCourseByOrgInDistance(double latitude, double longitude, String org, double distance){
 		ArrayList<Course> courses = new ArrayList<Course>();
 		
@@ -470,10 +491,10 @@ public class ParseDAO {
 	 * SQL:
 	 * SELECT *
 	 * FROM equipment
-	 * WHERE username = current user
+	 * WHERE "username" = current user
 	 * 
-	 * @param ParseUser
-	 * @return  ArrayList<Equipment>
+	 * @param user: current user
+	 * @return  list of equipment
 	 */
 	public ArrayList<Equipment> getEquipments(ParseUser user){
 		ArrayList<Equipment> equipments = new ArrayList<Equipment>();
@@ -510,9 +531,9 @@ public class ParseDAO {
 	 * 
 	 * SQL: 
 	 * DELETE 
-	 * FROM "Course" 
-	 * WHERE ""
-	 * @param course - Course
+	 * FROM Course 
+	 * WHERE "objectId" = objectid(ParseObject pointer)
+	 * @param course: The course will be deleted
 	 */
 	
 	public void deleteCourse(Course course){
@@ -544,8 +565,8 @@ public class ParseDAO {
 	 * FROM "Mission"
 	 * WHERE "course" = Course AND "username" = Current user
 	 * 
-	 * @param course
-	 * @param user
+	 * @param course: the course of this mission
+	 * @param user: current user.
 	 */
 	public void deleteMission(Course course, ParseUser user){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Mission");
@@ -572,8 +593,8 @@ public class ParseDAO {
 	 * FROM "Obstacle"
 	 * WHERE "course" = Course AND "username" = Current user
 	 * 
-	 * @param course
-	 * @param user
+	 * @param course: the course which the removed obstacle is.
+	 * @param user: current user
 	 */
 	public void deleteObstacleByUser(Course course, ParseUser user){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Obstacle");
@@ -603,8 +624,8 @@ public class ParseDAO {
 	/**
 	 * Increase equipment when user hack the course.
 	 * 
-	 * @param ParseUser: Current user
-	 * @param ArrayList<Obstacle>: List of obstacle in th course.
+	 * @param user: Current user
+	 * @param obstacle: List of obstacle in the course.
 	 */
 	public void updateGetEquipment(ParseUser user, ArrayList<Obstacle> obstacles){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("equipment");
@@ -628,7 +649,10 @@ public class ParseDAO {
 		}
 		
 	}
-	
+	/**
+	 * Special service to push notification to other device who's user is in the same organization.
+	 * @param user
+	 */
 	public void pushNotification(ParseUser user) {
 		ParsePush push = new ParsePush();
 		if(user.getString("organization").equals("iCorp")){

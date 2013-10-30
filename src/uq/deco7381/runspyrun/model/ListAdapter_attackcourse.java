@@ -27,7 +27,15 @@ import android.widget.TextView;
 
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-
+/**
+ * This class is a list view adapter use in AttackCourseActivity.
+ * It will use async task to calculate the location, bearing and distance.  
+ * 
+ * @author Jafo
+ * @version 1.3
+ * @since 15/10/2013
+ * @see uq.deco7381.runspyrun.activity.AttackCourseListActivity.java
+ */
 public class ListAdapter_attackcourse extends BaseAdapter {
 
 	private LayoutInflater mInflater;
@@ -35,7 +43,12 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 	private Context mContext;
 	private Location currentLocation;
 	private Bitmap bitmap;
-	
+	/**
+	 * Constructor
+	 * @param c: the main Activity which contain the list view.
+	 * @param loction: user's current loction.
+	 * @param list: the list of course load from Parse.
+	 */
 	public ListAdapter_attackcourse(Context c,Location location, ArrayList<Course> list) {
 		// TODO Auto-generated constructor stub
 		mAppList = list;
@@ -44,11 +57,18 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 		bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.arrow);
 		currentLocation = location;
 	}
-
+	/**
+	 * Set the current location for Async task to calculate the bearing and distance.
+	 * @param currenLocation: user's current loction
+	 */
 	public void setCurrentLocation(Location currenLocation){
 		this.currentLocation = currenLocation;
 		this.notifyDataSetChanged();
 	}
+	/**
+	 * Add a new course into list view 
+	 * @param course: new course element to data set.
+	 */
 	public void addCourse(Course course){
     	mAppList.add(course);
     	this.notifyDataSetChanged();
@@ -61,7 +81,7 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 
 	/**
      * Override all the data set in this adapter.
-     * @param course
+     * @param course: the list of course get from Parse
      */
     public void overrideDataset(ArrayList<Course> course){
 		this.mAppList = course;
@@ -141,6 +161,12 @@ public class ListAdapter_attackcourse extends BaseAdapter {
 	    TextView level;
 	    int position;
 	}
+	/**
+	 * This class use another thread to calculate the location, bearing and distance between user current loaction and course location.
+	 * Improving user experience.
+	 * @author Jafo
+	 *
+	 */
 	private class locationComputing extends AsyncTask<Object,Void,Bitmap>{
 		private ViewHolder holder;
 		private int position;

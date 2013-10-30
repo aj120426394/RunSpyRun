@@ -56,11 +56,13 @@ import com.wikitude.architect.SensorAccuracyChangeListener;
  * @version 1.3
  * @since 15/10/2013
  * 
- * @see uq.deco.runspyrun.activity.AttackCourseListActivity
+ * @see uq.deco7381.runspyrun.activity.AttackCourseListActivity.java
+ * @see up.deco7381.runspyrun.model.ParseDAO.java
  *
  */
 public class AttackActivity extends Activity implements  OnMyLocationChangeListener, ArchitectUrlListener{
 
+	private String WIKITUDE_API_KEY = "S21hdBHKcTzOVEwj0WC/LWuveQEV4++9h6OxmlYTnV3c740F29gZ81Rhvj8XUva0J6S5VmDZYiTefRLzlmidxKYnw14S4QXxyyn7D6GkgU0XB46PX7Cbd15DQ0rabH/cdeQBJWmd86BeS54UwrD9/av4y7nCOaKsBgAcb54SS8BTYWx0ZWRfX8rymlXhkqpd3yQU1W+l0InsllmLNu9YO09WGsmNSbH1qLrNeWrrfxhliDGgBqcIq2jfRp6G5SgBGVqA4YHz6+EPRF6AjiKB8I19qYxXKookzVEkLe7683JmPkdxOis6o5pljhXn0TBjAP8iVynpYhM6IvyTgZjlCIDGwwvke2YGjVTd2wWO3OUeuy+a48twUfMGgjkp0mqkV/UK0icjrDXvP1vbD66m14jeQUAufWyFSRXJ/QMDdljPAKee34XmGiOtDiwEWxSdox2v/L9gf1hER4y8VBZzG5MtjnRdwEUQ8Z3rKa+TisBwwP8TGigc+slbFQJcQvtBMeclHE4vfbl7FJ7SSC5oiSYzjPyZr1jFU9kMtOZy/CxBi80ccEWBb0hIk6/Hu+OCjAZgJQfGgh4U5AcKZBCxrLlfqXj2CdKOdZkxSOVnupHw01xuRNL+MWuRJwKcRHqBTB7BVntKSGH3l806JEMOO+XP9jpt42SwVQm6EjSAUCE=";
 	private GoogleMap map;
 	private MapFragment mMapFragment;
 	protected ArchitectView architectView;
@@ -144,7 +146,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 		 */
 		viewGroup = (RelativeLayout)findViewById(R.id.RelativeLayout1);
 		architectView = (ArchitectView)this.findViewById( R.id.architectView );
-		final ArchitectConfig config = new ArchitectConfig("S21hdBHKcTzOVEwj0WC/LWuveQEV4++9h6OxmlYTnV3c740F29gZ81Rhvj8XUva0J6S5VmDZYiTefRLzlmidxKYnw14S4QXxyyn7D6GkgU0XB46PX7Cbd15DQ0rabH/cdeQBJWmd86BeS54UwrD9/av4y7nCOaKsBgAcb54SS8BTYWx0ZWRfX8rymlXhkqpd3yQU1W+l0InsllmLNu9YO09WGsmNSbH1qLrNeWrrfxhliDGgBqcIq2jfRp6G5SgBGVqA4YHz6+EPRF6AjiKB8I19qYxXKookzVEkLe7683JmPkdxOis6o5pljhXn0TBjAP8iVynpYhM6IvyTgZjlCIDGwwvke2YGjVTd2wWO3OUeuy+a48twUfMGgjkp0mqkV/UK0icjrDXvP1vbD66m14jeQUAufWyFSRXJ/QMDdljPAKee34XmGiOtDiwEWxSdox2v/L9gf1hER4y8VBZzG5MtjnRdwEUQ8Z3rKa+TisBwwP8TGigc+slbFQJcQvtBMeclHE4vfbl7FJ7SSC5oiSYzjPyZr1jFU9kMtOZy/CxBi80ccEWBb0hIk6/Hu+OCjAZgJQfGgh4U5AcKZBCxrLlfqXj2CdKOdZkxSOVnupHw01xuRNL+MWuRJwKcRHqBTB7BVntKSGH3l806JEMOO+XP9jpt42SwVQm6EjSAUCE=");
+		final ArchitectConfig config = new ArchitectConfig(WIKITUDE_API_KEY);
 		architectView.onCreate( config );
 		architectView.setVisibility(View.GONE);
 		
@@ -188,7 +190,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	 * Set up a course:
 	 * 1. Display the zone
 	 * 
-	 * @param Course
+	 * @param course: the course will be displayed
 	 */
 	private void displayCourse(Course course){
 		map.addCircle(course.getCourseZone());
@@ -216,7 +218,7 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	/**
 	 * Show the missionComplete dialog when user hack the datasource.
 	 * 
-	 * @param Boolean: user complete the course or not.
+	 * @param complete: user complete the course or not.
 	 */
 	private void missionComplete(boolean complete){
 		RelativeLayout viewLayout = (RelativeLayout)findViewById(R.id.RelativeLaout);
@@ -446,8 +448,8 @@ boolean isLoading = false;
 	/**
 	 * Adds data from to the javascript file name to enable the data to be passed to the javascript file
 	 * 
-	 * @param methodName - the name of the javascript file to be called
-	 * @param arguments - the data to be passed to the javascript function in this case poiData - information about defences
+	 * @param methodName: the name of the javascript file to be called
+	 * @param arguments: the data to be passed to the javascript function in this case poiData - information about defense
 	 */
 	private void callJavaScript(final String methodName, final String[] arguments) {
 		final StringBuilder argumentsString = new StringBuilder("");
@@ -810,8 +812,7 @@ boolean isLoading = false;
 		}
 	};
 	/**
-	 * Loading the data with asyn task.
-	 * It will use another thread to load the data from Parse.
+	 * This class will use another thread to load the data from Parse.
 	 * Avoiding to use the same thread which show the user interface to user.
 	 * Improving user experience.
 	 * 
@@ -841,8 +842,9 @@ boolean isLoading = false;
 	}
 
 	/**
-	 * It will use another thread to update data to Parse.
+	 * This class will use another thread to update data to Parse.
 	 * Avoiding use the same thread which show the progress bar to user.
+	 * Improving user experience.
 	 * 
 	 * @author Jafo
 	 *

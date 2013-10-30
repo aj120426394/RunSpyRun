@@ -131,6 +131,9 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 
+		/*
+		 * Setup the sliding panel
+		 */
 		mPaneLayout = (SlidingPaneLayout)findViewById(R.id.content);
 		mPaneLayout.openPane();
 		mPaneLayout.invalidate();
@@ -157,9 +160,10 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			}
 		});
 		/*
-		ArrayListFragment list = new ArrayListFragment();
-		getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
-		*/
+		 *ArrayListFragment list = new ArrayListFragment();
+		 *getFragmentManager().beginTransaction().add(R.id.fragment1, list).commit();
+		 *
+		 */
 		ArrayList<Equipment> equipments = new ArrayList<Equipment>();
 		final ListView listview = (ListView) findViewById(R.id.listView1);
 		mAdapter_defence = new ListAdapter_defence(this,equipments,map,mPaneLayout,energyTextView, obstacleTextView, maxObstacle, currentObstacle);
@@ -251,11 +255,8 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 	}
 
 	/**
-	 * Set up a course:
-	 * 1. Display the zone
-	 * 2. Set the course object
-	 * 
-	 * @param latLng
+	 * Set the marker of course on the map
+	 * @param course: the course will be displayed
 	 */
 	private void displayCourse(Course course){
 		map.addCircle(course.getCourseZone());
@@ -414,6 +415,14 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 			
 	}
 
+	/**
+	 * This class will user another thread to get the list of equipment from parse.
+	 * This avoid using the same thread which display user interface to user.
+	 * To improve user experience
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class GetEquipment extends AsyncTask<ParseUser, Void, ArrayList<Equipment>>{
 
 		@Override
@@ -437,7 +446,14 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		}
 		
 	}
-	
+	/**
+	 * This class will user another thread to get the list of obstacles
+	 * This avoid using the same thread which display user interface to user.
+	 * To improve user experience
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class GetObstacles extends AsyncTask<Double, Void, ArrayList<Obstacle>>{
 
 		@Override

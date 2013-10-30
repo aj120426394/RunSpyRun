@@ -120,7 +120,7 @@ public class Course {
 		return this.organization;
 	}
 	/**
-	 * 
+	 * Set the object id of thi course from Parse
 	 * @param String: objectID
 	 */
 	public void setObjectID(String objectID){

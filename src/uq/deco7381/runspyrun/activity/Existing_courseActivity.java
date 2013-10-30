@@ -33,7 +33,16 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
+/**
+ * This class is use to create a new mission.
+ * It display the alliance course around in 500 meters,
+ * also user can create there own course by clicking Create New Course
+ * 
+ * @author Jafo
+ * @version 1.0
+ * @since 15/10/2013
+ *
+ */
 public class Existing_courseActivity extends Activity implements OnMyLocationChangeListener{
 
 	private GoogleMap map;
@@ -119,7 +128,11 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		
 		
 	}
-
+	/**
+	 * onClick method triggered by clicking Create New Course
+	 * It will detect the number of data source user have, if it is less than zero,
+	 * user is not allow to click this button.
+	 */
 	private void newCourseCreatable(){
 		RelativeLayout create = (RelativeLayout)findViewById(R.id.RelativeLayout1);
 		TextView createTitle = (TextView)findViewById(R.id.missionNum);
@@ -142,26 +155,6 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 			});
 		}
 	}
-	private ArrayList<Course> getCourseList(double latitude, double longitude){
-		ArrayList<Course> courseList  = new ArrayList<Course>();
-		ArrayList<Course> missionList = dao.getCourseByMissionFromNetwork(ParseUser.getCurrentUser());
-		ArrayList<Course> orgList = dao.getCourseByOrgInDistance(latitude, longitude, ParseUser.getCurrentUser().getString("organization"), 2);
-		
-		for(Course course:  orgList){
-			boolean flag = false;
-			for(Course missionCourse: missionList){
-				if(course.getObjectID().equals(missionCourse.getObjectID())){
-					flag = true;
-				}
-			}
-			if(flag == false){
-				courseList.add(course);
-			}
-		}
-		
-		return courseList;
-	}
-	
 	/**
 	 * Basic map set up
 	 * 1. Set map track user's current location
@@ -191,17 +184,14 @@ public class Existing_courseActivity extends Activity implements OnMyLocationCha
 		map.setOnCameraChangeListener(null);
 		
 	}
-	
-	public void createNewCourse() {
-		if(this.currentLocation != null){
-			Intent intent = new Intent(this, DefenceActivity.class);
-			intent.putExtra("latitude", this.currentLocation.getLatitude());
-			intent.putExtra("longtitude", this.currentLocation.getLongitude());
-			intent.putExtra("isFrom", "newCourse");
-			startActivity(intent);
-		}
-	}
-	
+	/**
+	 * This class will user another thread to get the course list from parse.
+	 * This avoid using the same thread which display user interface to user.
+	 * To improve user experience
+	 * 
+	 * @author Jafo
+	 *
+	 */
 	private class GetCourseList extends AsyncTask<Double, Void, ArrayList<Course>>{
 
 		@Override
