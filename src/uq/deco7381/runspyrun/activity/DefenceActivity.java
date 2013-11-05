@@ -85,6 +85,11 @@ public class DefenceActivity extends Activity implements OnMyLocationChangeListe
 		double latitude = intent.getDoubleExtra("latitude", 0.0);
 		double longitude = intent.getDoubleExtra("longtitude", 0.0);
 		isFrom = intent.getStringExtra("isFrom");
+		/*
+		double latitude = -27.4985904;
+		double longitude = 153.0141902;
+		isFrom = "existCourse";
+		*/
 		int userEnergy = ParseUser.getCurrentUser().getInt("energyLevel");
 		mContentView = findViewById(R.id.content);
 		mLoadingView = findViewById(R.id.loading);
