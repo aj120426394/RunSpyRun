@@ -345,7 +345,8 @@ public class AttackActivity extends Activity implements  OnMyLocationChangeListe
 	}
 	
 	/**
-	 * Starts the Attack view in the device using wikitude architect view overlaying the html file with the AR objects in different thread
+	 * Starts the Attack view in the device using wikitude architect view overlaying the html file 
+	 * with the AR objects in different thread
 	 * 
 	 * @throws IOException if loading index.html failed.
 	 * @see loadData
@@ -384,7 +385,7 @@ boolean isLoading = false;
 			
 			final int WAIT_FOR_LOCATION_STEP_MS = 2000;
 			
-			/**
+			/*
 			 * Loop to ensure that location data is obtained before data from parse is loaded
 			 */
 			while (AttackActivity.this.lastKnownLocaton==null && !AttackActivity.this.isFinishing()) {
@@ -429,8 +430,8 @@ boolean isLoading = false;
 				poiData.put(new JSONObject(obstacleHashMap));
 			}
 			
-			/**
-			 * If location is obtained calls javascrit file which displays the Attack View on the device
+			/*
+			 * If location is obtained calls javascript file which displays the Attack View on the device
 			 * Passes poiData into the javascript function
 			 * 
 			 * @see callJavaScript
@@ -522,7 +523,10 @@ boolean isLoading = false;
 			
 
 			/*
-			 * check to see if obstacle has been triggered
+			 * checks to see if obstacle has been triggered based on behavior of different obstacles
+			 * sets triggered flag if an obstacle has been triggered
+			 * creates alert messages to be displayed in the AR view
+			 * 
 			 */
 			if (viewFlag == 2) {
 				
@@ -534,148 +538,257 @@ boolean isLoading = false;
 				
 				int obs_energycost = 0;
 				
-				// check whether obstacle has been triggered
+				/* Loop to check through all obstacles for the course
+				 * to determine whether the user has triggered any of the obstalces
+				 */
 				for(Obstacle obstacle: obstacles){
-					//check distance between current location and all obstacles
 				
-					// get obstacle type
+					/* get obstacle type and trigger distance
+					 * 
+					 */
 					String obs_type = obstacle.getType();
 					double obs_triggerdistance = obstacle.getTriggerDistance();
-					//System.out.println(obs_triggerdistance);
+					System.out.println(obs_type+" - trigger distance: "+obs_triggerdistance);
 				
-					// get distance from currentLoc to obstacle
+					/* get distance from currentLoc to obstacle
+					 * 
+					 */
 					double obsdistance = (obstacle.getParseGeoPoint().distanceInKilometersTo(currentLoc) * 1000);
 					System.out.println("Dis to obs"+counter1+" "+obs_type+" is "+obsdistance);
-					System.out.println("Trigger distance is "+obs_triggerdistance);
 					
-					// get bearing obstacle location to current location
+					/* get bearing obstacle location to current location
+					 * 
+					 */
 					Location obstaclelocation = new Location("");
 					obstaclelocation.setLatitude(obstacle.getLatitude());
 					obstaclelocation.setLongitude(obstacle.getLongitude());
 					float userbearing = obstaclelocation.bearingTo(location);
 					System.out.println("Bearing from obstacle to user is "+userbearing);
 					
-					// check if obstacle already triggered
+					/* check if obstacle already triggered
+					 * 
+					 */
 					triggered = obshash.containsKey(obstacle);
-					System.out.println("triggered value is "+triggered);
+					System.out.println("Obstacle triggered: "+triggered);
 
-					// check if user within distance to trigger obstacle
-					// only do this if not already triggered
-					// reduce users energy
+					/* This section of the code provides behaviors when an obstacle is triggered for the 
+					 * first time.  
+					 * Behaviors will depend upon the characteristics of each of the different obstacles.
+					 * 
+					 */
+					
 					if ((obsdistance < obs_triggerdistance) && (triggered==false)) {
 						
-						// Guard
+						/* If obstacle is a Guard
+						 * Check if seen by guard that is within the set radius of the guard position
+						 * and within the bearing for which way the guard is looking
+						 * check the functionality of checkIfSeenByGuard
+						 * if within radius and vision range of the guard
+						 * Reduce energy
+						 * AR View message to user that energy lost - advise what to do
+						 * 
+						 */
+						
 						if (obs_type=="Guard") {
 							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
 							if (seenByGuard) {
-								alertmessage = "Detection: Guard - energy reduction: "+(obstacle.getEnergyCost());
+								alertmessage = "Detection: You have been detected by a Guard.  " +
+										"Your energy has been reduced by "+(obstacle.getEnergyCost())+
+										".  Move away from this location.";
 							} else {
-								alertmessage = "Warning: In Range of Guard not within field of vision";
+								alertmessage = "Warning: You are within range of a guard but the guard is facing away from you.  " +
+										"The guard is turning towards you.  Move away quickly.";
 							}
 						}
 						
-						// Dog
+						/* If obstacle is a Dog
+						 * Reduce energy
+						 * AR View message to user that energy lost - advise what to do
+						 * 
+						 */
 						if (obs_type=="Dog") {
-							alertmessage = "Detection: Dog - energy reduction: "+(obstacle.getEnergyCost());
+							alertmessage = "Detection: You have been detected by a Dog." +
+									"Your energy has been reduced by "+(obstacle.getEnergyCost())+
+									".  The dog will keep moving towards you until you move a safe distance away.";
 							dog_dist = 30;
 						}
-						// Detection Plate
+						
+						/* If obstacle triggered is a Detection Plate
+						 * Reduce energy
+						 * AR View message to user that energy lost - advise what to do
+						 * 
+						 */
 						if (obs_type=="DetectionPlate") {
-							alertmessage = "Detection: Detection Plate - energy reduction: : "+(obstacle.getEnergyCost());
+							alertmessage = "Detection: You have triggered a Detection Plate.  Your energy has " +
+									"been reduced by "+(obstacle.getEnergyCost())+".  Move away from this area.";
 						}
 						
-						// Motion Detector
+						/* If obstacle that has been triggered is a Motion Detector
+						 * No energy lost
+						 * AR View warning to user not to move too fast
+						 * 
+						 */
 						if (obs_type=="MotionDetector") {
-							alertmessage ="Detection: Motion - no energy lost: move slowly";
+							alertmessage ="Detection: You have been detected by a Motion Detector.  You have not lost" +
+									"any energy.  If you move too fast whilst you are within the range of the Motion Detector" +
+									" you will lose energy.  Move slowly.";
 							previouslocation = currentLoc;
 						}
 						
 						obshash.put(obstacle, true);
-						/*
-						 * When obstacle be triggered, it will reduce energy of user who trigger this obstacle.
-						 * Also put half of stolen energy to player who create it.
+						
+						 /* When obstacle is triggered, it will reduce the energy of user who triggered this obstacle.
+						 * Also put half of the lost energy will be allocated to the player who created the obstacle.
 						 * No energy is taken when a motion detector is triggered at this stage
+						 * 
 						 */
 						if (obs_type!="MotionDetector" || (obs_type=="Guard" && seenByGuard != false)) {
 							obs_energycost += (obstacle.getEnergyCost());
 							dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 						}
-						// vibrate phone 
+						
+						/* vibrate phone to alert user
+						 *  
+						 */
 						Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 						vibrator.vibrate(500);
 						
-						// set alertFlag for passing to the AR view
+						/* set alertFlag to turn on the alert graphic in the AR view
+						 * 
+						 */
 						alertgraphicshow = "on";
-						System.out.println("First Triggered - "+alertmessage);
+						System.out.println("First Triggered AR alert message - "+alertmessage);
 					}
 					
-					// obstacle no longer triggered
-					// reset obshash so that obstacle can be triggered again
+					/* obstacle no longer triggered
+					 * reset obshash indicator so that obstacle can be triggered again
+					 * reset if the user has been bitten by the dog
+					 * reset if the user has been seen by the guard
+					 * create AR message that user is clear of all defences
+					 * turn off the alert graphic in AR view
+					 * 
+					 */
 					if (obsdistance > obs_triggerdistance && triggered){
 						obshash.remove(obstacle);
 						bitten = false; // reset the dog
 						seenByGuard = false;
 						alertmessage ="Mission active - Clear of all defences";
 						alertgraphicshow = "off"; // turn off alert graphic
+						System.out.println("Clear of all obstacles everything reset");
 					}
 					
-					// events when already detected but still within trigger distance 
+					/* behavior when obstacle is triggered and user is still within trigger distance
+					 * behavior depends upon the characteristics of each obstacle
+					 * 
+					 */
 					if ((obsdistance < obs_triggerdistance) && (triggered)) {
 						
-						// Guard behavior check to see if within sight of guard if so energy reduction 
-						// otherwise no energy reduction
+						/* If obstacle is a guard
+						 * check to see if user within the sight range of the guard
+						 * if so reduce energy
+						 * AR view message that energy has been lost
+						 * 
+						 * if not in sight range of the guard
+						 * AR warning - advising what to do
+						 * 
+						 */
 						if (obs_type=="Guard") {
 							guardSightBearing = calcGuardSightbearing(guardSightBearing);
 							seenByGuard = checkIfSeenByGuard(guardSightBearing, userbearing);
 							if (seenByGuard) {
-								alertmessage = "Detection: Seen by Guard - energy reduction "+obstacle.getEnergyCost();
+								alertmessage = "Detection: You have been seen by Guard.  Your energy has been " +
+										"reduced by "+obstacle.getEnergyCost()+".  Move away from this area or " +
+												"wait until the guard turns away.";
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 								alertgraphicshow = "on";
 							} else {
-								alertmessage = "Warning: In Range of Guard not within field of vision";
+								alertmessage = "Warning: In Range of Guard but not within field of vision.  The guard " +
+										"keeps turning so keep moving.";
 								alertgraphicshow = "off";
 							}
 						}
 						
-						// Dog behavior when triggered - chases and bites
+						/* If obstacle is a dog
+						 * If the user has not been bitten
+						 * Reduce the distance between the dog and the user
+						 * 
+						 * if the distance is equal to 5 and the user has not been bitten
+						 * reduce energy
+						 * AR View message that the user has been bitten and energy lost - advise what to do
+						 * vibrate the device
+						 * show alert graphic in AR view
+						 * 
+						 * If the distance is equal to or less than 5 and the user has been bitten
+						 * AR view message advising user to move away
+						 * hide alert graphic in AR view
+						 * 
+						 */
 						if (obs_type=="Dog") {
 							if (dog_dist == 5 && !(bitten)) {
 								bitten = true;
 								Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 								vibrator.vibrate(500);
-								alertmessage = "You have been attacked by the dog - energy reduction "+obstacle.getEnergyCost();
+								alertmessage = "Detection: You have been attacked by the dog.  Your energy " +
+										"has been reduced by "+obstacle.getEnergyCost()+".  Move away from " +
+												"this area.";
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
 								alertgraphicshow = "on";
+								System.out.println("First bitten by dog - dog distance is "+dog_dist);
 							} else if (dog_dist > 0 && !(bitten)) {
 								dog_dist -= 5;
-								alertmessage = "Dog chasing you - "+dog_dist+"m away";
+								alertmessage = "Warning: The dog is chasing you and is "+dog_dist+"m away.  " +
+										"Move away from this area.";
 								alertgraphicshow = "off";
+								System.out.println("Dog moving closer - distance "+dog_dist);
 							} else if ((dog_dist < 6) && (bitten)) {
-								alertmessage = "You have been attacked by the dog - move away";
+								alertmessage = "Detection: You have been attacked by the dog - move away from " +
+										"this area.";
 								alertgraphicshow = "off";
+								System.out.println("attacked by dog - distance "+dog_dist);
 							}
 						}
-						// Motion Detector only triggered if the user moves more than 10m between location checks
+						/* If the obstacle is a Motion Detector
+						 * check the distance that user has moved since the last location check
+						 * if the distance is greater than 10m
+						 * reduce energy
+						 * AR view message advising user of energy loss and what to do
+						 * turn on AR view alert graphic
+						 * 
+						 * if the distance is less than 10m
+						 * AR view message advising user to move slowly
+						 * 
+						 */
 						if (obs_type=="MotionDetector") {
 							double moveddistance = (previouslocation.distanceInKilometersTo(currentLoc)*1000);
 							if (moveddistance > 10) {
 								alertgraphicshow = "on";
-								alertmessage = "Excessive movement detected - energy reduction "+obstacle.getEnergyCost();
+								alertmessage = "Detection: Excessive movement detected by a Motion Detector.  " +
+										"Your energy has been reduced by  "+obstacle.getEnergyCost()+".  Move " +
+												"slowly until you are out of range of the Motion Detector.";
 								obs_energycost += (obstacle.getEnergyCost());
 								dao.updateObstacleEnergy(obstacle, obstacle.getEnergyCost()/2);
+								System.out.println("within motion detector range and moved too far - moved "+moveddistance);
 							} else {
-								alertmessage = "In range of motion detector: move slowly";
+								alertmessage = "Warning:  You are in range of a motion detector: move slowly " +
+										"to avoid energy loss.";
 								alertgraphicshow = "off";
+								System.out.println("within motion detector range but not moved too far - moved"+moveddistance);
 							}
 						}
-						// Detection Plate behavior already triggered
+						/* If the obstacle is a Detection Plate
+						 * AR view message advising user to move away
+						 * no energy loss
+						 * 
+						 */
 						if (obs_type=="DetectionPlate") {
-							alertmessage="In range of detection plate - move away";
+							alertmessage="You are still in range of a detection plate.  Move away from this " +
+									"area.";
 							alertgraphicshow="off";
+							System.out.println("still in range of detection plate");
 						}
-						System.out.println("Second Trigger - "+alertmessage);
+						System.out.println(obs_type+" second trigger - "+alertmessage);
 					}
 
 					counter1 += 1;
@@ -694,17 +807,21 @@ boolean isLoading = false;
 				
 				
 
-				/**
-				 * Check to see if at data stream
+				/*
+				 * Check to see if the user is at the data stream
+				 * start the reachData task
+				 * 
 				 */
 				if (distance*1000<10) {
 					alertmessage = "You have reached the data stream";
 
-					alertFlag = "ALERT!";
+					alertgraphicshow = "on";
 					reachData();
 				}
 				
-				// update status, energy, energy bar and alerts in AR view 
+				/* update status, energy, energy bar and alerts in AR view
+				 *  
+				 */
 				if (this.architectView!=null) {
 					this.architectView.callJavascript("World.updateEnergyValue( '"+userEnergy+"' );");			
 					final String alertRightText = ( "World.updateAlertElementRight( '"+alertmessage.toString()+"' );" );
@@ -729,17 +846,24 @@ boolean isLoading = false;
 			float userbearing) {
 		// TODO Auto-generated method stub
 		
-		// convert userbearing to 360
+		/* convert userbearing to 360 degree setting
+		 * 
+		 */
 		System.out.println("User bearing before conversion: "+userbearing);
 		if (userbearing <0) {
 			userbearing = 180 + (180 + userbearing);
 		}
 		System.out.println("User bearing after conversion: "+userbearing);
 		
-		// check if user is within sight of the guard
+		/* check if user is within sight of the guard
+		 * bearing from guard to user is within + or - 30 degrees (60 degree field of vision)
+		 * of the guards sight bearing
+		 */
 		if (userbearing >= (guardSightBearing2-30.0f) && userbearing <= (guardSightBearing2+30.0f)) {
+			System.out.println("In range of guard and in sight");
 			return true;
 		} else {
+			System.out.println("In range of guard but not in sight");
 			return false;
 		}
 	}

@@ -99,13 +99,16 @@ var World = {
 	
 	updateAlertElementRight: function updateAlertElementRightFn(alertRightText) {
 		document.getElementById("alertElement1").innerHTML = alertRightText;
+		console.log("alert text updated"+alertRightText);
 	},
 	
 	updateAlertGraphic: function updateAlertGraphicFn(alertgraphicflag) {
 		if (alertgraphicflag=="on") {
 			document.getElementById("alertgraphic").innerHTML = '<img id="alertgraphicimg" src="img/Alert.png">';
+			console.log("alert graphic turned on");
 		} else {
 			document.getElementById("alertgraphic").innerHTML = ' ';
+			console.log("alert graphic turned off");
 		};
 	}
 
